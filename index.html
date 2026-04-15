@@ -14,6 +14,30 @@
     <div class="title-desc">Board game · 24 căsuțe tematice · 2 jucători</div>
   </header>
 
+  <section class="fusion-hub">
+    <div class="fusion-head">
+      <div>
+        <div class="fusion-kicker">Arcade Fusion Portal</div>
+        <h2>Îmbinare Board + Arcade Collection</h2>
+      </div>
+      <div class="fusion-actions">
+        <button class="secondary-btn" id="fusion-toggle-btn" onclick="toggleFusionPortal()">🕹️ Activează Portal</button>
+        <button class="secondary-btn" onclick="openLegacyWorld()">🌍 Deschide versiunea GitHub</button>
+      </div>
+    </div>
+    <p class="fusion-copy">
+      Joacă tabla ARCADE WORLD aici, iar când vrei experiența completă deschizi instant colecția originală în portalul integrat.
+    </p>
+    <div class="fusion-frame-wrap hidden" id="fusion-frame-wrap">
+      <iframe
+        id="fusion-frame"
+        class="fusion-frame"
+        title="Arcade Collection Portal"
+        loading="lazy"
+        src="about:blank"></iframe>
+    </div>
+  </section>
+
   <section class="top-status">
     <div class="info-strip">
       <div class="info-box">
