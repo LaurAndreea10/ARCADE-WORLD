@@ -1,1 +1,54 @@
 
+.mg-icon { font-size: 52px; margin-bottom: 10px; }
+.mg-title { font-family: 'Black Ops One', cursive; font-size: 20px; color: var(--cyan); letter-spacing: 2px; margin-bottom: 6px; }
+.mg-origin { font-size: 11px; color: var(--dim); letter-spacing: 2px; margin-bottom: 14px; }
+.mg-desc { font-size: 14px; color: var(--white); line-height: 1.6; margin-bottom: 18px; }
+.mg-challenge { background: #ffffff08; border: 1px solid #ffffff15; border-radius: 10px; padding: 14px; margin-bottom: 18px; }
+.mg-challenge-title { font-size: 11px; color: var(--gold); letter-spacing: 3px; margin-bottom: 8px; }
+.shoot-bar-wrap { background: #000; border-radius: 8px; height: 20px; overflow: hidden; margin-bottom: 10px; position: relative; cursor: pointer; }
+.shoot-bar { height: 100%; background: linear-gradient(90deg, #ff4444, #ffaa00, #00ff88, #ffaa00, #ff4444); background-size: 200%; animation: bar-move 1s linear infinite; }
+@keyframes bar-move { 0% { background-position: 0%; } 100% { background-position: 200%; } }
+.shoot-cursor { position: absolute; top: 0; height: 100%; width: 4px; background: white; box-shadow: 0 0 8px white; transition: left .05s linear; }
+.mem-grid { display: grid; gap: 8px; margin-bottom: 10px; }
+.mem-card { aspect-ratio: 1; border-radius: 8px; background: var(--border); border: 1px solid var(--dim); display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; transition: all .2s; user-select: none; }
+.mem-card.hidden-card { color: transparent; background: #1a1a30; }
+.mem-card.matched { background: #00ff8822; border-color: var(--green); }
+.ttt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; max-width: 200px; margin-left: auto; margin-right: auto; }
+.ttt-cell { aspect-ratio: 1; border-radius: 8px; background: #1a1a30; border: 1px solid var(--dim); display: flex; align-items: center; justify-content: center; font-size: 26px; cursor: pointer; transition: all .15s; }
+.ttt-cell:hover:empty { background: #ffffff0a; }
+.maze-display { font-family: monospace; font-size: 13px; line-height: 1.3; letter-spacing: 2px; color: var(--cyan); margin-bottom: 10px; background: #000; padding: 10px; border-radius: 8px; white-space: pre; }
+.maze-controls, .btn-row { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.maze-btn, .answer-btn, .secondary-btn, .input-btn { background: #1a1a30; border: 1px solid var(--dim); color: var(--white); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 700; }
+.maze-btn:hover, .answer-btn:hover, .secondary-btn:hover, .input-btn:hover { border-color: var(--cyan); }
+.btn-win, .btn-lose, .btn-skip, .btn-restart { border: none; border-radius: 10px; padding: 12px 24px; cursor: pointer; letter-spacing: 1px; font-family: 'Rajdhani', sans-serif; font-weight: 700; }
+.btn-win { background: linear-gradient(135deg, var(--green), #00cc66); color: #000; }
+.btn-lose { background: linear-gradient(135deg, var(--pink), #cc0055); color: #fff; }
+.btn-skip { background: transparent; color: var(--dim); border: 1px solid var(--border); }
+.result-good { color: var(--green); font-weight: 700; font-size: 15px; margin-top: 8px; }
+.result-bad { color: var(--pink); font-weight: 700; font-size: 15px; margin-top: 8px; }
+.win-screen { position: fixed; inset: 0; background: #000000ee; display: flex; align-items: center; justify-content: center; z-index: 200; backdrop-filter: blur(10px); }
+.win-screen.hidden { display: none; }
+.win-panel { text-align: center; padding: 40px 32px; background: linear-gradient(135deg, #0d0d1e, #1a0d2e); border-radius: 24px; border: 2px solid var(--gold); box-shadow: 0 0 80px #f5c84244; max-width: 380px; width: 100%; }
+.win-trophy { font-size: 64px; margin-bottom: 12px; animation: trophy-bounce 1s ease infinite alternate; }
+@keyframes trophy-bounce { from { transform: translateY(0); } to { transform: translateY(-8px); } }
+.win-title { font-family: 'Black Ops One', cursive; font-size: 28px; color: var(--gold); margin-bottom: 6px; }
+.win-sub { color: var(--dim); font-size: 14px; margin-bottom: 20px; }
+.btn-restart { background: linear-gradient(135deg, var(--gold), #e6a800); color: #000; font-family: 'Black Ops One', cursive; font-size: 15px; letter-spacing: 2px; }
+.wire-grid, .option-grid, .dir-grid, .four-grid, .triple-grid { display: grid; gap: 8px; margin-top: 8px; }
+.wire-grid, .option-grid, .four-grid { grid-template-columns: 1fr 1fr; }
+.dir-grid, .triple-grid { grid-template-columns: repeat(3, 1fr); }
+.tiny-note { font-size: 12px; color: var(--dim); margin-top: 8px; }
+.fusion-slots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
+.fusion-slot, .tile-duel-cell, .pattern-chip, .brick-chip, .combo-puck { border: 1px solid var(--border); border-radius: 8px; padding: 12px 8px; background: #121226; cursor: pointer; user-select: none; }
+.fusion-slot, .brick-chip, .combo-puck { font-size: 24px; }
+.fusion-slot:hover, .tile-duel-cell:hover, .pattern-chip:hover, .brick-chip:hover, .combo-puck:hover { border-color: var(--cyan); }
+.tile-duel-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
+.tile-duel-cell { min-height: 74px; display: flex; align-items: center; justify-content: center; flex-direction: column; font-size: 22px; }
+.text-input { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: #0b0b18; color: var(--white); outline: none; margin-bottom: 10px; text-align: center; font-size: 16px; }
+.text-input:focus { border-color: var(--cyan); }
+.pulse-go { animation: pulseGo .7s ease-in-out infinite alternate; }
+@keyframes pulseGo { from { box-shadow: 0 0 0 #00ff8800; } to { box-shadow: 0 0 14px #00ff8877; } }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+@media (max-width: 480px) {
