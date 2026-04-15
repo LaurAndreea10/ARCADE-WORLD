@@ -76,6 +76,21 @@
     <div class="leg-item">💀 Capcană</div>
   </div>
 
+  <section class="meta-panels">
+    <div class="meta-card">
+      <div class="meta-title">🎒 Inventory</div>
+      <div class="meta-grid" id="inventory-panel"></div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-title">🏅 Badges</div>
+      <div class="meta-list" id="badges-panel">Niciun badge încă.</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-title">🏆 Achievements</div>
+      <div class="meta-list" id="achievements-panel">Fără progres momentan.</div>
+    </div>
+  </section>
+
   <div class="log-wrap">
     <div class="log-box" id="log-box"></div>
   </div>
@@ -90,6 +105,19 @@
       <div class="mg-challenge" id="mg-challenge"></div>
       <div id="mg-feedback" style="min-height:24px"></div>
       <div class="btn-row" id="mg-buttons"></div>
+    </div>
+  </div>
+
+  <div class="overlay hidden" id="full-overlay">
+    <div class="full-panel">
+      <button class="mg-close" title="Închide jocul original" onclick="closeFullGame(false)">×</button>
+      <div class="mg-title" id="full-title">FULL GAME</div>
+      <div class="tiny-note" id="full-subtitle">Rulează versiunea originală în iframe.</div>
+      <iframe id="full-frame" class="full-frame" title="Full Game" loading="lazy"></iframe>
+      <div class="btn-row">
+        <button class="btn-win" onclick="closeFullGame(true)">Marchează WIN</button>
+        <button class="btn-lose" onclick="closeFullGame(false)">Marchează LOSS</button>
+      </div>
     </div>
   </div>
 
