@@ -30,14 +30,125 @@ const CELLS = [
   {id:23, icon:'🎭', name:'Fusion+',    type:'arcade',     pts:4,  desc:'Dimension Collapsed',               game:'fusion',   variant:'selector'},
 ];
 
-const MODE_LABELS = { solo: 'Solo Skill', ai: 'Vs AI', quiz: 'Skill + Quiz' };
+const STORAGE_KEY = 'arcade-world-profile-v2';
+const MODE_LABELS = { solo: 'Solo Skill', ai: 'Vs AI', quiz: 'Skill + Quiz', full: 'Full Game' };
 const DIFF_LABELS = { easy: 'Easy', medium: 'Medium', hard: 'Hard' };
 const DIFF_REWARD = { easy: 0, medium: 1, hard: 2 };
+const DAILY_TARGET = { plays: 5, wins: 3, fullRuns: 2 };
+const WEEKLY_TARGET_WINS = 12;
+const FULL_GAME_LINKS = {
+  shoot: 'https://es-d-0728073020260417-019d8fca-8d0c-70aa-ac45-d66d5b467a3d.codepen.dev/?game=basket-career',
+  ttt: 'https://es-d-0728073020260417-019d8fca-8d0c-70aa-ac45-d66d5b467a3d.codepen.dev/?game=tic-tac-toe',
+  shooter: 'https://es-d-0728073020260417-019d8fca-8d0c-70aa-ac45-d66d5b467a3d.codepen.dev/?game=void-hunter',
+  pvai: 'https://es-d-0728073020260417-019d8fca-8d0c-70aa-ac45-d66d5b467a3d.codepen.dev/?game=pvai',
+  hockey: 'https://es-d-0728073020260417-019d8fca-8d0c-70aa-ac45-d66d5b467a3d.codepen.dev/?game=air-hockey',
+  bomb: 'https://es-d-0728073020260417-019d8fca-8d0c-70aa-ac45-d66d5b467a3d.codepen.dev/?game=bomberman',
+  breakout: 'https://es-d-0728073020260417-019d8fca-8d0c-70aa-ac45-d66d5b467a3d.codepen.dev/?game=breakout',
+  bounce: 'https://es-d-0728073020260417-019d8fca-8d0c-70aa-ac45-d66d5b467a3d.codepen.dev/?game=bounce',
+  maze: 'https://es-d-0728073020260417-019d8fca-8d0c-70aa-ac45-d66d5b467a3d.codepen.dev/?game=maze',
+  fusion: 'https://es-d-0728073020260417-019d8fca-8d0c-70aa-ac45-d66d5b467a3d.codepen.dev/?game=fusion',
+  memory: 'https://es-d-0728073020260417-019d8fca-8d0c-70aa-ac45-d66d5b467a3d.codepen.dev/?game=particle-memory'
+};
 
 let state;
 let logEntries = [];
 let mgState = {};
 let timers = [];
+let profile = {};
+
+function todayISO() { return new Date().toISOString().slice(0, 10); }
+function ensureGameProgress(game) {
+  if (!profile.progressByGame[game]) profile.progressByGame[game] = { plays: 0, wins: 0, soloWins: 0, aiWins: 0, quizWins: 0, fullWins: 0, fullRuns: 0 };
+  return profile.progressByGame[game];
+}
+function freshProfile() {
+  return {
+    version: 2,
+    totals: { plays: 0, wins: 0, fullRuns: 0, quizWins: 0 },
+    inventory: { coins: 0, shards: 0, tickets: 0, keys: 0 },
+    badges: [],
+    achievements: {},
+    progressByGame: {},
+    fullRuns: { totalWins: 0, byGame: {} },
+    dailyProgress: { date: todayISO(), plays: 0, wins: 0, fullRuns: 0 },
+    questsState: { dailyClaimed: false, weekly: { week: getWeekId(), wins: 0, claimed: false } }
+  };
+}
+function getWeekId() {
+  const d = new Date();
+  const first = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const dayMs = 24 * 3600 * 1000;
+  return `${d.getUTCFullYear()}-W${Math.ceil((((d - first) / dayMs) + first.getUTCDay() + 1) / 7)}`;
+}
+function hydrateProfile(raw) {
+  const base = freshProfile();
+  const merged = { ...base, ...(raw || {}) };
+  merged.totals = { ...base.totals, ...(raw?.totals || {}) };
+  merged.inventory = { ...base.inventory, ...(raw?.inventory || {}) };
+  merged.fullRuns = { ...base.fullRuns, ...(raw?.fullRuns || {}), byGame: { ...(base.fullRuns.byGame || {}), ...(raw?.fullRuns?.byGame || {}) } };
+  merged.dailyProgress = { ...base.dailyProgress, ...(raw?.dailyProgress || {}) };
+  merged.questsState = { ...base.questsState, ...(raw?.questsState || {}), weekly: { ...base.questsState.weekly, ...(raw?.questsState?.weekly || {}) } };
+  merged.progressByGame = { ...(raw?.progressByGame || {}) };
+  return merged;
+}
+function loadProfile() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+    profile = hydrateProfile(parsed);
+  } catch (_) {
+    profile = freshProfile();
+  }
+  normalizeDateProgress();
+}
+function saveProfile() { localStorage.setItem(STORAGE_KEY, JSON.stringify(profile)); }
+function normalizeDateProgress() {
+  const today = todayISO();
+  if (profile.dailyProgress.date !== today) {
+    profile.dailyProgress = { date: today, plays: 0, wins: 0, fullRuns: 0 };
+    profile.questsState.dailyClaimed = false;
+  }
+  const week = getWeekId();
+  if (profile.questsState.weekly.week !== week) profile.questsState.weekly = { week, wins: 0, claimed: false };
+}
+function addBadge(label) {
+  if (!profile.badges.includes(label)) profile.badges.push(label);
+}
+function unlockAchievement(key, title) {
+  if (profile.achievements[key]) return;
+  profile.achievements[key] = { title, unlockedAt: new Date().toISOString() };
+  addBadge(title);
+  addLog(`🏅 Achievement deblocat: ${title}`);
+}
+function renderMetaPanels() {
+  const inv = document.getElementById('inventory-panel');
+  const badges = document.getElementById('badges-panel');
+  const ach = document.getElementById('achievements-panel');
+  inv.innerHTML = Object.entries(profile.inventory).map(([k, v]) => `<div class="meta-grid-item"><span>${k}</span><strong>${v}</strong></div>`).join('');
+  badges.innerHTML = profile.badges.length ? profile.badges.map(b => `<span class="meta-chip">${b}</span>`).join('') : 'Niciun badge încă.';
+  const achList = Object.values(profile.achievements);
+  ach.innerHTML = achList.length ? achList.map(a => `<span class="meta-chip">${a.title}</span>`).join('') : 'Fără progres momentan.';
+}
+function modeLockInfo(cell, mode) {
+  const gp = ensureGameProgress(cell.game);
+  if (mode === 'solo') return { locked: false, reason: '' };
+  if (mode === 'ai') {
+    if (profile.totals.wins < 3) return { locked: true, reason: 'Necesită 3 victorii globale.' };
+    if (gp.soloWins < 1) return { locked: true, reason: 'Câștigă 1 run Solo pe acest joc.' };
+    return { locked: false, reason: '' };
+  }
+  if (mode === 'quiz') {
+    if (profile.totals.wins < 6) return { locked: true, reason: 'Necesită 6 victorii globale.' };
+    if (gp.aiWins < 1) return { locked: true, reason: 'Câștigă 1 run AI pe acest joc.' };
+    return { locked: false, reason: '' };
+  }
+  if (mode === 'full') {
+    if (profile.totals.wins < 10) return { locked: true, reason: 'Necesită 10 victorii globale.' };
+    if (gp.quizWins < 1) return { locked: true, reason: 'Câștigă 1 run Quiz pe acest joc.' };
+    if (!FULL_GAME_LINKS[cell.game]) return { locked: true, reason: 'Lipsă link Full Game pentru acest tile.' };
+    return { locked: false, reason: '' };
+  }
+  return { locked: false, reason: '' };
+}
 
 function getGridPos(id) {
   if (id <= 6) return { r: 0, c: id };
@@ -202,6 +313,69 @@ function finishMiniGame(ok, text, closeDelay = 900, rewardOverride = null) {
   showFeedback(ok, text, closeDelay);
 }
 
+function grantInventoryRewards({ won, mode, reward }) {
+  profile.inventory.coins += won ? Math.max(1, reward) : 1;
+  profile.inventory.shards += won ? 1 : 0;
+  if (mode === 'full' && won) profile.inventory.keys += 1;
+  if (mode === 'quiz' && won) profile.inventory.tickets += 1;
+}
+function registerQuestProgress({ won, mode }) {
+  normalizeDateProgress();
+  profile.dailyProgress.plays += 1;
+  if (won) profile.dailyProgress.wins += 1;
+  if (mode === 'full') profile.dailyProgress.fullRuns += 1;
+  profile.questsState.weekly.wins += won ? 1 : 0;
+
+  if (!profile.questsState.dailyClaimed &&
+      profile.dailyProgress.plays >= DAILY_TARGET.plays &&
+      profile.dailyProgress.wins >= DAILY_TARGET.wins &&
+      profile.dailyProgress.fullRuns >= DAILY_TARGET.fullRuns) {
+    profile.questsState.dailyClaimed = true;
+    profile.inventory.coins += 8;
+    profile.inventory.shards += 3;
+    addLog('📦 Daily quest completat! +8 coins, +3 shards');
+  }
+  if (!profile.questsState.weekly.claimed && profile.questsState.weekly.wins >= WEEKLY_TARGET_WINS) {
+    profile.questsState.weekly.claimed = true;
+    profile.inventory.keys += 2;
+    addLog('🗝️ Weekly quest completat! +2 keys');
+  }
+}
+function evaluateAchievements() {
+  if (profile.totals.wins >= 1) unlockAchievement('first_win', 'First Win');
+  if (profile.totals.wins >= 10) unlockAchievement('strategist', 'Board Strategist');
+  if (Object.keys(profile.progressByGame).length >= 10) unlockAchievement('explorer', 'Game Explorer');
+  if (profile.fullRuns.totalWins >= 5) unlockAchievement('full_runner', 'Full Runner');
+  if (profile.totals.quizWins >= 5) unlockAchievement('quiz_master', 'Quiz Master');
+  if (profile.dailyProgress.plays >= 8) unlockAchievement('daily_grinder', 'Daily Grinder');
+}
+function updateMetaProgress(cell, won) {
+  const gp = ensureGameProgress(cell.game);
+  gp.plays += 1;
+  if (won) {
+    gp.wins += 1;
+    if (mgState.mode === 'solo') gp.soloWins += 1;
+    if (mgState.mode === 'ai') gp.aiWins += 1;
+    if (mgState.mode === 'quiz') { gp.quizWins += 1; profile.totals.quizWins += 1; }
+    if (mgState.mode === 'full') {
+      gp.fullWins += 1;
+      profile.fullRuns.totalWins += 1;
+      profile.fullRuns.byGame[cell.game] = (profile.fullRuns.byGame[cell.game] || 0) + 1;
+    }
+  }
+  if (mgState.mode === 'full') {
+    gp.fullRuns += 1;
+    profile.totals.fullRuns += 1;
+  }
+  profile.totals.plays += 1;
+  if (won) profile.totals.wins += 1;
+  registerQuestProgress({ won, mode: mgState.mode || 'solo' });
+  grantInventoryRewards({ won, mode: mgState.mode || 'solo', reward: getWinReward(cell) });
+  evaluateAchievements();
+  saveProfile();
+  renderMetaPanels();
+}
+
 function closeMG(won) {
   if (!mgState.cell || mgState.done) return;
   mgState.done = true;
@@ -239,6 +413,7 @@ function closeMG(won) {
     addLog(`❌ ${['J1','J2'][p]} pierde mini-jocul pe ${cell.name}`);
   }
 
+  updateMetaProgress(cell, won);
   renderBoard();
   if (!checkWin()) endTurn();
 }
@@ -274,8 +449,10 @@ function restartGame() {
   logEntries = [];
   document.getElementById('win-screen').classList.add('hidden');
   document.getElementById('overlay').classList.add('hidden');
+  document.getElementById('full-overlay').classList.add('hidden');
   document.getElementById('dice-val').textContent = '—';
   renderBoard();
+  renderMetaPanels();
   addLog('🎮 Joc nou pornit! Tura: JUCĂTOR 1');
 }
 
@@ -310,15 +487,19 @@ function launchFollowupQuiz({ stageText, quizTitle, question, answers, correctIn
 }
 
 function showModeSelector(onSelect) {
+  const cell = mgState.cell;
+  const modes = ['solo', 'ai', 'quiz', 'full'].map(mode => ({ mode, ...modeLockInfo(cell, mode) }));
   document.getElementById('mg-feedback').innerHTML = '';
   document.getElementById('mg-challenge').innerHTML = `
     <div class="mg-challenge-title">Alege modul</div>
     <div style="display:grid;gap:10px">
-      <button class="answer-btn" onclick="selectMode('solo')">🎮 Solo Skill</button>
-      <button class="answer-btn" onclick="selectMode('ai')">🤖 Vs AI</button>
-      <button class="answer-btn" onclick="selectMode('quiz')">🧠 Skill + Quiz</button>
+      ${modes.map(({ mode, locked, reason }) => `
+        <div class="mode-btn-wrap">
+          <button class="answer-btn" ${locked ? 'disabled' : ''} onclick="${locked ? '' : `selectMode('${mode}')`}">${mode === 'solo' ? '🎮' : mode === 'ai' ? '🤖' : mode === 'quiz' ? '🧠' : '🕹️'} ${MODE_LABELS[mode]}</button>
+          ${locked ? `<div class="lock-reason">🔒 ${reason}</div>` : '<div class="lock-reason">Deblocat</div>'}
+        </div>`).join('')}
     </div>
-    <div class="tiny-note">Balans puncte: Quiz = +1, AI Medium = +1, AI Hard = +2.</div>`;
+    <div class="tiny-note">Regulă lock coerentă: Solo deschis; AI/Quiz/Full progresive per joc + global.</div>`;
   window.selectMode = function(mode) {
     mgState.mode = mode;
     onSelect(mode);
@@ -342,6 +523,7 @@ function setupSelectorGame(cell, handlers) {
   showModeSelector((mode) => {
     if (mode === 'solo') handlers.solo(cell);
     else if (mode === 'quiz') handlers.quiz(cell);
+    else if (mode === 'full') startFullGame(cell);
     else showDifficultySelector((diff) => handlers.ai(cell, diff));
   });
 }
@@ -353,10 +535,34 @@ function openMiniGame(cell) {
   document.getElementById('mg-origin').textContent = `INSPIRAT DIN: ${cell.desc.toUpperCase()}`;
   document.getElementById('mg-feedback').innerHTML = '';
   clearMiniGameRunState();
-  mgState = { cell, player: ['JUCĂTOR 1','JUCĂTOR 2'][state.turn], interval: null, done: false, feedbackText: '', mode: null, difficulty: null, reward: null };
+  mgState = { cell, player: ['JUCĂTOR 1','JUCĂTOR 2'][state.turn], interval: null, done: false, feedbackText: '', mode: 'solo', difficulty: null, reward: null };
   const key = `${cell.game}:${cell.variant || 'default'}`;
   const handler = MINI_GAMES[key] || GAME_FALLBACKS[cell.game] || setupGeneric;
   handler(cell);
+}
+
+function startFullGame(cell) {
+  const link = FULL_GAME_LINKS[cell.game];
+  if (!link) return finishMiniGame(false, '❌ Nu există link Full Game pentru acest tile.');
+  document.getElementById('overlay').classList.add('hidden');
+  document.getElementById('full-overlay').classList.remove('hidden');
+  document.getElementById('full-title').textContent = `${cell.icon} ${cell.name.toUpperCase()} — FULL GAME`;
+  document.getElementById('full-subtitle').textContent = 'Finalul poate veni din postMessage sau manual din butoanele de jos.';
+  document.getElementById('full-frame').src = link;
+}
+
+function closeFullGame(won) {
+  if (!mgState.cell || mgState.done) return;
+  document.getElementById('full-overlay').classList.add('hidden');
+  document.getElementById('full-frame').src = 'about:blank';
+  mgState.mode = 'full';
+  const bonus = won ? 2 + Math.floor((profile.fullRuns.totalWins || 0) / 5) : 0;
+  if (won) {
+    mgState.reward = Math.max(1, mgState.cell.pts + bonus);
+    closeMG(true);
+  } else {
+    closeMG(false);
+  }
 }
 
 const MINI_GAMES = {
@@ -810,7 +1016,17 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
+window.addEventListener('message', (event) => {
+  if (!event?.data || typeof event.data !== 'object') return;
+  if (event.data.type !== 'arcade-world-full-result') return;
+  if (document.getElementById('full-overlay').classList.contains('hidden')) return;
+  const isWin = event.data.result === 'win';
+  closeFullGame(isWin);
+});
+
+loadProfile();
 state = freshState();
 buildBoard();
+renderMetaPanels();
 addLog('🎮 ARCADE WORLD pornit! Tura: JUCĂTOR 1 · Primul la 20 puncte câștigă.');
 addLog('📋 Regulă: aruncă zarul → te muți → joci mini-jocul de pe câmp.');
