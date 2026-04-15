@@ -45,6 +45,36 @@ h1 {
   line-height: 1;
 }
 .title-desc { font-size: 13px; color: var(--dim); margin-top: 6px; letter-spacing: 1px; }
+.hidden { display: none !important; }
+.fusion-hub {
+  max-width: 980px;
+  margin: 2px auto 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: linear-gradient(135deg, #0c0c1b, #15152d);
+}
+.fusion-head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.fusion-kicker {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--gold);
+}
+.fusion-head h2 {
+  font-size: clamp(18px, 3vw, 24px);
+  letter-spacing: 1px;
+}
+.fusion-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.fusion-copy { margin-top: 8px; color: var(--dim); font-size: 13px; }
+.fusion-frame-wrap { margin-top: 12px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.fusion-frame { width: 100%; height: min(60vh, 560px); border: 0; background: #000; }
 .top-status { max-width: 860px; margin: 0 auto; padding: 0 16px 8px; display: grid; gap: 12px; }
 .info-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
 .info-box { background: linear-gradient(135deg, #0d0d1e, #14142a); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; }

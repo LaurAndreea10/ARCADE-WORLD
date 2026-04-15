@@ -49,6 +49,8 @@ const FULL_GAME_LINKS = {
   fusion: 'https://es-d-0728073020260417-019d8fca-8d0c-70aa-ac45-d66d5b467a3d.codepen.dev/?game=fusion',
   memory: 'https://es-d-0728073020260417-019d8fca-8d0c-70aa-ac45-d66d5b467a3d.codepen.dev/?game=particle-memory'
 };
+const FUSION_PORTAL_URL = 'https://es-d-0728073020260417-019d8fca-8d0c-70aa-ac45-d66d5b467a3d.codepen.dev/';
+const LEGACY_WORLD_URL = 'https://laurandreea10.github.io/ARCADE-WORLD/';
 
 let state;
 let logEntries = [];
@@ -168,6 +170,26 @@ function shuffle(arr) {
 function schedule(fn, ms) { const id = setTimeout(fn, ms); timers.push(id); return id; }
 function clearScheduled() { timers.forEach(clearTimeout); timers = []; }
 function clearMiniGameRunState() { clearInterval(mgState.interval); clearScheduled(); resetMiniHandlers(); }
+function toggleFusionPortal() {
+  const wrap = document.getElementById('fusion-frame-wrap');
+  const frame = document.getElementById('fusion-frame');
+  const btn = document.getElementById('fusion-toggle-btn');
+  const opening = wrap.classList.contains('hidden');
+  wrap.classList.toggle('hidden', !opening);
+  if (opening) {
+    frame.src = FUSION_PORTAL_URL;
+    btn.textContent = '🔒 Închide Portal';
+    addLog('🕹️ Portalul Arcade Collection a fost activat.');
+  } else {
+    frame.src = 'about:blank';
+    btn.textContent = '🕹️ Activează Portal';
+    addLog('🔒 Portalul Arcade Collection a fost închis.');
+  }
+}
+function openLegacyWorld() {
+  window.open(LEGACY_WORLD_URL, '_blank', 'noopener,noreferrer');
+  addLog('🌍 Ai deschis versiunea clasică ARCADE WORLD.');
+}
 function resetMiniHandlers() {
   [
     'doShoot','memClick','tttClick','mazeMove','bombAnswer','bbPress','pvaiChoice',
