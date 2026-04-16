@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ro">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -38,6 +38,18 @@
       gap:18px;
       min-height:calc(100vh - 24px);
     }
+
+    .top-note{
+      margin:0 auto 12px;
+      max-width:1460px;
+      border:1px solid rgba(65,231,255,.26);
+      border-radius:16px;
+      padding:12px 16px;
+      background:linear-gradient(180deg, rgba(10,29,57,.96), rgba(8,19,40,.96));
+      color:#e7f2ff;
+    }
+    .top-note strong{display:block;font-size:15px;line-height:1.35}
+    .top-note span{display:block;font-size:13px;color:#b9cced;margin-top:4px}
 
     .shell{
       border:1px solid var(--line);
@@ -722,6 +734,7 @@
 
     @media (max-width:920px){
       body{padding:8px}
+      .top-note{padding:10px 12px}
       .hero,.config{padding-left:18px;padding-right:18px}
       .turn-grid{grid-template-columns:1fr}
       .progress-grid{grid-template-columns:1fr}
@@ -729,10 +742,29 @@
       .map-title h2{font-size:40px}
       .panel-top{flex-direction:column;align-items:flex-start}
       .panel-stage{min-height:260px}
+      .panel-actions{width:100%;display:grid;grid-template-columns:1fr 1fr 1fr}
+      .panel-btn{width:100%;text-align:center}
+    }
+
+    @media (max-width:640px){
+      .hero-title{font-size:24px}
+      .modes,.rules,.actions{gap:8px}
+      .mode{min-width:calc(50% - 4px);min-height:76px;padding:12px}
+      .rule{padding:10px 12px;font-size:13px}
+      .btn{padding:12px 14px}
+      .panel-wrap{padding:14px}
+      .tile{width:72px;height:72px}
+      .map{padding:18px 12px 20px}
+      .sidebar-btn{padding:12px}
+      .small-note{font-size:11px}
     }
   </style>
 </head>
 <body>
+  <div class="top-note">
+    <strong>Identify bugs and improve the game without changing the structure.</strong>
+    <span>Optimize for mobile.</span>
+  </div>
   <div class="app">
     <section class="shell left-shell">
       <div class="hero">
@@ -740,7 +772,7 @@
           <div class="hero-icon" id="selectedIcon">🏀</div>
           <div>
             <h1 class="hero-title" id="selectedTitle">Basket - Arcade Hub</h1>
-            <p class="hero-subtitle" id="selectedSubtitle">Start încarcă sigur jocul real sau fallback local în iframe.</p>
+            <p class="hero-subtitle" id="selectedSubtitle">Start safely loads the real game or a local iframe fallback.</p>
           </div>
         </div>
         <div class="badges" id="badges"></div>
@@ -748,27 +780,27 @@
 
       <div class="config">
         <div>
-          <div class="label">Alege modul</div>
+          <div class="label">Choose mode</div>
           <div class="modes" id="modes"></div>
         </div>
 
         <div>
-          <div class="label">Alege regula</div>
+          <div class="label">Choose rule set</div>
           <div class="rules" id="rules"></div>
         </div>
 
         <div class="actions">
-          <button class="btn primary" type="button" id="startBtn">Start joc</button>
+          <button class="btn primary" type="button" id="startBtn">Start game</button>
           <button class="btn secondary" type="button" id="previewBtn">Preview rewards</button>
-          <button class="btn secondary" type="button" id="rulesBtn">Reguli</button>
+          <button class="btn secondary" type="button" id="rulesBtn">Rules</button>
         </div>
 
         <div class="flow">
           <div>
             <strong>Flow:</strong>
-            <span id="flowText">Joci întâi jocul. Bonus question apare doar la finalizare.</span>
+            <span id="flowText">Play first. Bonus questions appear only after you finish the run.</span>
           </div>
-          <div class="flow-note" id="flowNote">Întrebarea nu blochează gameplay-ul</div>
+          <div class="flow-note" id="flowNote">Questions never block gameplay</div>
         </div>
       </div>
 
@@ -777,12 +809,12 @@
           <div class="panel-top">
             <div>
               <div class="panel-kicker">Live Game Panel</div>
-              <div class="panel-title" id="panelTitle">Selectează un tile și apasă Start</div>
+              <div class="panel-title" id="panelTitle">Select a tile and press Start</div>
             </div>
             <div class="panel-actions">
               <button class="panel-btn primary" type="button" id="reloadBtn">Reload</button>
               <button class="panel-btn" type="button" id="openTabBtn">Open tab</button>
-              <button class="panel-btn" type="button" id="closeBtn">Închide</button>
+              <button class="panel-btn" type="button" id="closeBtn">Close</button>
             </div>
           </div>
 
@@ -791,31 +823,31 @@
 
             <div class="panel-placeholder" id="panelPlaceholder">
               <div class="panel-placeholder-inner">
-                <h3>Start merge sigur</h3>
+                <h3>Reliable Start flow</h3>
                 <p>
-                  Dacă ai pus link în <strong>EMBEDS</strong>, se încarcă jocul real.
-                  Dacă nu, se încarcă automat un fallback local în iframe, ca să vezi clar că butonul Start funcționează.
+                  If a link is set in <strong>EMBEDS</strong>, the real game loads.
+                  If not, a local iframe fallback loads automatically so Start is always testable.
                 </p>
               </div>
             </div>
 
             <div class="panel-overlay" id="panelOverlay">
               <div class="panel-overlay-inner">
-                <h3 id="overlayTitle">Se încarcă jocul...</h3>
-                <p id="overlayText">Pregătim iframe-ul și sesiunea curentă.</p>
+                <h3 id="overlayTitle">Loading game...</h3>
+                <p id="overlayText">Preparing the iframe and current session.</p>
               </div>
             </div>
           </div>
 
           <div class="panel-bottom">
             <span class="pill" id="panelState">idle</span>
-            <span id="panelHint">Apasă Start. Dacă nu există embed real, vezi fallback-ul local.</span>
+            <span id="panelHint">Press Start. If no real embed exists, the local fallback is shown.</span>
           </div>
 
           <div class="manual-controls">
-            <button class="manual-btn win" type="button" id="finishWinBtn">✅ Victorie</button>
-            <button class="manual-btn lose" type="button" id="finishLoseBtn">❌ Înfrângere</button>
-            <button class="manual-btn neutral" type="button" id="finishCloseBtn">🛑 Închide fără reward</button>
+            <button class="manual-btn win" type="button" id="finishWinBtn">✅ Victory</button>
+            <button class="manual-btn lose" type="button" id="finishLoseBtn">❌ Defeat</button>
+            <button class="manual-btn neutral" type="button" id="finishCloseBtn">🛑 Close without reward</button>
           </div>
         </div>
       </div>
@@ -825,7 +857,7 @@
         <div class="map-outline"></div>
         <div class="map-title">
           <h2>ARCADE<br>WORLD</h2>
-          <p>Selectează un tile și pornește jocul</p>
+          <p>Select a tile and launch the game</p>
         </div>
         <div class="tiles" id="tiles"></div>
       </div>
@@ -838,24 +870,24 @@
           <div class="dice" id="diceValue">4</div>
           <div class="stack">
             <div class="mini-stat">
-              <div class="mini-label">Tura curentă</div>
+              <div class="mini-label">Current turn</div>
               <div class="mini-value" id="turnValue">2</div>
             </div>
             <div class="mini-stat">
-              <div class="mini-label">Ultimul zar</div>
+              <div class="mini-label">Last roll</div>
               <div class="mini-value" id="lastRollValue">4</div>
             </div>
           </div>
         </div>
 
-        <button class="sidebar-btn primary" type="button" id="rollBtn">🎲 Aruncă zarul</button>
+        <button class="sidebar-btn primary" type="button" id="rollBtn">🎲 Roll dice</button>
         <button class="sidebar-btn secondary" type="button" id="bonusBtn">✨ Bonus turn (1)</button>
 
-        <div class="turn-result lose" id="turnResult">Înfrângere</div>
+        <div class="turn-result lose" id="turnResult">Defeat</div>
       </div>
 
       <div class="card">
-        <div class="card-title">Progres global</div>
+        <div class="card-title">Global progress</div>
 
         <div class="progress-grid">
           <div class="progress-box">
@@ -873,7 +905,7 @@
         </div>
 
         <div class="xp-head">
-          <span>Progress spre level următor</span>
+          <span>Progress to next level</span>
           <span id="xpLabel">12 / 100 XP</span>
         </div>
         <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
@@ -882,7 +914,7 @@
           <h3>Reward preview</h3>
           <div class="reward-list" id="rewardList"></div>
           <div class="small-note">
-            Dacă tile-ul are întrebare bonus, ea apare după ce marchezi victoria sau înfrângerea.
+            If a tile includes a bonus question, it appears after you mark victory or defeat.
           </div>
         </div>
       </div>
@@ -898,7 +930,7 @@
         turn: 2,
         lastRoll: 4,
         bonusTurns: 1,
-        resultText: "Înfrângere",
+        resultText: "Defeat",
         resultType: "lose",
         progress: {
           coins: 18,
@@ -914,10 +946,10 @@
       };
 
       var modes = [
-        { id: "solo", title: "Solo", desc: "Joci instant, focus pe scor și combo.", cta: "Joacă Solo", locked: false },
-        { id: "ai", title: "Vs AI", desc: "Meci rapid contra AI.", cta: "Joacă vs AI", locked: false },
-        { id: "hotseat", title: "2 Players", desc: "Hotseat local pentru duel.", cta: "Joacă 2 Players", locked: false },
-        { id: "quiz", title: "Quiz Run", desc: "Întrebarea vine după match.", cta: "Quiz Run", locked: true, reason: "Locked" }
+        { id: "solo", title: "Solo", desc: "Jump in instantly and focus on score and combos.", cta: "Play Solo", locked: false },
+        { id: "ai", title: "Vs AI", desc: "Meci rapid contra AI.", cta: "Play vs AI", locked: false },
+        { id: "hotseat", title: "2 Players", desc: "Hotseat local pentru duel.", cta: "Play 2 Players", locked: false },
+        { id: "quiz", title: "Quiz Run", desc: "Questions appear after each match.", cta: "Quiz Run", locked: true, reason: "Locked" }
       ];
 
       var tiles = [
@@ -926,16 +958,16 @@
           x: 120, y: 18,
           icon: "🏀",
           name: "Basket",
-          subtitle: "Basket arcade cu Start stabil și fallback local.",
+          subtitle: "Basket arcade with reliable Start and local fallback.",
           gameKey: "basket",
           rewardBase: 120,
           questionPolicy: "bonus_after_match",
           rules: ["classic", "blitz", "chaos", "moving"],
           badges: ["sports", "timing", "reward:120"],
           rewards: [
-            { label: "Reward bază", value: "+120" },
+            { label: "Base reward", value: "+120" },
             { label: "Perfect shot", value: "+25 XP" },
-            { label: "Bonus întrebare", value: "+coins / +XP" }
+            { label: "Bonus question", value: "+coins / +XP" }
           ]
         },
         {
@@ -943,14 +975,14 @@
           x: 228, y: 18,
           icon: "🗺️",
           name: "Labirint",
-          subtitle: "Navighezi printre capcane și ieșiri.",
+          subtitle: "Navigate traps and exits.",
           gameKey: "maze",
           rewardBase: 95,
           questionPolicy: "between_rounds",
           rules: ["classic", "timed", "fog"],
           badges: ["logic", "explore"],
           rewards: [
-            { label: "Reward bază", value: "+95" },
+            { label: "Base reward", value: "+95" },
             { label: "Chest bonus", value: "+coins" }
           ]
         },
@@ -959,14 +991,14 @@
           x: 336, y: 18,
           icon: "💣",
           name: "Bomber",
-          subtitle: "Timing, bombe și risc arcade.",
+          subtitle: "Timing, bombs, and arcade risk.",
           gameKey: "bomberman",
           rewardBase: 130,
           questionPolicy: "bonus_after_match",
           rules: ["classic", "chaos"],
           badges: ["action", "arcade"],
           rewards: [
-            { label: "Reward bază", value: "+130" },
+            { label: "Base reward", value: "+130" },
             { label: "Streak bonus", value: "+30 XP" }
           ]
         },
@@ -982,7 +1014,7 @@
           rules: ["survival", "blitz"],
           badges: ["speed", "runner"],
           rewards: [
-            { label: "Reward bază", value: "+110" },
+            { label: "Base reward", value: "+110" },
             { label: "Combo", value: "+coins" }
           ]
         },
@@ -991,7 +1023,7 @@
           x: 552, y: 18,
           icon: "⭐",
           name: "Bonus",
-          subtitle: "Tile bonus pentru extra progres.",
+          subtitle: "Bonus tile for extra progression.",
           gameKey: "bonus_tile",
           rewardBase: 0,
           questionPolicy: "disabled",
@@ -1007,14 +1039,14 @@
           x: 660, y: 18,
           icon: "🏒",
           name: "Hockey",
-          subtitle: "Reflexe și unghiuri rapide.",
+          subtitle: "Fast reflexes and sharp angles.",
           gameKey: "hockey",
           rewardBase: 105,
           questionPolicy: "bonus_after_match",
           rules: ["classic", "blitz"],
           badges: ["sports"],
           rewards: [
-            { label: "Reward bază", value: "+105" }
+            { label: "Base reward", value: "+105" }
           ]
         }
       ];
@@ -1102,8 +1134,8 @@
       }
 
       function showOverlay(title, text) {
-        els.overlayTitle.textContent = title || "Se încarcă jocul...";
-        els.overlayText.textContent = text || "Pregătim iframe-ul.";
+        els.overlayTitle.textContent = title || "Loading game...";
+        els.overlayText.textContent = text || "Preparing iframe.";
         els.panelOverlay.classList.add("show");
       }
 
@@ -1136,18 +1168,18 @@
         renderBadges(tile);
 
         els.flowText.textContent = tile.questionPolicy === "disabled"
-          ? "Tile-ul intră direct în joc și reward-ul standard."
-          : "Joci întâi jocul. Bonus question apare doar la finalizare.";
+          ? "Tile enters gameplay directly with standard rewards."
+          : "Play first. Bonus questions appear only after you finish the run.";
         els.flowNote.textContent = tile.questionPolicy === "disabled"
-          ? "Fără întrebare pe acest tile"
-          : "Întrebarea nu blochează gameplay-ul";
+          ? "No question on this tile"
+          : "Questions never block gameplay";
 
         if (state.session.status !== "playing") {
           var url = getEmbedForTile(tile);
           if (url) {
-            setPanelState("ready", "Start va încărca jocul real în iframe.");
+            setPanelState("ready", "Start will load the real game in the iframe.");
           } else {
-            setPanelState("fallback", "Nu există embed setat. Start va încărca fallback local.");
+            setPanelState("fallback", "No embed set. Start will load local fallback.");
           }
         }
       }
@@ -1297,7 +1329,7 @@
         var safeRule = state.selectedRule.replace(/</g, "&lt;").replace(/>/g, "&gt;");
         return `
 <!DOCTYPE html>
-<html lang="ro">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -1334,15 +1366,15 @@
   <div class="wrap">
     <div class="card">
       <h1>${safeTitle}</h1>
-      <p>Acesta este fallback-ul local. Start funcționează corect, dar pentru jocul real trebuie să completezi linkul în obiectul EMBEDS.</p>
+      <p>This is the local fallback. Start works correctly, but you must set the real game link in EMBEDS.</p>
       <div class="meta">
         <div class="pill">Mode: ${safeMode}</div>
         <div class="pill">Rule: ${safeRule}</div>
         <div class="pill">Fallback local</div>
       </div>
       <div class="box">
-        <div class="accent">Cum activezi jocul real</div>
-        <p style="margin-top:8px">În codul principal, la EMBEDS, pune linkul CodePen embed pentru acest gameKey.</p>
+        <div class="accent">How to enable the real game</div>
+        <p style="margin-top:8px">In the main code, add the CodePen embed link for this gameKey in EMBEDS.</p>
       </div>
     </div>
   </div>
@@ -1359,8 +1391,8 @@
         els.gameFrame.removeAttribute("srcdoc");
         els.panelPlaceholder.style.display = "grid";
         hideOverlay();
-        els.panelTitle.textContent = "Selectează un tile și apasă Start";
-        setPanelState("idle", "Panel închis. Poți porni din nou.");
+        els.panelTitle.textContent = "Select a tile and press Start";
+        setPanelState("idle", "Panel closed. You can start again.");
       }
 
       function loadRealOrFallback() {
@@ -1375,13 +1407,13 @@
         els.gameFrame.classList.add("visible");
         els.panelTitle.textContent = tile.name + " • " + capitalize(state.selectedRule) + " • " + state.selectedMode.toUpperCase();
 
-        showOverlay("Se încarcă " + tile.name, "Pornim sesiunea curentă.");
+        showOverlay("Loading " + tile.name, "Starting the current session.");
 
         if (url) {
           els.gameFrame.removeAttribute("srcdoc");
           els.gameFrame.onload = function() {
             hideOverlay();
-            setPanelState("playing", "Jocul real rulează în iframe.");
+            setPanelState("playing", "Real game is running in the iframe.");
           };
           els.gameFrame.src = url;
         } else {
@@ -1389,14 +1421,14 @@
           els.gameFrame.src = "about:blank";
           els.gameFrame.srcdoc = buildFallbackHtml(tile);
           hideOverlay();
-          setPanelState("fallback", "Rulează fallback local. Completează EMBEDS pentru jocul real.");
+          setPanelState("fallback", "Local fallback is running. Complete EMBEDS for the real game.");
         }
       }
 
       function reloadCurrent() {
         var tile = getSelectedTile();
         if (state.session.status !== "playing" && state.session.status !== "finished") return;
-        showOverlay("Reload", "Reîncărcăm conținutul din panel.");
+        showOverlay("Reload", "Reloading panel content.");
         if (state.session.embedUrl) {
           els.gameFrame.removeAttribute("srcdoc");
           els.gameFrame.src = state.session.embedUrl;
@@ -1413,7 +1445,7 @@
         if (url) {
           window.open(url, "_blank", "noopener");
         } else {
-          alert("Nu există link real în EMBEDS pentru acest joc.");
+          alert("No real link exists in EMBEDS for this game.");
         }
       }
 
@@ -1424,20 +1456,20 @@
         var reward = buildReward(outcome);
 
         state.session.status = "finished";
-        state.resultText = outcome === "win" ? "Victorie" : "Înfrângere";
+        state.resultText = outcome === "win" ? "Victory" : "Defeat";
         state.resultType = outcome === "win" ? "win" : "lose";
         applyReward(reward);
 
         setPanelState(
           "finished",
           outcome === "win"
-            ? "Sesiunea a fost marcată ca victorie."
-            : "Sesiunea a fost marcată ca înfrângere."
+            ? "Session has been marked as victory."
+            : "Session has been marked as defeat."
         );
 
         if (tile.questionPolicy !== "disabled") {
           setTimeout(function () {
-            var ok = window.confirm("Întrebare bonus pentru " + tile.name + ":\n\nAi răspuns corect?");
+            var ok = window.confirm("Bonus question for " + tile.name + ":\n\nDid you answer correctly?");
             var bonus = ok ? { xp: 15, coins: 3 } : { xp: 2 };
             applyReward(bonus);
           }, 80);
@@ -1448,7 +1480,7 @@
 
       function finishCloseOnly() {
         closePanel();
-        state.resultText = "Sesiune închisă";
+        state.resultText = "Session closed";
         state.resultType = "lose";
         renderTurn();
       }
@@ -1465,12 +1497,12 @@
       function showRules() {
         var tile = getSelectedTile();
         alert(
-          "Joc: " + tile.name + "\n" +
+          "Game: " + tile.name + "\n" +
           "Rule set: " + capitalize(state.selectedRule) + "\n\n" +
-          "1. Start încarcă jocul real sau fallback local.\n" +
-          "2. Joci în iframe.\n" +
-          "3. Marchezi sesiunea ca Victorie sau Înfrângere.\n" +
-          "4. Dacă există întrebare bonus, apare după finalizare."
+          "1. Start loads the real game or local fallback.\n" +
+          "2. Play inside the iframe.\n" +
+          "3. Marchezi sesiunea ca Victory sau Defeat.\n" +
+          "4. If a bonus question exists, it appears after finishing."
         );
       }
 
@@ -1480,10 +1512,10 @@
         state.turn += 1;
 
         var outcomes = [
-          { text: "Victorie", type: "win" },
-          { text: "Înfrângere", type: "lose" },
+          { text: "Victory", type: "win" },
+          { text: "Defeat", type: "lose" },
           { text: "Boss fight", type: "lose" },
-          { text: "Tile bonus", type: "win" }
+          { text: "Bonus tile", type: "win" }
         ];
         var out = outcomes[Math.floor(Math.random() * outcomes.length)];
         state.resultText = out.text;
