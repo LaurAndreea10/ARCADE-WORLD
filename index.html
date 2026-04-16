@@ -3,164 +3,1529 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ARCADE WORLD — Board Game</title>
-  <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css" />
+  <title>Arcade World Hub</title>
+  <style>
+    :root{
+      --bg:#060b18;
+      --bg2:#0b1530;
+      --panel:rgba(12,24,50,.95);
+      --panel2:rgba(16,32,66,.96);
+      --line:rgba(120,160,255,.16);
+      --text:#eef4ff;
+      --muted:#9fb3db;
+      --cyan:#41e7ff;
+      --gold:#ffd95d;
+      --green:#2fe09f;
+      --red:#ff7f93;
+      --shadow:0 20px 60px rgba(0,0,0,.35);
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%}
+    body{
+      font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(65,231,255,.08), transparent 26%),
+        radial-gradient(circle at top right, rgba(255,217,93,.08), transparent 18%),
+        linear-gradient(180deg,#040814 0%,#02050c 100%);
+      padding:12px;
+    }
+
+    .app{
+      display:grid;
+      grid-template-columns:minmax(860px,1.8fr) minmax(320px,.8fr);
+      gap:18px;
+      min-height:calc(100vh - 24px);
+    }
+
+    .shell{
+      border:1px solid var(--line);
+      border-radius:30px;
+      overflow:hidden;
+      background:linear-gradient(180deg, rgba(8,17,36,.96), rgba(5,11,24,.98));
+      box-shadow:var(--shadow);
+    }
+
+    .left-shell{
+      display:grid;
+      grid-template-rows:auto auto auto 1fr;
+    }
+
+    .hero{
+      padding:26px 28px 20px;
+      border-bottom:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(18,39,74,.96), rgba(11,25,51,.95));
+    }
+
+    .hero-row{
+      display:flex;
+      gap:14px;
+      align-items:center;
+    }
+
+    .hero-icon{
+      width:54px;
+      height:54px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      font-size:30px;
+      background:radial-gradient(circle at 30% 30%, #ffe080, #ff9800 65%, #b44f00 100%);
+      box-shadow:0 0 22px rgba(255,157,0,.34);
+    }
+
+    h1,h2,h3,p{margin:0}
+
+    .hero-title{
+      font-size:28px;
+      font-weight:900;
+      line-height:1.04;
+      letter-spacing:-.03em;
+    }
+
+    .hero-subtitle{
+      margin-top:6px;
+      font-size:15px;
+      color:var(--muted);
+    }
+
+    .badges{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:18px;
+    }
+
+    .badge{
+      padding:10px 14px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:800;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.05);
+    }
+    .badge.blue{background:rgba(94,156,255,.12)}
+    .badge.green{background:rgba(47,224,159,.12)}
+    .badge.gold{background:rgba(255,217,93,.12);color:#fff2bc}
+
+    .config{
+      padding:22px 28px;
+      border-bottom:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(9,21,43,.96), rgba(6,14,29,.98));
+      display:grid;
+      gap:18px;
+    }
+
+    .label{
+      margin-bottom:10px;
+      font-size:12px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      color:#c8d8fb;
+    }
+
+    .modes,.rules,.actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .mode,.rule,.btn,.panel-btn,.tile,.manual-btn,.sidebar-btn{
+      transition:.16s ease;
+    }
+    .mode:hover,.rule:hover,.btn:hover,.panel-btn:hover,.tile:hover,.manual-btn:hover,.sidebar-btn:hover{
+      transform:translateY(-2px);
+    }
+
+    .mode{
+      min-width:145px;
+      min-height:88px;
+      padding:14px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      cursor:pointer;
+    }
+
+    .mode.active{
+      border-color:rgba(65,231,255,.48);
+      background:linear-gradient(180deg, rgba(18,72,95,.42), rgba(13,42,73,.52));
+      box-shadow:0 0 0 1px rgba(65,231,255,.12), 0 14px 28px rgba(16,112,145,.18);
+    }
+
+    .mode.locked{
+      opacity:.55;
+      cursor:not-allowed;
+      filter:saturate(.8);
+    }
+
+    .mode-title{
+      font-size:15px;
+      font-weight:900;
+      margin-bottom:7px;
+    }
+
+    .mode-desc{
+      font-size:12px;
+      line-height:1.35;
+      color:var(--muted);
+    }
+
+    .rule{
+      padding:12px 16px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    .rule.active{
+      background:rgba(255,217,93,.12);
+      border-color:rgba(255,217,93,.35);
+      color:#fff1b4;
+    }
+
+    button{
+      border:0;
+      outline:0;
+      font:inherit;
+    }
+
+    .btn{
+      padding:14px 18px;
+      border-radius:18px;
+      cursor:pointer;
+      font-weight:900;
+    }
+
+    .btn.primary{
+      background:linear-gradient(180deg,#ffe47d,#f1c70f);
+      color:#241b00;
+      box-shadow:0 16px 34px rgba(241,199,15,.2);
+    }
+
+    .btn.secondary{
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .flow{
+      padding:14px 16px;
+      border-radius:18px;
+      border:1px solid rgba(94,156,255,.14);
+      background:rgba(4,12,28,.82);
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      font-size:14px;
+      color:#d8e4ff;
+    }
+
+    .flow-note{
+      color:#b8ffe3;
+      font-weight:800;
+    }
+
+    .panel-wrap{
+      padding:18px 20px 20px;
+      border-bottom:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(8,18,39,.96), rgba(5,12,27,.98));
+    }
+
+    .panel{
+      border-radius:28px;
+      overflow:hidden;
+      border:1px solid rgba(120,160,255,.16);
+      background:rgba(2,8,22,.95);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.03), 0 18px 40px rgba(0,0,0,.28);
+    }
+
+    .panel-top{
+      padding:14px 16px;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      background:linear-gradient(180deg, rgba(17,36,72,.96), rgba(10,24,50,.98));
+      border-bottom:1px solid rgba(120,160,255,.14);
+    }
+
+    .panel-kicker{
+      font-size:12px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.16em;
+      color:#90c6ff;
+      margin-bottom:4px;
+    }
+
+    .panel-title{
+      font-size:16px;
+      font-weight:900;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .panel-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .panel-btn{
+      padding:10px 14px;
+      border-radius:14px;
+      font-weight:800;
+      cursor:pointer;
+      color:var(--text);
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .panel-btn.primary{
+      background:linear-gradient(180deg,#ffe47d,#f1c70f);
+      color:#231a00;
+    }
+
+    .panel-stage{
+      position:relative;
+      width:100%;
+      aspect-ratio:16 / 9;
+      min-height:380px;
+      background:
+        radial-gradient(circle at center, rgba(65,231,255,.08), transparent 20%),
+        linear-gradient(180deg,#020714 0%,#01040b 100%);
+    }
+
+    .game-frame{
+      width:100%;
+      height:100%;
+      border:0;
+      display:none;
+      background:#000;
+    }
+
+    .game-frame.visible{
+      display:block;
+    }
+
+    .panel-placeholder,.panel-overlay{
+      position:absolute;
+      inset:0;
+      display:grid;
+      place-items:center;
+      text-align:center;
+      padding:28px;
+    }
+
+    .panel-placeholder-inner,.panel-overlay-inner{
+      max-width:720px;
+    }
+
+    .panel-placeholder h3,.panel-overlay h3{
+      font-size:28px;
+      font-weight:900;
+      letter-spacing:-.03em;
+      margin-bottom:10px;
+    }
+
+    .panel-placeholder p,.panel-overlay p{
+      color:var(--muted);
+      line-height:1.5;
+      font-size:15px;
+    }
+
+    .panel-overlay{
+      pointer-events:none;
+      opacity:0;
+      background:linear-gradient(180deg, rgba(4,10,25,.74), rgba(2,7,18,.82));
+      transition:opacity .2s ease;
+    }
+
+    .panel-overlay.show{
+      opacity:1;
+    }
+
+    .panel-bottom{
+      padding:12px 16px;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      background:rgba(255,255,255,.02);
+      border-top:1px solid rgba(120,160,255,.12);
+      font-size:13px;
+      color:#d3dfff;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(65,231,255,.08);
+      border:1px solid rgba(65,231,255,.16);
+      color:#c4faff;
+      font-weight:900;
+    }
+
+    .manual-controls{
+      padding:14px 16px 16px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      border-top:1px solid rgba(120,160,255,.12);
+      background:rgba(255,255,255,.02);
+    }
+
+    .manual-btn{
+      padding:12px 14px;
+      border-radius:14px;
+      font-weight:900;
+      cursor:pointer;
+    }
+
+    .manual-btn.win{
+      background:rgba(47,224,159,.14);
+      border:1px solid rgba(47,224,159,.26);
+      color:#beffe3;
+    }
+
+    .manual-btn.lose{
+      background:rgba(255,127,147,.14);
+      border:1px solid rgba(255,127,147,.26);
+      color:#ffd5dc;
+    }
+
+    .manual-btn.neutral{
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      color:var(--text);
+    }
+
+    .map{
+      position:relative;
+      min-height:560px;
+      overflow:hidden;
+      background:
+        radial-gradient(circle at center, rgba(48,100,190,.14), transparent 28%),
+        linear-gradient(180deg,#020713 0%,#02050d 100%);
+    }
+
+    .map-glow{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(circle at center, rgba(65,231,255,.09), transparent 21%),
+        radial-gradient(circle at center, rgba(118,245,255,.06), transparent 35%);
+    }
+
+    .map-outline{
+      position:absolute;
+      inset:24px;
+      border-radius:30px;
+      border:1px dashed rgba(94,156,255,.12);
+      pointer-events:none;
+    }
+
+    .map-title{
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform:translate(-50%,-50%);
+      pointer-events:none;
+      text-align:center;
+      opacity:.92;
+    }
+
+    .map-title h2{
+      font-size:54px;
+      line-height:.95;
+      font-weight:900;
+      letter-spacing:-.04em;
+      color:#98fff5;
+      text-shadow:0 0 18px rgba(65,231,255,.18);
+    }
+
+    .map-title p{
+      margin-top:10px;
+      color:#87a9d8;
+      font-size:12px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.22em;
+    }
+
+    .tiles{
+      position:absolute;
+      inset:0;
+    }
+
+    .tile{
+      position:absolute;
+      width:96px;
+      height:96px;
+      padding:8px;
+      border-radius:18px;
+      display:grid;
+      grid-template-rows:auto 1fr auto;
+      overflow:hidden;
+      cursor:pointer;
+      color:#dfe9ff;
+      background:linear-gradient(180deg, rgba(10,15,54,.98), rgba(13,18,49,.98));
+      border:1px solid rgba(123,145,255,.16);
+      box-shadow:0 16px 38px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.05);
+    }
+
+    .tile.active{
+      border-color:rgba(255,112,194,.74);
+      box-shadow:0 0 0 1px rgba(255,112,194,.18), 0 0 30px rgba(255,112,194,.2), 0 18px 42px rgba(0,0,0,.32);
+    }
+
+    .tile.bonus{
+      box-shadow:0 0 0 1px rgba(255,217,93,.14), 0 18px 42px rgba(0,0,0,.28);
+    }
+
+    .tile-index{
+      font-size:11px;
+      color:#8ea6d7;
+    }
+
+    .tile-icon{
+      display:grid;
+      place-items:center;
+      font-size:32px;
+      line-height:1;
+    }
+
+    .tile-name{
+      text-align:center;
+      font-size:11px;
+      color:#9cb0dc;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-weight:900;
+    }
+
+    .tile-dot{
+      position:absolute;
+      right:8px;
+      bottom:8px;
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:var(--cyan);
+      box-shadow:0 0 12px rgba(65,231,255,.5);
+    }
+
+    .right-shell{
+      padding:18px;
+      display:grid;
+      grid-template-rows:auto auto 1fr;
+      gap:18px;
+    }
+
+    .card{
+      border-radius:28px;
+      padding:24px;
+      background:linear-gradient(180deg, rgba(11,31,74,.95), rgba(3,17,46,.98));
+      border:1px solid rgba(255,217,93,.16);
+      box-shadow:var(--shadow);
+    }
+
+    .card-title{
+      color:#ffd530;
+      font-size:13px;
+      font-weight:900;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      margin-bottom:18px;
+    }
+
+    .turn-grid{
+      display:grid;
+      grid-template-columns:138px 1fr;
+      gap:16px;
+      align-items:stretch;
+    }
+
+    .dice{
+      border-radius:28px;
+      min-height:136px;
+      display:grid;
+      place-items:center;
+      font-size:64px;
+      font-weight:900;
+      color:#f4f7ff;
+      background:linear-gradient(180deg, rgba(79,91,67,.45), rgba(28,53,97,.28));
+      border:1px solid rgba(255,217,93,.24);
+    }
+
+    .stack{
+      display:grid;
+      gap:12px;
+    }
+
+    .mini-stat{
+      border-radius:22px;
+      padding:18px 16px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .mini-label{
+      color:#d6e1fb;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      margin-bottom:10px;
+    }
+
+    .mini-value{
+      font-size:22px;
+      font-weight:900;
+    }
+
+    .sidebar-btn{
+      width:100%;
+      margin-top:14px;
+      padding:16px 18px;
+      border-radius:22px;
+      cursor:pointer;
+      font-weight:900;
+      font-size:17px;
+    }
+
+    .sidebar-btn.primary{
+      background:linear-gradient(180deg,#ffe47d,#f1c70f);
+      color:#231b00;
+    }
+
+    .sidebar-btn.secondary{
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .turn-result{
+      margin-top:16px;
+      font-size:24px;
+      font-weight:900;
+    }
+
+    .turn-result.win{color:#abffd9}
+    .turn-result.lose{color:#ffd3db}
+
+    .progress-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+      margin-bottom:18px;
+    }
+
+    .progress-box{
+      border-radius:22px;
+      padding:16px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .progress-k{
+      font-size:12px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:#d8e2ff;
+      margin-bottom:8px;
+    }
+
+    .progress-v{
+      font-size:18px;
+      font-weight:900;
+    }
+
+    .xp-head{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      font-weight:900;
+      margin-bottom:10px;
+    }
+
+    .xp-bar{
+      width:100%;
+      height:14px;
+      border-radius:999px;
+      overflow:hidden;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.06);
+    }
+
+    .xp-fill{
+      width:0%;
+      height:100%;
+      border-radius:inherit;
+      background:linear-gradient(90deg,#58e6ff,#84ffc7);
+      box-shadow:0 0 18px rgba(88,230,255,.24);
+      transition:width .25s ease;
+    }
+
+    .reward-box{
+      margin-top:18px;
+      border-radius:24px;
+      padding:18px;
+      background:linear-gradient(180deg, rgba(18,43,86,.76), rgba(10,26,58,.92));
+      border:1px solid rgba(65,231,255,.14);
+    }
+
+    .reward-box h3{
+      font-size:16px;
+      margin-bottom:10px;
+    }
+
+    .reward-list{
+      display:grid;
+      gap:10px;
+    }
+
+    .reward-item{
+      padding:10px 12px;
+      border-radius:16px;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.06);
+      color:#dbe7ff;
+      font-size:14px;
+    }
+
+    .small-note{
+      margin-top:12px;
+      font-size:12px;
+      color:#98add7;
+      line-height:1.45;
+    }
+
+    @media (max-width:1450px){
+      .app{grid-template-columns:1fr}
+    }
+
+    @media (max-width:920px){
+      body{padding:8px}
+      .hero,.config{padding-left:18px;padding-right:18px}
+      .turn-grid{grid-template-columns:1fr}
+      .progress-grid{grid-template-columns:1fr}
+      .tile{width:82px;height:82px}
+      .map-title h2{font-size:40px}
+      .panel-top{flex-direction:column;align-items:flex-start}
+      .panel-stage{min-height:260px}
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <div class="title-sub">Laura's Game Universe</div>
-    <h1>ARCADE WORLD</h1>
-    <div class="title-desc">Board game · 24 căsuțe tematice · 2 jucători</div>
-  </header>
-
-  <section class="fusion-hub">
-    <div class="fusion-head">
-      <div>
-        <div class="fusion-kicker">Arcade Fusion Portal</div>
-        <h2>Îmbinare Board + Arcade Collection</h2>
+  <div class="app">
+    <section class="shell left-shell">
+      <div class="hero">
+        <div class="hero-row">
+          <div class="hero-icon" id="selectedIcon">🏀</div>
+          <div>
+            <h1 class="hero-title" id="selectedTitle">Basket - Arcade Hub</h1>
+            <p class="hero-subtitle" id="selectedSubtitle">Start încarcă sigur jocul real sau fallback local în iframe.</p>
+          </div>
+        </div>
+        <div class="badges" id="badges"></div>
       </div>
-      <div class="fusion-actions">
-        <button class="secondary-btn" id="fusion-toggle-btn" onclick="toggleFusionPortal()">🕹️ Activează Portal</button>
-        <button class="secondary-btn" onclick="openLegacyWorld()">🌍 Deschide versiunea GitHub</button>
-      </div>
-    </div>
-    <p class="fusion-copy">
-      Joacă tabla ARCADE WORLD aici, iar când vrei experiența completă deschizi instant colecția originală în portalul integrat.
-    </p>
-    <div class="fusion-frame-wrap hidden" id="fusion-frame-wrap">
-      <iframe
-        id="fusion-frame"
-        class="fusion-frame"
-        title="Arcade Collection Portal"
-        loading="lazy"
-        src="about:blank"></iframe>
-    </div>
-  </section>
 
-  <section class="top-status">
-    <div class="info-strip">
-      <div class="info-box">
-        <div class="info-label">Obiectiv</div>
-        <div class="info-value">Primul la 20 puncte</div>
-      </div>
-      <div class="info-box">
-        <div class="info-label">Regulă bonus</div>
-        <div class="info-value">+1 punct la trecerea peste START</div>
-      </div>
-      <div class="info-box">
-        <div class="info-label">Fază curentă</div>
-        <div class="info-value" id="phase-label">Așteaptă zarul</div>
-      </div>
-      <div class="info-box">
-        <div class="info-label">Ultimul câmp</div>
-        <div class="info-value" id="last-cell">—</div>
-      </div>
-    </div>
-  </section>
+      <div class="config">
+        <div>
+          <div class="label">Alege modul</div>
+          <div class="modes" id="modes"></div>
+        </div>
 
-  <div class="players-bar">
-    <div class="player-card active" id="pc1">
-      <div class="pc-avatar">🔵</div>
-      <div class="pc-name">JUCĂTOR 1</div>
-      <div class="pc-score" id="sc1">0</div>
-      <div class="pc-pos" id="pos1">Câmp 0</div>
-      <div class="pc-progress"><div class="pc-progress-fill" id="pb1"></div></div>
-    </div>
+        <div>
+          <div class="label">Alege regula</div>
+          <div class="rules" id="rules"></div>
+        </div>
 
-    <div class="vs-badge">VS</div>
+        <div class="actions">
+          <button class="btn primary" type="button" id="startBtn">Start joc</button>
+          <button class="btn secondary" type="button" id="previewBtn">Preview rewards</button>
+          <button class="btn secondary" type="button" id="rulesBtn">Reguli</button>
+        </div>
 
-    <div class="player-card p2" id="pc2">
-      <div class="pc-avatar">🔴</div>
-      <div class="pc-name">JUCĂTOR 2</div>
-      <div class="pc-score" id="sc2">0</div>
-      <div class="pc-pos" id="pos2">Câmp 0</div>
-      <div class="pc-progress"><div class="pc-progress-fill p2" id="pb2"></div></div>
-    </div>
-
-    <div class="turn-badge" id="turn-badge">🎲 Tura: JUCĂTOR 1</div>
-  </div>
-
-  <div class="board-wrap">
-    <div class="board" id="board"></div>
-  </div>
-
-  <div class="dice-area">
-    <button class="dice-btn" id="roll-btn" onclick="rollDice()">🎲 ARUNCĂ</button>
-    <div class="dice-result" id="dice-val">—</div>
-  </div>
-
-  <div class="legend">
-    <div class="leg-item">🏀 Basket</div>
-    <div class="leg-item">🚀 Shooter</div>
-    <div class="leg-item">✖️ Puzzle</div>
-    <div class="leg-item">💣 Arcade</div>
-    <div class="leg-item">🃏 Memory</div>
-    <div class="leg-item">⭐ Bonus</div>
-    <div class="leg-item">💀 Capcană</div>
-  </div>
-
-  <section class="meta-panels">
-    <div class="meta-card">
-      <div class="meta-title">🎒 Inventory</div>
-      <div class="meta-grid" id="inventory-panel"></div>
-    </div>
-    <div class="meta-card">
-      <div class="meta-title">🏅 Badges</div>
-      <div class="meta-list" id="badges-panel">Niciun badge încă.</div>
-    </div>
-    <div class="meta-card">
-      <div class="meta-title">🏆 Achievements</div>
-      <div class="meta-list" id="achievements-panel">Fără progres momentan.</div>
-    </div>
-  </section>
-
-  <div class="log-wrap">
-    <div class="log-box" id="log-box"></div>
-  </div>
-
-  <div class="overlay hidden" id="overlay">
-    <div class="mg-panel" id="mg-panel">
-      <button class="mg-close" title="Închide mini-jocul" onclick="closeMG(false)">×</button>
-      <div class="mg-icon" id="mg-icon">🎮</div>
-      <div class="mg-title" id="mg-title">MINI-JOC</div>
-      <div class="mg-origin" id="mg-origin">ARCADE WORLD</div>
-      <div class="mg-desc" id="mg-desc"></div>
-      <div class="mg-challenge" id="mg-challenge"></div>
-      <div id="mg-feedback" style="min-height:24px"></div>
-      <div class="btn-row" id="mg-buttons"></div>
-    </div>
-  </div>
-
-  <div class="overlay hidden" id="full-overlay">
-    <div class="full-panel">
-      <button class="mg-close" title="Închide jocul original" onclick="closeFullGame(false)">×</button>
-      <div class="mg-title" id="full-title">FULL GAME</div>
-      <div class="tiny-note" id="full-subtitle">Rulează versiunea originală în iframe.</div>
-      <iframe id="full-frame" class="full-frame" title="Full Game" loading="lazy"></iframe>
-      <div class="btn-row">
-        <button class="btn-win" onclick="closeFullGame(true)">Marchează WIN</button>
-        <button class="btn-lose" onclick="closeFullGame(false)">Marchează LOSS</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="win-screen hidden" id="win-screen">
-    <div class="win-panel">
-      <div class="win-trophy">🏆</div>
-      <div class="win-title" id="win-title">VICTORIE!</div>
-      <div class="win-sub" id="win-sub">Câștigătorul a cucerit Arcade World!</div>
-      <div style="margin-bottom:20px">
-        <div style="font-size:13px;color:#888;margin-bottom:8px">SCOR FINAL</div>
-        <div style="display:flex;justify-content:center;gap:24px">
-          <div><div style="color:var(--cyan);font-size:22px;font-family:'Black Ops One',cursive" id="ws1">0</div><div style="font-size:10px;color:#555">J1</div></div>
-          <div><div style="color:var(--pink);font-size:22px;font-family:'Black Ops One',cursive" id="ws2">0</div><div style="font-size:10px;color:#555">J2</div></div>
+        <div class="flow">
+          <div>
+            <strong>Flow:</strong>
+            <span id="flowText">Joci întâi jocul. Bonus question apare doar la finalizare.</span>
+          </div>
+          <div class="flow-note" id="flowNote">Întrebarea nu blochează gameplay-ul</div>
         </div>
       </div>
-      <button class="btn-restart" onclick="restartGame()">↺ JOC NOU</button>
-    </div>
+
+      <div class="panel-wrap">
+        <div class="panel">
+          <div class="panel-top">
+            <div>
+              <div class="panel-kicker">Live Game Panel</div>
+              <div class="panel-title" id="panelTitle">Selectează un tile și apasă Start</div>
+            </div>
+            <div class="panel-actions">
+              <button class="panel-btn primary" type="button" id="reloadBtn">Reload</button>
+              <button class="panel-btn" type="button" id="openTabBtn">Open tab</button>
+              <button class="panel-btn" type="button" id="closeBtn">Închide</button>
+            </div>
+          </div>
+
+          <div class="panel-stage">
+            <iframe id="gameFrame" class="game-frame" title="Arcade game panel" allowfullscreen allow="autoplay; fullscreen"></iframe>
+
+            <div class="panel-placeholder" id="panelPlaceholder">
+              <div class="panel-placeholder-inner">
+                <h3>Start merge sigur</h3>
+                <p>
+                  Dacă ai pus link în <strong>EMBEDS</strong>, se încarcă jocul real.
+                  Dacă nu, se încarcă automat un fallback local în iframe, ca să vezi clar că butonul Start funcționează.
+                </p>
+              </div>
+            </div>
+
+            <div class="panel-overlay" id="panelOverlay">
+              <div class="panel-overlay-inner">
+                <h3 id="overlayTitle">Se încarcă jocul...</h3>
+                <p id="overlayText">Pregătim iframe-ul și sesiunea curentă.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-bottom">
+            <span class="pill" id="panelState">idle</span>
+            <span id="panelHint">Apasă Start. Dacă nu există embed real, vezi fallback-ul local.</span>
+          </div>
+
+          <div class="manual-controls">
+            <button class="manual-btn win" type="button" id="finishWinBtn">✅ Victorie</button>
+            <button class="manual-btn lose" type="button" id="finishLoseBtn">❌ Înfrângere</button>
+            <button class="manual-btn neutral" type="button" id="finishCloseBtn">🛑 Închide fără reward</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="map">
+        <div class="map-glow"></div>
+        <div class="map-outline"></div>
+        <div class="map-title">
+          <h2>ARCADE<br>WORLD</h2>
+          <p>Selectează un tile și pornește jocul</p>
+        </div>
+        <div class="tiles" id="tiles"></div>
+      </div>
+    </section>
+
+    <aside class="shell right-shell">
+      <div class="card">
+        <div class="card-title">Turn System</div>
+        <div class="turn-grid">
+          <div class="dice" id="diceValue">4</div>
+          <div class="stack">
+            <div class="mini-stat">
+              <div class="mini-label">Tura curentă</div>
+              <div class="mini-value" id="turnValue">2</div>
+            </div>
+            <div class="mini-stat">
+              <div class="mini-label">Ultimul zar</div>
+              <div class="mini-value" id="lastRollValue">4</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="sidebar-btn primary" type="button" id="rollBtn">🎲 Aruncă zarul</button>
+        <button class="sidebar-btn secondary" type="button" id="bonusBtn">✨ Bonus turn (1)</button>
+
+        <div class="turn-result lose" id="turnResult">Înfrângere</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Progres global</div>
+
+        <div class="progress-grid">
+          <div class="progress-box">
+            <div class="progress-k">Coins</div>
+            <div class="progress-v" id="coinsValue">18</div>
+          </div>
+          <div class="progress-box">
+            <div class="progress-k">XP</div>
+            <div class="progress-v" id="xpValue">12</div>
+          </div>
+          <div class="progress-box">
+            <div class="progress-k">Level</div>
+            <div class="progress-v" id="levelValue">1</div>
+          </div>
+        </div>
+
+        <div class="xp-head">
+          <span>Progress spre level următor</span>
+          <span id="xpLabel">12 / 100 XP</span>
+        </div>
+        <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
+
+        <div class="reward-box">
+          <h3>Reward preview</h3>
+          <div class="reward-list" id="rewardList"></div>
+          <div class="small-note">
+            Dacă tile-ul are întrebare bonus, ea apare după ce marchezi victoria sau înfrângerea.
+          </div>
+        </div>
+      </div>
+    </aside>
   </div>
 
-  <script src="app.js"></script>
+  <script>
+    (function () {
+      var state = {
+        selectedTileId: "basket",
+        selectedMode: "solo",
+        selectedRule: "classic",
+        turn: 2,
+        lastRoll: 4,
+        bonusTurns: 1,
+        resultText: "Înfrângere",
+        resultType: "lose",
+        progress: {
+          coins: 18,
+          xp: 12,
+          level: 1,
+          xpMax: 100
+        },
+        session: {
+          status: "idle",
+          embedUrl: "",
+          activeGameKey: null
+        }
+      };
+
+      var modes = [
+        { id: "solo", title: "Solo", desc: "Joci instant, focus pe scor și combo.", cta: "Joacă Solo", locked: false },
+        { id: "ai", title: "Vs AI", desc: "Meci rapid contra AI.", cta: "Joacă vs AI", locked: false },
+        { id: "hotseat", title: "2 Players", desc: "Hotseat local pentru duel.", cta: "Joacă 2 Players", locked: false },
+        { id: "quiz", title: "Quiz Run", desc: "Întrebarea vine după match.", cta: "Quiz Run", locked: true, reason: "Locked" }
+      ];
+
+      var tiles = [
+        {
+          id: "basket",
+          x: 120, y: 18,
+          icon: "🏀",
+          name: "Basket",
+          subtitle: "Basket arcade cu Start stabil și fallback local.",
+          gameKey: "basket",
+          rewardBase: 120,
+          questionPolicy: "bonus_after_match",
+          rules: ["classic", "blitz", "chaos", "moving"],
+          badges: ["sports", "timing", "reward:120"],
+          rewards: [
+            { label: "Reward bază", value: "+120" },
+            { label: "Perfect shot", value: "+25 XP" },
+            { label: "Bonus întrebare", value: "+coins / +XP" }
+          ]
+        },
+        {
+          id: "maze",
+          x: 228, y: 18,
+          icon: "🗺️",
+          name: "Labirint",
+          subtitle: "Navighezi printre capcane și ieșiri.",
+          gameKey: "maze",
+          rewardBase: 95,
+          questionPolicy: "between_rounds",
+          rules: ["classic", "timed", "fog"],
+          badges: ["logic", "explore"],
+          rewards: [
+            { label: "Reward bază", value: "+95" },
+            { label: "Chest bonus", value: "+coins" }
+          ]
+        },
+        {
+          id: "bomber",
+          x: 336, y: 18,
+          icon: "💣",
+          name: "Bomber",
+          subtitle: "Timing, bombe și risc arcade.",
+          gameKey: "bomberman",
+          rewardBase: 130,
+          questionPolicy: "bonus_after_match",
+          rules: ["classic", "chaos"],
+          badges: ["action", "arcade"],
+          rewards: [
+            { label: "Reward bază", value: "+130" },
+            { label: "Streak bonus", value: "+30 XP" }
+          ]
+        },
+        {
+          id: "void",
+          x: 444, y: 18,
+          icon: "🚀",
+          name: "Void",
+          subtitle: "Runner rapid cu lane switching.",
+          gameKey: "void_runner",
+          rewardBase: 110,
+          questionPolicy: "between_rounds",
+          rules: ["survival", "blitz"],
+          badges: ["speed", "runner"],
+          rewards: [
+            { label: "Reward bază", value: "+110" },
+            { label: "Combo", value: "+coins" }
+          ]
+        },
+        {
+          id: "bonus",
+          x: 552, y: 18,
+          icon: "⭐",
+          name: "Bonus",
+          subtitle: "Tile bonus pentru extra progres.",
+          gameKey: "bonus_tile",
+          rewardBase: 0,
+          questionPolicy: "disabled",
+          rules: ["instant"],
+          badges: ["bonus"],
+          rewards: [
+            { label: "Bonus turn", value: "+2" },
+            { label: "XP", value: "+15" }
+          ]
+        },
+        {
+          id: "hockey",
+          x: 660, y: 18,
+          icon: "🏒",
+          name: "Hockey",
+          subtitle: "Reflexe și unghiuri rapide.",
+          gameKey: "hockey",
+          rewardBase: 105,
+          questionPolicy: "bonus_after_match",
+          rules: ["classic", "blitz"],
+          badges: ["sports"],
+          rewards: [
+            { label: "Reward bază", value: "+105" }
+          ]
+        }
+      ];
+
+      var EMBEDS = {
+        basket: "",
+        maze: "",
+        bomberman: "",
+        void_runner: "",
+        hockey: ""
+      };
+
+      var els = {
+        selectedIcon: document.getElementById("selectedIcon"),
+        selectedTitle: document.getElementById("selectedTitle"),
+        selectedSubtitle: document.getElementById("selectedSubtitle"),
+        badges: document.getElementById("badges"),
+        modes: document.getElementById("modes"),
+        rules: document.getElementById("rules"),
+        flowText: document.getElementById("flowText"),
+        flowNote: document.getElementById("flowNote"),
+        startBtn: document.getElementById("startBtn"),
+        previewBtn: document.getElementById("previewBtn"),
+        rulesBtn: document.getElementById("rulesBtn"),
+        panelTitle: document.getElementById("panelTitle"),
+        panelState: document.getElementById("panelState"),
+        panelHint: document.getElementById("panelHint"),
+        reloadBtn: document.getElementById("reloadBtn"),
+        openTabBtn: document.getElementById("openTabBtn"),
+        closeBtn: document.getElementById("closeBtn"),
+        finishWinBtn: document.getElementById("finishWinBtn"),
+        finishLoseBtn: document.getElementById("finishLoseBtn"),
+        finishCloseBtn: document.getElementById("finishCloseBtn"),
+        panelPlaceholder: document.getElementById("panelPlaceholder"),
+        panelOverlay: document.getElementById("panelOverlay"),
+        overlayTitle: document.getElementById("overlayTitle"),
+        overlayText: document.getElementById("overlayText"),
+        gameFrame: document.getElementById("gameFrame"),
+        tiles: document.getElementById("tiles"),
+        diceValue: document.getElementById("diceValue"),
+        turnValue: document.getElementById("turnValue"),
+        lastRollValue: document.getElementById("lastRollValue"),
+        bonusBtn: document.getElementById("bonusBtn"),
+        turnResult: document.getElementById("turnResult"),
+        coinsValue: document.getElementById("coinsValue"),
+        xpValue: document.getElementById("xpValue"),
+        levelValue: document.getElementById("levelValue"),
+        xpLabel: document.getElementById("xpLabel"),
+        xpFill: document.getElementById("xpFill"),
+        rewardList: document.getElementById("rewardList"),
+        rollBtn: document.getElementById("rollBtn")
+      };
+
+      function getTileById(id) {
+        for (var i = 0; i < tiles.length; i++) {
+          if (tiles[i].id === id) return tiles[i];
+        }
+        return tiles[0];
+      }
+
+      function getSelectedTile() {
+        return getTileById(state.selectedTileId);
+      }
+
+      function capitalize(text) {
+        return String(text || "").charAt(0).toUpperCase() + String(text || "").slice(1).replace(/-/g, " ");
+      }
+
+      function normalizeEmbed(url) {
+        if (!url) return "";
+        if (url.indexOf("/embed/") !== -1) return url;
+        if (url.indexOf("/pen/") !== -1) {
+          return url.replace("/pen/", "/embed/") + (url.indexOf("?") === -1 ? "?default-tab=result" : "");
+        }
+        return url;
+      }
+
+      function getEmbedForTile(tile) {
+        return normalizeEmbed(EMBEDS[tile.gameKey] || "");
+      }
+
+      function setPanelState(label, hint) {
+        els.panelState.textContent = label;
+        els.panelHint.textContent = hint;
+      }
+
+      function showOverlay(title, text) {
+        els.overlayTitle.textContent = title || "Se încarcă jocul...";
+        els.overlayText.textContent = text || "Pregătim iframe-ul.";
+        els.panelOverlay.classList.add("show");
+      }
+
+      function hideOverlay() {
+        els.panelOverlay.classList.remove("show");
+      }
+
+      function renderBadges(tile) {
+        els.badges.innerHTML = "";
+        var classes = ["blue", "green", "gold"];
+        for (var i = 0; i < tile.badges.length; i++) {
+          var badge = document.createElement("div");
+          badge.className = "badge " + classes[i % classes.length];
+          badge.textContent = tile.badges[i];
+          els.badges.appendChild(badge);
+        }
+        if (tile.rewardBase) {
+          var base = document.createElement("div");
+          base.className = "badge blue";
+          base.textContent = "base reward: " + tile.rewardBase;
+          els.badges.appendChild(base);
+        }
+      }
+
+      function renderHeader() {
+        var tile = getSelectedTile();
+        els.selectedIcon.textContent = tile.icon;
+        els.selectedTitle.textContent = tile.name + " - Arcade Hub";
+        els.selectedSubtitle.textContent = tile.subtitle;
+        renderBadges(tile);
+
+        els.flowText.textContent = tile.questionPolicy === "disabled"
+          ? "Tile-ul intră direct în joc și reward-ul standard."
+          : "Joci întâi jocul. Bonus question apare doar la finalizare.";
+        els.flowNote.textContent = tile.questionPolicy === "disabled"
+          ? "Fără întrebare pe acest tile"
+          : "Întrebarea nu blochează gameplay-ul";
+
+        if (state.session.status !== "playing") {
+          var url = getEmbedForTile(tile);
+          if (url) {
+            setPanelState("ready", "Start va încărca jocul real în iframe.");
+          } else {
+            setPanelState("fallback", "Nu există embed setat. Start va încărca fallback local.");
+          }
+        }
+      }
+
+      function renderModes() {
+        els.modes.innerHTML = "";
+        for (var i = 0; i < modes.length; i++) {
+          (function(mode) {
+            var btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "mode" + (state.selectedMode === mode.id ? " active" : "") + (mode.locked ? " locked" : "");
+            btn.innerHTML =
+              '<div class="mode-title">' + mode.title + '</div>' +
+              '<div class="mode-desc">' + (mode.locked ? mode.reason : mode.desc) + '</div>';
+            btn.addEventListener("click", function() {
+              if (mode.locked) return;
+              state.selectedMode = mode.id;
+              renderModes();
+              renderCTA();
+            });
+            els.modes.appendChild(btn);
+          })(modes[i]);
+        }
+      }
+
+      function renderRules() {
+        var tile = getSelectedTile();
+        var rules = tile.rules || ["classic"];
+        if (rules.indexOf(state.selectedRule) === -1) state.selectedRule = rules[0];
+        els.rules.innerHTML = "";
+        for (var i = 0; i < rules.length; i++) {
+          (function(rule) {
+            var btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "rule" + (state.selectedRule === rule ? " active" : "");
+            btn.textContent = capitalize(rule);
+            btn.addEventListener("click", function() {
+              state.selectedRule = rule;
+              renderRules();
+            });
+            els.rules.appendChild(btn);
+          })(rules[i]);
+        }
+      }
+
+      function renderCTA() {
+        var currentMode = modes[0];
+        for (var i = 0; i < modes.length; i++) {
+          if (modes[i].id === state.selectedMode) currentMode = modes[i];
+        }
+        els.startBtn.textContent = currentMode.cta;
+      }
+
+      function renderTiles() {
+        els.tiles.innerHTML = "";
+        for (var i = 0; i < tiles.length; i++) {
+          (function(tile, index) {
+            var btn = document.createElement("button");
+            btn.type = "button";
+            var cls = "tile";
+            if (tile.id === state.selectedTileId) cls += " active";
+            if (tile.badges.indexOf("bonus") !== -1) cls += " bonus";
+            btn.className = cls;
+            btn.style.left = tile.x + "px";
+            btn.style.top = tile.y + "px";
+            btn.innerHTML =
+              '<div class="tile-index">' + index + '</div>' +
+              '<div class="tile-icon">' + tile.icon + '</div>' +
+              '<div class="tile-name">' + tile.name + '</div>' +
+              '<div class="tile-dot"></div>';
+            btn.addEventListener("click", function() {
+              state.selectedTileId = tile.id;
+              state.selectedRule = tile.rules && tile.rules.length ? tile.rules[0] : "classic";
+              render();
+            });
+            els.tiles.appendChild(btn);
+          })(tiles[i], i);
+        }
+      }
+
+      function renderRewards() {
+        var tile = getSelectedTile();
+        els.rewardList.innerHTML = "";
+        for (var i = 0; i < tile.rewards.length; i++) {
+          var row = document.createElement("div");
+          row.className = "reward-item";
+          row.innerHTML = "<span>" + tile.rewards[i].label + "</span><strong>" + tile.rewards[i].value + "</strong>";
+          els.rewardList.appendChild(row);
+        }
+      }
+
+      function renderProgress() {
+        els.coinsValue.textContent = state.progress.coins;
+        els.xpValue.textContent = state.progress.xp;
+        els.levelValue.textContent = state.progress.level;
+        els.xpLabel.textContent = state.progress.xp + " / " + state.progress.xpMax + " XP";
+        els.xpFill.style.width = Math.min((state.progress.xp / state.progress.xpMax) * 100, 100) + "%";
+      }
+
+      function renderTurn() {
+        els.diceValue.textContent = state.lastRoll;
+        els.turnValue.textContent = state.turn;
+        els.lastRollValue.textContent = state.lastRoll;
+        els.bonusBtn.textContent = "✨ Bonus turn (" + state.bonusTurns + ")";
+        els.turnResult.textContent = state.resultText;
+        els.turnResult.className = "turn-result " + state.resultType;
+      }
+
+      function applyReward(reward) {
+        reward = reward || {};
+        state.progress.coins += Number(reward.coins || 0);
+        state.progress.xp += Number(reward.xp || 0);
+        state.bonusTurns += Number(reward.turns || 0);
+
+        while (state.progress.xp >= state.progress.xpMax) {
+          state.progress.xp -= state.progress.xpMax;
+          state.progress.level += 1;
+        }
+
+        renderProgress();
+        renderTurn();
+      }
+
+      function buildReward(outcome) {
+        var tile = getSelectedTile();
+        var base = Number(tile.rewardBase || 0);
+
+        if (tile.gameKey === "bonus_tile") {
+          return outcome === "win" ? { turns: 2, xp: 15 } : {};
+        }
+
+        if (outcome === "win") {
+          return {
+            coins: Math.max(2, Math.round(base / 20) || 2),
+            xp: Math.max(8, Math.round(base / 10) || 8)
+          };
+        }
+
+        return {
+          xp: Math.max(2, Math.round(base / 28) || 2)
+        };
+      }
+
+      function buildFallbackHtml(tile) {
+        var safeTitle = tile.name.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        var safeMode = state.selectedMode.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        var safeRule = state.selectedRule.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        return `
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>${safeTitle}</title>
+<style>
+  html,body{margin:0;height:100%;font-family:Inter,system-ui,sans-serif;background:#071120;color:#eef4ff}
+  .wrap{height:100%;display:grid;place-items:center;padding:24px;background:
+    radial-gradient(circle at top left, rgba(65,231,255,.12), transparent 28%),
+    radial-gradient(circle at top right, rgba(255,217,93,.1), transparent 22%),
+    linear-gradient(180deg,#071120 0%,#040915 100%)}
+  .card{
+    width:min(760px,100%);
+    border-radius:28px;
+    padding:28px;
+    background:rgba(12,24,50,.92);
+    border:1px solid rgba(120,160,255,.16);
+    box-shadow:0 20px 60px rgba(0,0,0,.35)
+  }
+  h1{margin:0 0 8px;font-size:34px;line-height:1.02}
+  p{margin:0;color:#a8bddf;line-height:1.5}
+  .meta{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 22px}
+  .pill{
+    padding:10px 14px;border-radius:999px;font-size:13px;font-weight:800;
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08)
+  }
+  .box{
+    margin-top:18px;padding:18px;border-radius:20px;
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)
+  }
+  .accent{color:#98fff5;font-weight:900}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>${safeTitle}</h1>
+      <p>Acesta este fallback-ul local. Start funcționează corect, dar pentru jocul real trebuie să completezi linkul în obiectul EMBEDS.</p>
+      <div class="meta">
+        <div class="pill">Mode: ${safeMode}</div>
+        <div class="pill">Rule: ${safeRule}</div>
+        <div class="pill">Fallback local</div>
+      </div>
+      <div class="box">
+        <div class="accent">Cum activezi jocul real</div>
+        <p style="margin-top:8px">În codul principal, la EMBEDS, pune linkul CodePen embed pentru acest gameKey.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`;
+      }
+
+      function closePanel() {
+        state.session.status = "idle";
+        state.session.embedUrl = "";
+        state.session.activeGameKey = null;
+        els.gameFrame.classList.remove("visible");
+        els.gameFrame.src = "about:blank";
+        els.gameFrame.removeAttribute("srcdoc");
+        els.panelPlaceholder.style.display = "grid";
+        hideOverlay();
+        els.panelTitle.textContent = "Selectează un tile și apasă Start";
+        setPanelState("idle", "Panel închis. Poți porni din nou.");
+      }
+
+      function loadRealOrFallback() {
+        var tile = getSelectedTile();
+        var url = getEmbedForTile(tile);
+
+        state.session.status = "playing";
+        state.session.embedUrl = url;
+        state.session.activeGameKey = tile.gameKey;
+
+        els.panelPlaceholder.style.display = "none";
+        els.gameFrame.classList.add("visible");
+        els.panelTitle.textContent = tile.name + " • " + capitalize(state.selectedRule) + " • " + state.selectedMode.toUpperCase();
+
+        showOverlay("Se încarcă " + tile.name, "Pornim sesiunea curentă.");
+
+        if (url) {
+          els.gameFrame.removeAttribute("srcdoc");
+          els.gameFrame.onload = function() {
+            hideOverlay();
+            setPanelState("playing", "Jocul real rulează în iframe.");
+          };
+          els.gameFrame.src = url;
+        } else {
+          els.gameFrame.onload = null;
+          els.gameFrame.src = "about:blank";
+          els.gameFrame.srcdoc = buildFallbackHtml(tile);
+          hideOverlay();
+          setPanelState("fallback", "Rulează fallback local. Completează EMBEDS pentru jocul real.");
+        }
+      }
+
+      function reloadCurrent() {
+        var tile = getSelectedTile();
+        if (state.session.status !== "playing" && state.session.status !== "finished") return;
+        showOverlay("Reload", "Reîncărcăm conținutul din panel.");
+        if (state.session.embedUrl) {
+          els.gameFrame.removeAttribute("srcdoc");
+          els.gameFrame.src = state.session.embedUrl;
+        } else {
+          els.gameFrame.src = "about:blank";
+          els.gameFrame.srcdoc = buildFallbackHtml(tile);
+          hideOverlay();
+        }
+      }
+
+      function openCurrentTab() {
+        var tile = getSelectedTile();
+        var url = state.session.embedUrl || getEmbedForTile(tile);
+        if (url) {
+          window.open(url, "_blank", "noopener");
+        } else {
+          alert("Nu există link real în EMBEDS pentru acest joc.");
+        }
+      }
+
+      function finishSession(outcome) {
+        if (state.session.status !== "playing" && state.session.status !== "finished") return;
+
+        var tile = getSelectedTile();
+        var reward = buildReward(outcome);
+
+        state.session.status = "finished";
+        state.resultText = outcome === "win" ? "Victorie" : "Înfrângere";
+        state.resultType = outcome === "win" ? "win" : "lose";
+        applyReward(reward);
+
+        setPanelState(
+          "finished",
+          outcome === "win"
+            ? "Sesiunea a fost marcată ca victorie."
+            : "Sesiunea a fost marcată ca înfrângere."
+        );
+
+        if (tile.questionPolicy !== "disabled") {
+          setTimeout(function () {
+            var ok = window.confirm("Întrebare bonus pentru " + tile.name + ":\n\nAi răspuns corect?");
+            var bonus = ok ? { xp: 15, coins: 3 } : { xp: 2 };
+            applyReward(bonus);
+          }, 80);
+        }
+
+        renderTurn();
+      }
+
+      function finishCloseOnly() {
+        closePanel();
+        state.resultText = "Sesiune închisă";
+        state.resultType = "lose";
+        renderTurn();
+      }
+
+      function previewRewards() {
+        var tile = getSelectedTile();
+        var lines = [];
+        for (var i = 0; i < tile.rewards.length; i++) {
+          lines.push(tile.rewards[i].label + ": " + tile.rewards[i].value);
+        }
+        alert("Reward preview - " + tile.name + "\n\n" + lines.join("\n"));
+      }
+
+      function showRules() {
+        var tile = getSelectedTile();
+        alert(
+          "Joc: " + tile.name + "\n" +
+          "Rule set: " + capitalize(state.selectedRule) + "\n\n" +
+          "1. Start încarcă jocul real sau fallback local.\n" +
+          "2. Joci în iframe.\n" +
+          "3. Marchezi sesiunea ca Victorie sau Înfrângere.\n" +
+          "4. Dacă există întrebare bonus, apare după finalizare."
+        );
+      }
+
+      function rollDice() {
+        var roll = Math.floor(Math.random() * 6) + 1;
+        state.lastRoll = roll;
+        state.turn += 1;
+
+        var outcomes = [
+          { text: "Victorie", type: "win" },
+          { text: "Înfrângere", type: "lose" },
+          { text: "Boss fight", type: "lose" },
+          { text: "Tile bonus", type: "win" }
+        ];
+        var out = outcomes[Math.floor(Math.random() * outcomes.length)];
+        state.resultText = out.text;
+        state.resultType = out.type;
+        if (out.type === "win") applyReward({ coins: roll, xp: 6 + roll });
+        renderTurn();
+      }
+
+      function useBonusTurn() {
+        if (state.bonusTurns <= 0) return;
+        state.bonusTurns -= 1;
+        state.resultText = "Bonus activ";
+        state.resultType = "win";
+        applyReward({ xp: 12 });
+        renderTurn();
+      }
+
+      function render() {
+        renderHeader();
+        renderModes();
+        renderRules();
+        renderCTA();
+        renderTiles();
+        renderRewards();
+        renderProgress();
+        renderTurn();
+      }
+
+      els.startBtn.addEventListener("click", loadRealOrFallback);
+      els.previewBtn.addEventListener("click", previewRewards);
+      els.rulesBtn.addEventListener("click", showRules);
+      els.reloadBtn.addEventListener("click", reloadCurrent);
+      els.openTabBtn.addEventListener("click", openCurrentTab);
+      els.closeBtn.addEventListener("click", closePanel);
+      els.finishWinBtn.addEventListener("click", function () { finishSession("win"); });
+      els.finishLoseBtn.addEventListener("click", function () { finishSession("lose"); });
+      els.finishCloseBtn.addEventListener("click", finishCloseOnly);
+      els.rollBtn.addEventListener("click", rollDice);
+      els.bonusBtn.addEventListener("click", useBonusTurn);
+
+      render();
+    })();
+  </script>
 </body>
 </html>
