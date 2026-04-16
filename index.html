@@ -1,532 +1,343 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ro">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Arcade World Hub</title>
+  <title>Arcade World</title>
   <style>
     :root{
-      --bg:#060b18;
-      --bg2:#0b1530;
-      --panel:rgba(12,24,50,.95);
-      --panel2:rgba(16,32,66,.96);
-      --line:rgba(120,160,255,.16);
+      --bg:#030611;
+      --panel:#0a1331;
+      --panel2:#0d1738;
+      --line:rgba(113,140,255,.16);
       --text:#eef4ff;
-      --muted:#9fb3db;
-      --cyan:#41e7ff;
-      --gold:#ffd95d;
-      --green:#2fe09f;
-      --red:#ff7f93;
-      --shadow:0 20px 60px rgba(0,0,0,.35);
+      --muted:#97abd8;
+      --cyan:#47e7ff;
+      --gold:#ffd95b;
+      --green:#31dfa0;
+      --red:#ff7f92;
+      --shadow:0 20px 60px rgba(0,0,0,.38);
+      --tile-shadow:0 12px 24px rgba(0,0,0,.32);
     }
 
     *{box-sizing:border-box}
     html,body{margin:0;min-height:100%}
     body{
-      font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+      font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
       color:var(--text);
       background:
-        radial-gradient(circle at top left, rgba(65,231,255,.08), transparent 26%),
-        radial-gradient(circle at top right, rgba(255,217,93,.08), transparent 18%),
-        linear-gradient(180deg,#040814 0%,#02050c 100%);
+        radial-gradient(circle at top left, rgba(82,116,255,.11), transparent 22%),
+        radial-gradient(circle at top right, rgba(71,231,255,.08), transparent 18%),
+        linear-gradient(180deg,#040713 0%,#02040b 100%);
       padding:12px;
     }
 
+    button,select{font:inherit}
     .app{
       display:grid;
-      grid-template-columns:minmax(860px,1.8fr) minmax(320px,.8fr);
-      gap:18px;
+      grid-template-columns:minmax(0,1.65fr) minmax(320px,.82fr);
+      gap:16px;
       min-height:calc(100vh - 24px);
     }
 
-    .top-note{
-      margin:0 auto 12px;
-      max-width:1460px;
-      border:1px solid rgba(65,231,255,.26);
-      border-radius:16px;
-      padding:12px 16px;
-      background:linear-gradient(180deg, rgba(10,29,57,.96), rgba(8,19,40,.96));
-      color:#e7f2ff;
-    }
-    .top-note strong{display:block;font-size:15px;line-height:1.35}
-    .top-note span{display:block;font-size:13px;color:#b9cced;margin-top:4px}
-
     .shell{
+      background:linear-gradient(180deg, rgba(8,16,37,.96), rgba(5,10,24,.985));
       border:1px solid var(--line);
       border-radius:30px;
       overflow:hidden;
-      background:linear-gradient(180deg, rgba(8,17,36,.96), rgba(5,11,24,.98));
       box-shadow:var(--shadow);
     }
 
     .left-shell{
       display:grid;
-      grid-template-rows:auto auto auto 1fr;
+      grid-template-rows:auto auto 1fr;
+      min-height:860px;
     }
 
-    .hero{
-      padding:26px 28px 20px;
+    .topbar{
+      padding:18px 20px 16px;
       border-bottom:1px solid var(--line);
-      background:linear-gradient(180deg, rgba(18,39,74,.96), rgba(11,25,51,.95));
-    }
-
-    .hero-row{
+      background:linear-gradient(180deg, rgba(16,31,68,.96), rgba(10,22,48,.97));
       display:flex;
-      gap:14px;
       align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
     }
 
-    .hero-icon{
-      width:54px;
-      height:54px;
-      border-radius:50%;
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:0;
+    }
+
+    .brand-badge{
+      width:48px;
+      height:48px;
+      border-radius:16px;
       display:grid;
       place-items:center;
-      font-size:30px;
-      background:radial-gradient(circle at 30% 30%, #ffe080, #ff9800 65%, #b44f00 100%);
-      box-shadow:0 0 22px rgba(255,157,0,.34);
+      font-size:24px;
+      background:linear-gradient(180deg, rgba(255,217,91,.24), rgba(71,231,255,.12));
+      border:1px solid rgba(255,255,255,.1);
+      box-shadow:0 10px 22px rgba(0,0,0,.24);
     }
 
-    h1,h2,h3,p{margin:0}
-
-    .hero-title{
-      font-size:28px;
+    .brand h1{
+      margin:0;
+      font-size:23px;
+      line-height:1.02;
       font-weight:900;
-      line-height:1.04;
       letter-spacing:-.03em;
     }
 
-    .hero-subtitle{
-      margin-top:6px;
-      font-size:15px;
+    .brand p{
+      margin:5px 0 0;
       color:var(--muted);
+      font-size:14px;
     }
 
-    .badges{
+    .toolbar{
       display:flex;
-      flex-wrap:wrap;
+      align-items:center;
       gap:10px;
-      margin-top:18px;
+      flex-wrap:wrap;
     }
 
-    .badge{
-      padding:10px 14px;
+    .segmented{
+      display:inline-flex;
+      padding:4px;
       border-radius:999px;
-      font-size:13px;
-      font-weight:800;
-      border:1px solid rgba(255,255,255,.08);
       background:rgba(255,255,255,.05);
-    }
-    .badge.blue{background:rgba(94,156,255,.12)}
-    .badge.green{background:rgba(47,224,159,.12)}
-    .badge.gold{background:rgba(255,217,93,.12);color:#fff2bc}
-
-    .config{
-      padding:22px 28px;
-      border-bottom:1px solid var(--line);
-      background:linear-gradient(180deg, rgba(9,21,43,.96), rgba(6,14,29,.98));
-      display:grid;
-      gap:18px;
+      border:1px solid rgba(255,255,255,.08);
     }
 
-    .label{
-      margin-bottom:10px;
-      font-size:12px;
-      font-weight:900;
-      text-transform:uppercase;
-      letter-spacing:.18em;
-      color:#c8d8fb;
+    .segmented button{
+      border:0;
+      padding:9px 14px;
+      border-radius:999px;
+      background:transparent;
+      color:var(--text);
+      cursor:pointer;
+      font-weight:800;
     }
 
-    .modes,.rules,.actions{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
+    .segmented button.active{
+      background:linear-gradient(180deg,#ffe37c,#f2ca16);
+      color:#241c00;
     }
 
-    .mode,.rule,.btn,.panel-btn,.tile,.manual-btn,.sidebar-btn{
+    .ghost-btn,.primary-btn,.chip,.tile,.action-btn{
       transition:.16s ease;
     }
-    .mode:hover,.rule:hover,.btn:hover,.panel-btn:hover,.tile:hover,.manual-btn:hover,.sidebar-btn:hover{
+
+    .ghost-btn:hover,.primary-btn:hover,.chip:hover,.tile:hover,.action-btn:hover{
       transform:translateY(-2px);
     }
 
-    .mode{
-      min-width:145px;
-      min-height:88px;
-      padding:14px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.08);
-      background:rgba(255,255,255,.04);
-      color:var(--text);
-      cursor:pointer;
-    }
-
-    .mode.active{
-      border-color:rgba(65,231,255,.48);
-      background:linear-gradient(180deg, rgba(18,72,95,.42), rgba(13,42,73,.52));
-      box-shadow:0 0 0 1px rgba(65,231,255,.12), 0 14px 28px rgba(16,112,145,.18);
-    }
-
-    .mode.locked{
-      opacity:.55;
-      cursor:not-allowed;
-      filter:saturate(.8);
-    }
-
-    .mode-title{
-      font-size:15px;
-      font-weight:900;
-      margin-bottom:7px;
-    }
-
-    .mode-desc{
-      font-size:12px;
-      line-height:1.35;
-      color:var(--muted);
-    }
-
-    .rule{
-      padding:12px 16px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.08);
-      background:rgba(255,255,255,.04);
-      color:var(--text);
-      font-weight:800;
-      cursor:pointer;
-    }
-
-    .rule.active{
-      background:rgba(255,217,93,.12);
-      border-color:rgba(255,217,93,.35);
-      color:#fff1b4;
-    }
-
-    button{
-      border:0;
-      outline:0;
-      font:inherit;
-    }
-
-    .btn{
-      padding:14px 18px;
-      border-radius:18px;
-      cursor:pointer;
-      font-weight:900;
-    }
-
-    .btn.primary{
-      background:linear-gradient(180deg,#ffe47d,#f1c70f);
-      color:#241b00;
-      box-shadow:0 16px 34px rgba(241,199,15,.2);
-    }
-
-    .btn.secondary{
+    .ghost-btn{
+      border:1px solid rgba(255,255,255,.09);
       background:rgba(255,255,255,.05);
       color:var(--text);
-      border:1px solid rgba(255,255,255,.08);
-    }
-
-    .flow{
-      padding:14px 16px;
-      border-radius:18px;
-      border:1px solid rgba(94,156,255,.14);
-      background:rgba(4,12,28,.82);
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      align-items:center;
-      font-size:14px;
-      color:#d8e4ff;
-    }
-
-    .flow-note{
-      color:#b8ffe3;
+      border-radius:14px;
+      padding:10px 14px;
+      cursor:pointer;
       font-weight:800;
     }
 
-    .panel-wrap{
-      padding:18px 20px 20px;
+    .config{
+      padding:18px 20px 18px;
       border-bottom:1px solid var(--line);
-      background:linear-gradient(180deg, rgba(8,18,39,.96), rgba(5,12,27,.98));
+      background:linear-gradient(180deg, rgba(8,18,39,.98), rgba(5,12,28,.99));
+      display:grid;
+      gap:16px;
     }
 
-    .panel{
-      border-radius:28px;
-      overflow:hidden;
-      border:1px solid rgba(120,160,255,.16);
-      background:rgba(2,8,22,.95);
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.03), 0 18px 40px rgba(0,0,0,.28);
+    .config-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr 190px auto;
+      gap:14px;
+      align-items:end;
     }
 
-    .panel-top{
-      padding:14px 16px;
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      align-items:center;
-      background:linear-gradient(180deg, rgba(17,36,72,.96), rgba(10,24,50,.98));
-      border-bottom:1px solid rgba(120,160,255,.14);
-    }
-
-    .panel-kicker{
-      font-size:12px;
+    .group-label{
+      margin:0 0 9px;
+      font-size:11px;
+      letter-spacing:.18em;
       font-weight:900;
       text-transform:uppercase;
-      letter-spacing:.16em;
-      color:#90c6ff;
-      margin-bottom:4px;
+      color:#c8d8fb;
     }
 
-    .panel-title{
-      font-size:16px;
-      font-weight:900;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .panel-actions{
+    .chip-row{
       display:flex;
       flex-wrap:wrap;
       gap:10px;
     }
 
-    .panel-btn{
-      padding:10px 14px;
-      border-radius:14px;
-      font-weight:800;
-      cursor:pointer;
-      color:var(--text);
-      background:rgba(255,255,255,.06);
+    .chip{
       border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      border-radius:999px;
+      padding:11px 14px;
+      cursor:pointer;
+      font-weight:800;
+      white-space:nowrap;
     }
 
-    .panel-btn.primary{
-      background:linear-gradient(180deg,#ffe47d,#f1c70f);
-      color:#231a00;
+    .chip.active{
+      background:rgba(255,217,91,.12);
+      border-color:rgba(255,217,91,.32);
+      color:#fff2ba;
     }
 
-    .panel-stage{
-      position:relative;
+    .turn-select{
       width:100%;
-      aspect-ratio:16 / 9;
-      min-height:380px;
-      background:
-        radial-gradient(circle at center, rgba(65,231,255,.08), transparent 20%),
-        linear-gradient(180deg,#020714 0%,#01040b 100%);
+      border-radius:16px;
+      padding:13px 14px;
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      border:1px solid rgba(255,255,255,.08);
+      outline:none;
     }
 
-    .game-frame{
-      width:100%;
-      height:100%;
+    .turn-select option{ color:#111; }
+
+    .primary-btn{
       border:0;
-      display:none;
-      background:#000;
+      background:linear-gradient(180deg,#ffe47d,#f1c810);
+      color:#231b00;
+      border-radius:18px;
+      padding:14px 18px;
+      cursor:pointer;
+      font-weight:900;
+      box-shadow:0 14px 30px rgba(241,200,16,.18);
+      min-width:160px;
     }
 
-    .game-frame.visible{
-      display:block;
+    .primary-btn[disabled], .action-btn[disabled]{
+      opacity:.5;
+      cursor:not-allowed;
+      transform:none !important;
     }
 
-    .panel-placeholder,.panel-overlay{
+    .info-bar{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      padding:12px 14px;
+      border-radius:18px;
+      background:rgba(4,11,27,.86);
+      border:1px solid rgba(93,155,255,.12);
+      color:#d8e5ff;
+      font-size:14px;
+    }
+
+    .info-note{
+      color:#b8ffe3;
+      font-weight:800;
+      white-space:nowrap;
+    }
+
+    .board-wrap{
+      position:relative;
+      min-height:620px;
+      background:
+        radial-gradient(circle at center, rgba(41,82,162,.16), transparent 30%),
+        linear-gradient(180deg,#020611 0%,#01030a 100%);
+      overflow:hidden;
+    }
+
+    .board-title{
       position:absolute;
       inset:0;
       display:grid;
       place-items:center;
+      pointer-events:none;
+      z-index:1;
+    }
+
+    .board-title-inner{
       text-align:center;
-      padding:28px;
+      opacity:.95;
     }
 
-    .panel-placeholder-inner,.panel-overlay-inner{
-      max-width:720px;
-    }
-
-    .panel-placeholder h3,.panel-overlay h3{
-      font-size:28px;
-      font-weight:900;
-      letter-spacing:-.03em;
-      margin-bottom:10px;
-    }
-
-    .panel-placeholder p,.panel-overlay p{
-      color:var(--muted);
-      line-height:1.5;
-      font-size:15px;
-    }
-
-    .panel-overlay{
-      pointer-events:none;
-      opacity:0;
-      background:linear-gradient(180deg, rgba(4,10,25,.74), rgba(2,7,18,.82));
-      transition:opacity .2s ease;
-    }
-
-    .panel-overlay.show{
-      opacity:1;
-    }
-
-    .panel-bottom{
-      padding:12px 16px;
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      align-items:center;
-      background:rgba(255,255,255,.02);
-      border-top:1px solid rgba(120,160,255,.12);
-      font-size:13px;
-      color:#d3dfff;
-    }
-
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 12px;
-      border-radius:999px;
-      background:rgba(65,231,255,.08);
-      border:1px solid rgba(65,231,255,.16);
-      color:#c4faff;
-      font-weight:900;
-    }
-
-    .manual-controls{
-      padding:14px 16px 16px;
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      border-top:1px solid rgba(120,160,255,.12);
-      background:rgba(255,255,255,.02);
-    }
-
-    .manual-btn{
-      padding:12px 14px;
-      border-radius:14px;
-      font-weight:900;
-      cursor:pointer;
-    }
-
-    .manual-btn.win{
-      background:rgba(47,224,159,.14);
-      border:1px solid rgba(47,224,159,.26);
-      color:#beffe3;
-    }
-
-    .manual-btn.lose{
-      background:rgba(255,127,147,.14);
-      border:1px solid rgba(255,127,147,.26);
-      color:#ffd5dc;
-    }
-
-    .manual-btn.neutral{
-      background:rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.08);
-      color:var(--text);
-    }
-
-    .map{
-      position:relative;
-      min-height:744px;
-      overflow:hidden;
-      background:
-        radial-gradient(circle at center, rgba(48,100,190,.14), transparent 28%),
-        linear-gradient(180deg,#020713 0%,#02050d 100%);
-    }
-
-    .map-glow{
-      position:absolute;
-      inset:0;
-      pointer-events:none;
-      background:
-        radial-gradient(circle at center, rgba(65,231,255,.09), transparent 21%),
-        radial-gradient(circle at center, rgba(118,245,255,.06), transparent 35%);
-    }
-
-    .map-outline{
-      position:absolute;
-      inset:24px;
-      border-radius:30px;
-      border:1px dashed rgba(94,156,255,.12);
-      pointer-events:none;
-    }
-
-    .map-title{
-      position:absolute;
-      left:50%;
-      top:50%;
-      transform:translate(-50%,-50%);
-      pointer-events:none;
-      text-align:center;
-      opacity:.92;
-    }
-
-    .map-title h2{
+    .board-title h2{
+      margin:0;
       font-size:54px;
       line-height:.95;
       font-weight:900;
       letter-spacing:-.04em;
-      color:#98fff5;
-      text-shadow:0 0 18px rgba(65,231,255,.18);
+      color:#78f6ed;
+      text-shadow:0 0 18px rgba(71,231,255,.18);
     }
 
-    .map-title p{
-      margin-top:10px;
-      color:#87a9d8;
+    .board-title p{
+      margin:10px 0 0;
       font-size:12px;
-      font-weight:900;
+      color:#89a8d7;
       text-transform:uppercase;
-      letter-spacing:.22em;
+      letter-spacing:.26em;
+      font-weight:900;
     }
 
-    .tiles{
-      position:absolute;
-      inset:0;
+    .board{
+      position:relative;
+      min-height:620px;
+      padding:18px;
+      z-index:2;
     }
 
     .tile{
       position:absolute;
-      width:96px;
-      height:96px;
-      padding:8px;
-      border-radius:18px;
+      width:94px;
+      height:92px;
+      border-radius:16px;
+      border:1px solid rgba(113,140,255,.18);
+      background:linear-gradient(180deg, rgba(14,22,62,.96), rgba(8,14,39,.985));
+      box-shadow:var(--tile-shadow);
+      color:var(--text);
+      cursor:pointer;
       display:grid;
       grid-template-rows:auto 1fr auto;
+      padding:8px;
       overflow:hidden;
-      cursor:pointer;
-      color:#dfe9ff;
-      background:linear-gradient(180deg, rgba(10,15,54,.98), rgba(13,18,49,.98));
-      border:1px solid rgba(123,145,255,.16);
-      box-shadow:0 16px 38px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.05);
     }
 
     .tile.active{
-      border-color:rgba(255,112,194,.74);
-      box-shadow:0 0 0 1px rgba(255,112,194,.18), 0 0 30px rgba(255,112,194,.2), 0 18px 42px rgba(0,0,0,.32);
+      border-color:rgba(255,64,176,.5);
+      box-shadow:0 0 0 1px rgba(255,64,176,.18), 0 0 26px rgba(255,64,176,.16), var(--tile-shadow);
     }
 
-    .tile.bonus{
-      box-shadow:0 0 0 1px rgba(255,217,93,.14), 0 18px 42px rgba(0,0,0,.28);
+    .tile.player{
+      border-color:rgba(71,231,255,.6);
+      box-shadow:0 0 0 1px rgba(71,231,255,.18), 0 0 26px rgba(71,231,255,.18), var(--tile-shadow);
     }
 
     .tile-index{
       font-size:11px;
-      color:#8ea6d7;
+      color:#8ca5d6;
+      text-align:left;
     }
 
     .tile-icon{
       display:grid;
       place-items:center;
-      font-size:32px;
+      font-size:30px;
       line-height:1;
+      filter:drop-shadow(0 0 12px rgba(71,231,255,.15));
     }
 
     .tile-name{
       text-align:center;
       font-size:11px;
-      color:#9cb0dc;
-      text-transform:uppercase;
-      letter-spacing:.08em;
       font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#a7b9e3;
     }
 
     .tile-dot{
@@ -537,131 +348,140 @@
       height:10px;
       border-radius:50%;
       background:var(--cyan);
-      box-shadow:0 0 12px rgba(65,231,255,.5);
+      box-shadow:0 0 12px rgba(71,231,255,.55);
+    }
+
+    .player-marker{
+      position:absolute;
+      left:8px;
+      bottom:8px;
+      font-size:11px;
+      font-weight:900;
+      color:#9afcff;
     }
 
     .right-shell{
-      padding:18px;
+      padding:16px;
       display:grid;
-      grid-template-rows:auto auto 1fr;
-      gap:18px;
+      grid-template-rows:auto auto auto auto auto 1fr;
+      gap:16px;
+      min-height:860px;
     }
 
     .card{
-      border-radius:28px;
-      padding:24px;
-      background:linear-gradient(180deg, rgba(11,31,74,.95), rgba(3,17,46,.98));
-      border:1px solid rgba(255,217,93,.16);
+      border-radius:26px;
+      padding:20px;
+      background:linear-gradient(180deg, rgba(11,30,71,.95), rgba(5,18,47,.98));
+      border:1px solid rgba(255,217,91,.15);
       box-shadow:var(--shadow);
     }
 
     .card-title{
-      color:#ffd530;
-      font-size:13px;
+      margin:0 0 16px;
+      color:#ffd42f;
+      font-size:12px;
       font-weight:900;
       letter-spacing:.22em;
       text-transform:uppercase;
-      margin-bottom:18px;
     }
 
-    .turn-grid{
-      display:grid;
-      grid-template-columns:138px 1fr;
-      gap:16px;
-      align-items:stretch;
+    .selected-head{
+      display:flex;
+      gap:14px;
+      align-items:center;
     }
 
-    .dice{
-      border-radius:28px;
-      min-height:136px;
+    .selected-icon{
+      width:56px;
+      height:56px;
+      border-radius:18px;
       display:grid;
       place-items:center;
-      font-size:64px;
-      font-weight:900;
-      color:#f4f7ff;
-      background:linear-gradient(180deg, rgba(79,91,67,.45), rgba(28,53,97,.28));
-      border:1px solid rgba(255,217,93,.24);
+      font-size:30px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
     }
 
-    .stack{
+    .selected-name{
+      margin:0;
+      font-size:24px;
+      font-weight:900;
+      letter-spacing:-.03em;
+    }
+
+    .selected-sub{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.45;
+    }
+
+    .mini-badges{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:16px;
+    }
+
+    .mini-badge{
+      padding:8px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      font-size:12px;
+      font-weight:800;
+    }
+
+    .dice-box{
       display:grid;
+      grid-template-columns:1fr 1fr 1fr;
       gap:12px;
     }
 
-    .mini-stat{
-      border-radius:22px;
-      padding:18px 16px;
+    .dice-card{
+      border-radius:18px;
+      padding:14px;
       background:rgba(255,255,255,.05);
       border:1px solid rgba(255,255,255,.08);
     }
 
-    .mini-label{
-      color:#d6e1fb;
-      font-size:12px;
-      text-transform:uppercase;
-      letter-spacing:.18em;
-      margin-bottom:10px;
-    }
-
-    .mini-value{
-      font-size:22px;
-      font-weight:900;
-    }
-
-    .sidebar-btn{
-      width:100%;
-      margin-top:14px;
-      padding:16px 18px;
-      border-radius:22px;
-      cursor:pointer;
-      font-weight:900;
-      font-size:17px;
-    }
-
-    .sidebar-btn.primary{
-      background:linear-gradient(180deg,#ffe47d,#f1c70f);
-      color:#231b00;
-    }
-
-    .sidebar-btn.secondary{
-      background:rgba(255,255,255,.06);
-      color:var(--text);
-      border:1px solid rgba(255,255,255,.08);
-    }
-
-    .turn-result{
-      margin-top:16px;
-      font-size:24px;
-      font-weight:900;
-    }
-
-    .turn-result.win{color:#abffd9}
-    .turn-result.lose{color:#ffd3db}
-
-    .progress-grid{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:14px;
-      margin-bottom:18px;
-    }
-
-    .progress-box{
-      border-radius:22px;
-      padding:16px;
-      background:rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.08);
-    }
-
-    .progress-k{
-      font-size:12px;
+    .dice-label{
+      font-size:11px;
       letter-spacing:.18em;
       text-transform:uppercase;
-      color:#d8e2ff;
+      color:#d8e1fb;
       margin-bottom:8px;
     }
 
-    .progress-v{
-      font-size:18px;
+    .dice-value{
+      font-size:30px;
+      font-weight:900;
+    }
+
+    .stats-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+      margin-bottom:16px;
+    }
+
+    .stat-box{
+      border-radius:18px;
+      padding:14px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .stat-label{
+      font-size:11px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:#d8e1fb;
+      margin-bottom:7px;
+    }
+
+    .stat-value{
+      font-size:20px;
       font-weight:900;
     }
 
@@ -671,6 +491,7 @@
       gap:12px;
       font-weight:900;
       margin-bottom:10px;
+      font-size:14px;
     }
 
     .xp-bar{
@@ -691,26 +512,13 @@
       transition:width .25s ease;
     }
 
-    .reward-box{
-      margin-top:18px;
-      border-radius:24px;
-      padding:18px;
-      background:linear-gradient(180deg, rgba(18,43,86,.76), rgba(10,26,58,.92));
-      border:1px solid rgba(65,231,255,.14);
-    }
-
-    .reward-box h3{
-      font-size:16px;
-      margin-bottom:10px;
-    }
-
     .reward-list{
       display:grid;
       gap:10px;
     }
 
     .reward-item{
-      padding:10px 12px;
+      padding:11px 12px;
       border-radius:16px;
       display:flex;
       justify-content:space-between;
@@ -721,769 +529,791 @@
       font-size:14px;
     }
 
+    .achievement-list{
+      margin:0;
+      padding:0;
+      list-style:none;
+      display:grid;
+      gap:10px;
+    }
+
+    .achievement-item{
+      padding:11px 12px;
+      border-radius:16px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.06);
+      color:#dbe7ff;
+      font-size:14px;
+      line-height:1.4;
+    }
+
+    .achievement-item strong{
+      display:block;
+      color:#fff6c7;
+      margin-bottom:2px;
+    }
+
     .small-note{
       margin-top:12px;
       font-size:12px;
-      color:#98add7;
+      color:#9ab0dc;
       line-height:1.45;
     }
 
-    @media (max-width:1450px){
+    .mobile-scroller{
+      display:none;
+      overflow:auto hidden;
+      padding:10px 12px 14px;
+      gap:10px;
+      background:linear-gradient(180deg, rgba(6,14,32,.98), rgba(4,10,23,.99));
+      border-top:1px solid var(--line);
+    }
+
+    .mobile-tile{
+      min-width:86px;
+      border-radius:16px;
+      padding:10px 8px;
+      border:1px solid rgba(113,140,255,.18);
+      background:linear-gradient(180deg, rgba(14,22,62,.96), rgba(8,14,39,.985));
+      color:var(--text);
+      display:grid;
+      gap:8px;
+      place-items:center;
+      cursor:pointer;
+      box-shadow:var(--tile-shadow);
+    }
+
+    .mobile-tile.active{
+      border-color:rgba(255,64,176,.5);
+      box-shadow:0 0 0 1px rgba(255,64,176,.18), 0 0 22px rgba(255,64,176,.14), var(--tile-shadow);
+    }
+
+    .mobile-tile.player{
+      border-color:rgba(71,231,255,.6);
+      box-shadow:0 0 0 1px rgba(71,231,255,.18), 0 0 22px rgba(71,231,255,.14), var(--tile-shadow);
+    }
+
+    .mobile-tile .mi{ font-size:26px; }
+    .mobile-tile .mn{
+      font-size:10px;
+      text-align:center;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:#a7b9e3;
+    }
+
+    .overlay{
+      position:fixed;
+      inset:0;
+      display:none;
+      background:rgba(2,6,18,.76);
+      backdrop-filter:blur(8px);
+      z-index:60;
+      padding:18px;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .overlay.open{ display:flex; }
+
+    .game-shell{
+      width:min(1240px,100%);
+      max-height:calc(100vh - 36px);
+      overflow:hidden;
+      border-radius:30px;
+      background:linear-gradient(180deg, rgba(8,20,46,.985), rgba(5,12,29,.995));
+      border:1px solid rgba(113,140,255,.18);
+      box-shadow:0 24px 90px rgba(0,0,0,.48);
+      display:grid;
+      grid-template-rows:auto 1fr;
+    }
+
+    .game-head{
+      padding:18px 20px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:flex-start;
+    }
+
+    .game-head-left{ display:flex; gap:14px; align-items:center; }
+
+    .game-icon{
+      width:64px;
+      height:64px;
+      border-radius:20px;
+      display:grid;
+      place-items:center;
+      font-size:34px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      flex:0 0 auto;
+    }
+
+    .game-title{
+      margin:0;
+      font-size:26px;
+      font-weight:900;
+      letter-spacing:-.03em;
+    }
+
+    .game-desc{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.45;
+    }
+
+    .game-layout{
+      display:grid;
+      grid-template-columns:1.6fr .9fr;
+      min-height:0;
+    }
+
+    .iframe-wrap{
+      min-height:0;
+      border-right:1px solid rgba(255,255,255,.08);
+      background:#050b17;
+    }
+
+    .game-frame{
+      width:100%;
+      height:100%;
+      min-height:640px;
+      border:0;
+      background:#000;
+    }
+
+    .side-panel{
+      min-height:0;
+      overflow:auto;
+      padding:18px;
+      display:grid;
+      gap:16px;
+      background:linear-gradient(180deg, rgba(10,20,45,.96), rgba(7,14,32,.98));
+    }
+
+    .panel-box{
+      border-radius:20px;
+      padding:16px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .panel-box-title{
+      margin:0 0 10px;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      color:#d9e3ff;
+      font-weight:900;
+    }
+
+    .panel-badges{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .panel-badge{
+      padding:8px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      font-size:12px;
+      font-weight:800;
+    }
+
+    .game-actions{ display:flex; gap:10px; flex-wrap:wrap; }
+
+    .action-btn{
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      border-radius:16px;
+      padding:14px 16px;
+      cursor:pointer;
+      font-weight:900;
+      flex:1 1 140px;
+    }
+
+    .action-btn.win{
+      background:rgba(49,223,160,.14);
+      border-color:rgba(49,223,160,.26);
+      color:#c2ffe5;
+    }
+
+    .action-btn.lose{
+      background:rgba(255,127,146,.14);
+      border-color:rgba(255,127,146,.26);
+      color:#ffd8df;
+    }
+
+    @media (max-width:1180px){
       .app{grid-template-columns:1fr}
+      .right-shell{min-height:auto}
     }
 
-    @media (max-width:920px){
+    @media (max-width:980px){
+      .config-grid{grid-template-columns:1fr 1fr}
+      .game-layout{grid-template-columns:1fr}
+      .iframe-wrap{border-right:0;border-bottom:1px solid rgba(255,255,255,.08)}
+      .game-frame{min-height:420px}
+    }
+
+    @media (max-width:820px){
       body{padding:8px}
-      .top-note{padding:10px 12px}
-      .hero,.config{padding-left:18px;padding-right:18px}
-      .turn-grid{grid-template-columns:1fr}
-      .progress-grid{grid-template-columns:1fr}
-      .tile{width:82px;height:82px}
-      .map-title h2{font-size:40px}
-      .panel-top{flex-direction:column;align-items:flex-start}
-      .panel-stage{min-height:260px}
-      .panel-actions{width:100%;display:grid;grid-template-columns:1fr 1fr 1fr}
-      .panel-btn{width:100%;text-align:center}
+      .left-shell{min-height:auto}
+      .topbar{padding:16px}
+      .brand h1{font-size:22px}
+      .config{padding:16px}
+      .config-grid{grid-template-columns:1fr}
+      .primary-btn{width:100%}
+      .info-bar{flex-direction:column;align-items:flex-start}
+      .board-wrap{min-height:auto}
+      .board{display:none}
+      .board-title{position:relative;inset:auto;padding:28px 18px 12px}
+      .board-title h2{font-size:38px}
+      .board-title p{font-size:11px;letter-spacing:.18em}
+      .mobile-scroller{display:flex}
+      .stats-grid{grid-template-columns:1fr 1fr}
+      .dice-box{grid-template-columns:1fr 1fr}
     }
 
-    @media (max-width:640px){
-      .hero-title{font-size:24px}
-      .modes,.rules,.actions{gap:8px}
-      .mode{min-width:calc(50% - 4px);min-height:76px;padding:12px}
-      .rule{padding:10px 12px;font-size:13px}
-      .btn{padding:12px 14px}
-      .panel-wrap{padding:14px}
-      .tile{width:72px;height:72px}
-      .map{padding:18px 12px 20px}
-      .sidebar-btn{padding:12px}
-      .small-note{font-size:11px}
+    @media (max-width:560px){
+      .toolbar{width:100%;justify-content:space-between}
+      .selected-name,.game-title{font-size:21px}
+      .stats-grid,.dice-box{grid-template-columns:1fr}
+      .card,.side-panel,.game-head{padding:16px}
+      .game-head-left{align-items:flex-start}
+      .game-frame{min-height:320px}
     }
   </style>
 </head>
 <body>
-  <div class="top-note">
-    <strong>Identify bugs and improve the game without changing the structure.</strong>
-    <span>Optimize for mobile.</span>
-  </div>
   <div class="app">
     <section class="shell left-shell">
-      <div class="hero">
-        <div class="hero-row">
-          <div class="hero-icon" id="selectedIcon">🏀</div>
+      <div class="topbar">
+        <div class="brand">
+          <div class="brand-badge">🎮</div>
           <div>
-            <h1 class="hero-title" id="selectedTitle">Basket - Arcade Hub</h1>
-            <p class="hero-subtitle" id="selectedSubtitle">Start safely loads the real game or a local iframe fallback.</p>
+            <h1 id="brandTitle">Arcade World</h1>
+            <p id="brandSubtitle">Roll the dice, move on the board, then open the current game.</p>
           </div>
         </div>
-        <div class="badges" id="badges"></div>
+
+        <div class="toolbar">
+          <div class="segmented">
+            <button type="button" class="active" id="langRoBtn">RO</button>
+            <button type="button" id="langEnBtn">EN</button>
+          </div>
+          <button type="button" class="ghost-btn" id="resetBtn">Reset</button>
+        </div>
       </div>
 
       <div class="config">
-        <div>
-          <div class="label">Choose mode</div>
-          <div class="modes" id="modes"></div>
-        </div>
-
-        <div>
-          <div class="label">Choose rule set</div>
-          <div class="rules" id="rules"></div>
-        </div>
-
-        <div class="actions">
-          <button class="btn primary" type="button" id="startBtn">Start game</button>
-          <button class="btn secondary" type="button" id="previewBtn">Preview rewards</button>
-          <button class="btn secondary" type="button" id="rulesBtn">Rules</button>
-        </div>
-
-        <div class="flow">
+        <div class="config-grid">
           <div>
-            <strong>Flow:</strong>
-            <span id="flowText">Play first. Bonus questions appear only after you finish the run.</span>
+            <p class="group-label" id="modeLabel">Alege modul</p>
+            <div class="chip-row" id="modeRow"></div>
           </div>
-          <div class="flow-note" id="flowNote">Questions never block gameplay</div>
+
+          <div>
+            <p class="group-label" id="ruleLabel">Alege regula</p>
+            <div class="chip-row" id="ruleRow"></div>
+          </div>
+
+          <div>
+            <p class="group-label" id="turnCountLabel">Număr de ture</p>
+            <select class="turn-select" id="turnCountSelect">
+              <option value="5">5</option>
+              <option value="10" selected>10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+            </select>
+          </div>
+
+          <div>
+            <button type="button" class="primary-btn" id="playBtn">Aruncă zarul</button>
+          </div>
+        </div>
+
+        <div class="info-bar">
+          <div>
+            <strong id="flowTitle">Flow:</strong>
+            <span id="flowText">Arunci zarul, se deschide jocul căsuței, apoi răspunzi la întrebare dacă există.</span>
+          </div>
+          <div class="info-note" id="flowNote">Play first, answer after</div>
         </div>
       </div>
 
-      <div class="panel-wrap">
-        <div class="panel">
-          <div class="panel-top">
-            <div>
-              <div class="panel-kicker">Live Game Panel</div>
-              <div class="panel-title" id="panelTitle">Select a tile and press Start</div>
-            </div>
-            <div class="panel-actions">
-              <button class="panel-btn primary" type="button" id="reloadBtn">Reload</button>
-              <button class="panel-btn" type="button" id="openTabBtn">Open tab</button>
-              <button class="panel-btn" type="button" id="closeBtn">Close</button>
-            </div>
-          </div>
-
-          <div class="panel-stage">
-            <iframe id="gameFrame" class="game-frame" title="Arcade game panel" allowfullscreen allow="autoplay; fullscreen"></iframe>
-
-            <div class="panel-placeholder" id="panelPlaceholder">
-              <div class="panel-placeholder-inner">
-                <h3>Reliable Start flow</h3>
-                <p>
-                  If a link is set in <strong>EMBEDS</strong>, the real game loads.
-                  If not, a local iframe fallback loads automatically so Start is always testable.
-                </p>
-              </div>
-            </div>
-
-            <div class="panel-overlay" id="panelOverlay">
-              <div class="panel-overlay-inner">
-                <h3 id="overlayTitle">Loading game...</h3>
-                <p id="overlayText">Preparing the iframe and current session.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="panel-bottom">
-            <span class="pill" id="panelState">idle</span>
-            <span id="panelHint">Press Start. If no real embed exists, the local fallback is shown.</span>
-          </div>
-
-          <div class="manual-controls">
-            <button class="manual-btn win" type="button" id="finishWinBtn">✅ Victory</button>
-            <button class="manual-btn lose" type="button" id="finishLoseBtn">❌ Defeat</button>
-            <button class="manual-btn neutral" type="button" id="finishCloseBtn">🛑 Close without reward</button>
+      <div class="board-wrap">
+        <div class="board-title">
+          <div class="board-title-inner">
+            <h2 id="centerTitle">ARCADE<br>WORLD</h2>
+            <p id="centerSubtitle">Roll and advance</p>
           </div>
         </div>
-      </div>
 
-      <div class="map">
-        <div class="map-glow"></div>
-        <div class="map-outline"></div>
-        <div class="map-title">
-          <h2>ARCADE<br>WORLD</h2>
-          <p>Select a tile and launch the game</p>
-        </div>
-        <div class="tiles" id="tiles"></div>
+        <div class="board" id="board"></div>
+        <div class="mobile-scroller" id="mobileScroller"></div>
       </div>
     </section>
 
     <aside class="shell right-shell">
       <div class="card">
-        <div class="card-title">Turn System</div>
-        <div class="turn-grid">
-          <div class="dice" id="diceValue">4</div>
-          <div class="stack">
-            <div class="mini-stat">
-              <div class="mini-label">Current turn</div>
-              <div class="mini-value" id="turnValue">2</div>
-            </div>
-            <div class="mini-stat">
-              <div class="mini-label">Last roll</div>
-              <div class="mini-value" id="lastRollValue">4</div>
-            </div>
+        <p class="card-title" id="turnCardTitle">Turn System</p>
+
+        <div class="dice-box">
+          <div class="dice-card">
+            <div class="dice-label" id="turnLabel">Turn</div>
+            <div class="dice-value" id="turnValue">0</div>
+          </div>
+          <div class="dice-card">
+            <div class="dice-label" id="diceLabel">Dice</div>
+            <div class="dice-value" id="diceValue">-</div>
+          </div>
+          <div class="dice-card">
+            <div class="dice-label" id="turnsLeftLabel">Left</div>
+            <div class="dice-value" id="turnsLeftValue">10</div>
           </div>
         </div>
 
-        <button class="sidebar-btn primary" type="button" id="rollBtn">🎲 Roll dice</button>
-        <button class="sidebar-btn secondary" type="button" id="bonusBtn">✨ Bonus turn (1)</button>
-
-        <div class="turn-result lose" id="turnResult">Defeat</div>
+        <div class="small-note" id="turnNote">
+          After the roll, the landed square opens its linked game.
+        </div>
       </div>
 
       <div class="card">
-        <div class="card-title">Global progress</div>
+        <p class="card-title" id="selectedCardTitle">Current Tile</p>
 
-        <div class="progress-grid">
-          <div class="progress-box">
-            <div class="progress-k">Coins</div>
-            <div class="progress-v" id="coinsValue">18</div>
+        <div class="selected-head">
+          <div class="selected-icon" id="selectedIcon">🏁</div>
+          <div>
+            <h2 class="selected-name" id="selectedName">Start</h2>
+            <p class="selected-sub" id="selectedDesc">Main hub tile.</p>
           </div>
-          <div class="progress-box">
-            <div class="progress-k">XP</div>
-            <div class="progress-v" id="xpValue">12</div>
+        </div>
+
+        <div class="mini-badges" id="selectedBadges"></div>
+
+        <div class="small-note" id="selectedNote">
+          The current tile is where the player marker stands.
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="card-title" id="progressCardTitle">Global Progress</p>
+
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="stat-label" id="coinsLabel">Coins</div>
+            <div class="stat-value" id="coinsValue">0</div>
           </div>
-          <div class="progress-box">
-            <div class="progress-k">Level</div>
-            <div class="progress-v" id="levelValue">1</div>
+          <div class="stat-box">
+            <div class="stat-label" id="xpStatLabel">XP</div>
+            <div class="stat-value" id="xpValue">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label" id="levelLabel">Level</div>
+            <div class="stat-value" id="levelValue">1</div>
           </div>
         </div>
 
         <div class="xp-head">
-          <span>Progress to next level</span>
-          <span id="xpLabel">12 / 100 XP</span>
+          <span id="xpHeadLabel">Progress to next level</span>
+          <span id="xpHeadValue">0 / 100 XP</span>
         </div>
         <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
+      </div>
 
-        <div class="reward-box">
-          <h3>Reward preview</h3>
-          <div class="reward-list" id="rewardList"></div>
-          <div class="small-note">
-            If a tile includes a bonus question, it appears after you mark victory or defeat.
-          </div>
+      <div class="card">
+        <p class="card-title" id="rewardCardTitle">Reward Preview</p>
+        <div class="reward-list" id="rewardList"></div>
+        <div class="small-note" id="rewardNote">
+          Rewards apply after the player finishes the opened game.
         </div>
+      </div>
+
+      <div class="card">
+        <p class="card-title">Achievements</p>
+        <ul class="achievement-list">
+          <li class="achievement-item"><strong>🏆 Prima victorie</strong>Câștigă primul joc.</li>
+          <li class="achievement-item"><strong>💰 Quarter K</strong>Strânge 250 coins.</li>
+          <li class="achievement-item"><strong>⭐ Level 5</strong>Ajungi la nivelul 5.</li>
+          <li class="achievement-item"><strong>🕹️ Full Runner</strong>Termină primul full game run.</li>
+          <li class="achievement-item"><strong>🌙 Daily Hunter</strong>Revendică daily bonus de 3 ori.</li>
+          <li class="achievement-item"><strong>🎖️ Collector</strong>Deblochează 4 badge-uri.</li>
+        </ul>
       </div>
     </aside>
   </div>
 
   <script>
     (function () {
-      var state = {
-        selectedTileId: "start",
-        selectedMode: "solo",
-        selectedRule: "classic",
-        turn: 2,
-        lastRoll: 4,
-        bonusTurns: 1,
-        resultText: "Defeat",
-        resultType: "lose",
-        progress: {
-          coins: 18,
-          xp: 12,
-          level: 1,
-          xpMax: 100
+      const dict = {
+        ro: {
+          brandTitle: "Arcade World",
+          brandSubtitle: "Aruncă zarul, mută-te pe hartă, apoi se deschide jocul căsuței curente.",
+          reset: "Reset",
+          modeLabel: "Alege modul",
+          ruleLabel: "Alege regula",
+          turnCountLabel: "Număr de ture",
+          play: "Aruncă zarul",
+          flowTitle: "Flow:",
+          flowText: "Arunci zarul, se deschide jocul căsuței, apoi răspunzi la întrebare dacă există.",
+          flowNote: "Joacă întâi, răspunde după",
+          centerTitle: "ARCADE\\nWORLD",
+          centerSubtitle: "Aruncă și avansează",
+          turnCardTitle: "Sistem de ture",
+          turnLabel: "Tura",
+          diceLabel: "Zar",
+          turnsLeftLabel: "Rămase",
+          turnNote: "După zar, se deschide jocul linkuit al căsuței pe care ai aterizat.",
+          selectedCardTitle: "Tile curent",
+          selectedNote: "Tile-ul curent este cel pe care se află markerul jucătorului.",
+          progressCardTitle: "Progres global",
+          coins: "Coins",
+          xp: "XP",
+          level: "Level",
+          xpHeadLabel: "Progress spre level următor",
+          rewardCardTitle: "Preview rewards",
+          rewardNote: "Reward-urile se aplică după ce jucătorul termină jocul deschis.",
+          modes: { solo: "Solo", ai: "Vs AI", coop: "2 Players" },
+          modeDescs: {
+            solo: "Joci instant, focus pe scor și combo.",
+            ai: "Meci rapid contra AI.",
+            coop: "Hotseat local pentru duel."
+          },
+          rules: {
+            classic: "Classic", blitz: "Blitz", chaos: "Chaos", moving: "Moving",
+            timed: "Timed", fog: "Fog", instant: "Instant", survival: "Survival",
+            mix: "Mix", ranked: "Ranked"
+          },
+          noTurnsLeft: "Nu mai ai ture rămase. Resetează sau schimbă numărul de ture."
         },
-        session: {
-          status: "idle",
-          embedUrl: "",
-          activeGameKey: null
+        en: {
+          brandTitle: "Arcade World",
+          brandSubtitle: "Roll the dice, move on the board, then the current square game opens.",
+          reset: "Reset",
+          modeLabel: "Choose mode",
+          ruleLabel: "Choose rule",
+          turnCountLabel: "Number of turns",
+          play: "Roll Dice",
+          flowTitle: "Flow:",
+          flowText: "Roll the dice, open the square game, then answer the bonus only after playing.",
+          flowNote: "Play first, answer after",
+          centerTitle: "ARCADE\\nWORLD",
+          centerSubtitle: "Roll and advance",
+          turnCardTitle: "Turn System",
+          turnLabel: "Turn",
+          diceLabel: "Dice",
+          turnsLeftLabel: "Left",
+          turnNote: "After the roll, the linked game of the landed square opens.",
+          selectedCardTitle: "Current Tile",
+          selectedNote: "The current tile is where the player marker stands.",
+          progressCardTitle: "Global Progress",
+          coins: "Coins",
+          xp: "XP",
+          level: "Level",
+          xpHeadLabel: "Progress to next level",
+          rewardCardTitle: "Reward Preview",
+          rewardNote: "Rewards apply after the player finishes the opened game.",
+          modes: { solo: "Solo", ai: "Vs AI", coop: "2 Players" },
+          modeDescs: {
+            solo: "Instant play focused on score and combo.",
+            ai: "Quick match against AI.",
+            coop: "Local hotseat duel."
+          },
+          rules: {
+            classic: "Classic", blitz: "Blitz", chaos: "Chaos", moving: "Moving",
+            timed: "Timed", fog: "Fog", instant: "Instant", survival: "Survival",
+            mix: "Mix", ranked: "Ranked"
+          },
+          noTurnsLeft: "No turns left. Reset or change the number of turns."
         }
       };
 
-      var modes = [
-        { id: "solo", title: "Solo", desc: "Jump in instantly and focus on score and combos.", cta: "Play Solo", locked: false },
-        { id: "ai", title: "Vs AI", desc: "Meci rapid contra AI.", cta: "Play vs AI", locked: false },
-        { id: "hotseat", title: "2 Players", desc: "Hotseat local pentru duel.", cta: "Play 2 Players", locked: false },
-        { id: "quiz", title: "Quiz Run", desc: "Questions appear after each match.", cta: "Quiz Run", locked: true, reason: "Locked" }
-      ];
-
-      var tiles = [
-        { id:"start", x:18, y:18, icon:"🏁", name:"Start", subtitle:"Start point for each arcade run.", gameKey:"bonus_tile", rewardBase:0, questionPolicy:"disabled", rules:["instant"], badges:["checkpoint","bonus"], rewards:[{label:"Start boost", value:"+1 turn protection"}] },
-        { id:"basket", x:120, y:18, icon:"🏀", name:"Basket", subtitle:"Basket arena classic.", gameKey:"basket", rewardBase:120, questionPolicy:"bonus_after_match", rules:["classic","blitz","chaos","moving"], badges:["sports","timing"], rewards:[{label:"Base reward", value:"+120"},{label:"Perfect shot", value:"+25 XP"}] },
-        { id:"maze", x:222, y:18, icon:"🗺️", name:"Labirint", subtitle:"Navigate traps and exits.", gameKey:"maze", rewardBase:95, questionPolicy:"between_rounds", rules:["classic","timed","fog"], badges:["logic","explore"], rewards:[{label:"Base reward", value:"+95"},{label:"Chest bonus", value:"+coins"}] },
-        { id:"bonus3", x:324, y:18, icon:"⭐", name:"Bonus+3", subtitle:"Instant bonus points tile.", gameKey:"bonus_tile", rewardBase:0, questionPolicy:"disabled", rules:["instant"], badges:["bonus"], rewards:[{label:"Stars", value:"+3"}] },
-        { id:"bomber", x:426, y:18, icon:"💣", name:"Bomberman", subtitle:"Timing, bombs and arcade risk.", gameKey:"bomberman", rewardBase:130, questionPolicy:"bonus_after_match", rules:["classic","chaos"], badges:["action","arcade"], rewards:[{label:"Base reward", value:"+130"},{label:"Streak bonus", value:"+30 XP"}] },
-        { id:"void", x:528, y:18, icon:"🚀", name:"Void", subtitle:"Fast lane switching runner.", gameKey:"void_runner", rewardBase:110, questionPolicy:"between_rounds", rules:["survival","blitz"], badges:["speed","runner"], rewards:[{label:"Base reward", value:"+110"},{label:"Combo", value:"+coins"}] },
-        { id:"fusion", x:630, y:18, icon:"🎭", name:"Fusion", subtitle:"Arcade fusion challenge.", gameKey:"fusion", rewardBase:115, questionPolicy:"bonus_after_match", rules:["classic","combo"], badges:["fusion","arcade"], rewards:[{label:"Base reward", value:"+115"}] },
-        { id:"capcana1", x:630, y:120, icon:"💀", name:"Capcană", subtitle:"Risk tile with negative score.", gameKey:"bonus_tile", rewardBase:-20, questionPolicy:"disabled", rules:["instant"], badges:["trap"], rewards:[{label:"Penalty", value:"-2 puncte"}] },
-        { id:"hockey", x:630, y:222, icon:"🏒", name:"Hockey", subtitle:"Fast reflexes and angles.", gameKey:"hockey", rewardBase:105, questionPolicy:"bonus_after_match", rules:["classic","blitz"], badges:["sports"], rewards:[{label:"Base reward", value:"+105"}] },
-        { id:"tictac", x:630, y:324, icon:"✖️", name:"TicTacToe", subtitle:"Quick tactical puzzle.", gameKey:"maze", rewardBase:90, questionPolicy:"between_rounds", rules:["classic"], badges:["puzzle"], rewards:[{label:"Base reward", value:"+90"}] },
-        { id:"bounce", x:630, y:426, icon:"🔵", name:"Bounce", subtitle:"Bounce timing game.", gameKey:"void_runner", rewardBase:100, questionPolicy:"between_rounds", rules:["classic","hard"], badges:["speed"], rewards:[{label:"Base reward", value:"+100"}] },
-        { id:"bonus4", x:630, y:528, icon:"⭐", name:"Bonus+4", subtitle:"Large bonus tile.", gameKey:"bonus_tile", rewardBase:0, questionPolicy:"disabled", rules:["instant"], badges:["bonus"], rewards:[{label:"Stars", value:"+4"}] },
-        { id:"memory", x:630, y:630, icon:"🃏", name:"Memory", subtitle:"Particle memory mode.", gameKey:"maze", rewardBase:102, questionPolicy:"between_rounds", rules:["medium","hard"], badges:["memory"], rewards:[{label:"Base reward", value:"+102"}] },
-        { id:"breakout", x:528, y:630, icon:"🧱", name:"Breakout", subtitle:"Break bricks and combos.", gameKey:"bomberman", rewardBase:108, questionPolicy:"bonus_after_match", rules:["classic","colors"], badges:["arcade"], rewards:[{label:"Base reward", value:"+108"}] },
-        { id:"capcana2", x:426, y:630, icon:"💀", name:"Capcană", subtitle:"Trap with score penalty.", gameKey:"bonus_tile", rewardBase:-30, questionPolicy:"disabled", rules:["instant"], badges:["trap"], rewards:[{label:"Penalty", value:"-3 puncte"}] },
-        { id:"basketplus", x:324, y:630, icon:"🏀", name:"Basket+", subtitle:"Harder basket variation.", gameKey:"basket", rewardBase:135, questionPolicy:"bonus_after_match", rules:["blitz","moving"], badges:["sports","pro"], rewards:[{label:"Base reward", value:"+135"}] },
-        { id:"pvai", x:222, y:630, icon:"⚔️", name:"PvAI", subtitle:"Boss duel against AI.", gameKey:"hockey", rewardBase:140, questionPolicy:"bonus_after_match", rules:["duel"], badges:["boss"], rewards:[{label:"Base reward", value:"+140"}] },
-        { id:"bonus2", x:120, y:630, icon:"⭐", name:"Bonus+2", subtitle:"Small bonus tile.", gameKey:"bonus_tile", rewardBase:0, questionPolicy:"disabled", rules:["instant"], badges:["bonus"], rewards:[{label:"Stars", value:"+2"}] },
-        { id:"shooter2", x:18, y:630, icon:"🚀", name:"Shooter2", subtitle:"Advanced void shooter.", gameKey:"void_runner", rewardBase:112, questionPolicy:"between_rounds", rules:["hard","survival"], badges:["runner"], rewards:[{label:"Base reward", value:"+112"}] },
-        { id:"bomba", x:18, y:528, icon:"💣", name:"Bomba!", subtitle:"Hardcore bomber tile.", gameKey:"bomberman", rewardBase:128, questionPolicy:"bonus_after_match", rules:["hardcore"], badges:["action"], rewards:[{label:"Base reward", value:"+128"}] },
-        { id:"mempro", x:18, y:426, icon:"🃏", name:"Mem.Pro", subtitle:"Hard memory challenge.", gameKey:"maze", rewardBase:118, questionPolicy:"between_rounds", rules:["hard"], badges:["memory","pro"], rewards:[{label:"Base reward", value:"+118"}] },
-        { id:"hockeyplus", x:18, y:324, icon:"🏒", name:"Hockey+", subtitle:"Combo hockey version.", gameKey:"hockey", rewardBase:122, questionPolicy:"bonus_after_match", rules:["combo"], badges:["sports","combo"], rewards:[{label:"Base reward", value:"+122"}] },
-        { id:"breakoutplus", x:18, y:222, icon:"🧱", name:"Breakout+", subtitle:"Color breakout variant.", gameKey:"bomberman", rewardBase:120, questionPolicy:"bonus_after_match", rules:["colors","hard"], badges:["arcade","combo"], rewards:[{label:"Base reward", value:"+120"}] },
-        { id:"fusionplus", x:18, y:120, icon:"🎭", name:"Fusion+", subtitle:"Collapsed fusion challenge.", gameKey:"fusion", rewardBase:126, questionPolicy:"bonus_after_match", rules:["combo","hard"], badges:["fusion","pro"], rewards:[{label:"Base reward", value:"+126"}] }
-      ];
-
-      var EMBEDS = {
-        basket: "",
-        maze: "",
-        bomberman: "",
-        void_runner: "",
-        hockey: ""
+      const state = {
+        lang: "ro",
+        selectedTileId: 0,
+        playerPosition: 0,
+        selectedMode: "solo",
+        selectedRule: "instant",
+        turnIndex: 0,
+        lastDice: "-",
+        totalTurns: 10,
+        turnsLeft: 10,
+        progress: { coins: 0, xp: 0, level: 1, xpMax: 100 }
       };
 
-      var els = {
-        selectedIcon: document.getElementById("selectedIcon"),
-        selectedTitle: document.getElementById("selectedTitle"),
-        selectedSubtitle: document.getElementById("selectedSubtitle"),
-        badges: document.getElementById("badges"),
-        modes: document.getElementById("modes"),
-        rules: document.getElementById("rules"),
+      const modes = ["solo", "ai", "coop"];
+      const tiles = [
+        { id:0, x:18, y:16, icon:"🏁", label:{ro:"Start", en:"Start"}, desc:{ro:"Hub principal al progresului.", en:"Main hub tile."}, rules:["instant"] },
+        { id:1, x:116, y:16, icon:"🏀", label:{ro:"Basket", en:"Basket"}, desc:{ro:"Basket arcade cu rewards.", en:"Arcade basketball."}, rules:["classic","blitz"] },
+        { id:2, x:214, y:16, icon:"🗺️", label:{ro:"Labirint", en:"Maze"}, desc:{ro:"Navighezi printre trasee.", en:"Navigate the maze."}, rules:["classic","timed"] },
+        { id:3, x:312, y:16, icon:"⭐", label:{ro:"Bonus+3", en:"Bonus+3"}, desc:{ro:"Tile bonus.", en:"Bonus tile."}, rules:["instant"] },
+        { id:4, x:410, y:16, icon:"💣", label:{ro:"Bomberman", en:"Bomberman"}, desc:{ro:"Action rapid.", en:"Fast action."}, rules:["classic","chaos"] },
+        { id:5, x:508, y:16, icon:"🚀", label:{ro:"Runner", en:"Runner"}, desc:{ro:"Viteză mare.", en:"High speed."}, rules:["survival","blitz"] },
+        { id:6, x:606, y:16, icon:"🎭", label:{ro:"Fusion", en:"Fusion"}, desc:{ro:"Provocări hibride.", en:"Hybrid challenges."}, rules:["mix","chaos"] },
+        { id:7, x:606, y:116, icon:"🏒", label:{ro:"Hockey", en:"Hockey"}, desc:{ro:"Reflexe rapide.", en:"Quick reflexes."}, rules:["classic","blitz"] },
+        { id:8, x:606, y:216, icon:"❌", label:{ro:"TicTacToe", en:"TicTacToe"}, desc:{ro:"Logică simplă.", en:"Simple logic."}, rules:["classic"] },
+        { id:9, x:606, y:316, icon:"🔵", label:{ro:"Bounce", en:"Bounce"}, desc:{ro:"Timing arcade.", en:"Arcade timing."}, rules:["classic","chaos"] },
+        { id:10, x:606, y:416, icon:"🃏", label:{ro:"Memory", en:"Memory"}, desc:{ro:"Memorie vizuală.", en:"Visual memory."}, rules:["classic","timed"] },
+        { id:11, x:606, y:516, icon:"📦", label:{ro:"Breakout", en:"Breakout"}, desc:{ro:"Brick breaking.", en:"Brick breaking."}, rules:["classic","blitz"] },
+        { id:12, x:606, y:616, icon:"⚔️", label:{ro:"PvAI", en:"PvAI"}, desc:{ro:"Duel cu AI.", en:"Duel vs AI."}, rules:["classic","ranked"] },
+        { id:13, x:508, y:616, icon:"⭐", label:{ro:"Bonus+2", en:"Bonus+2"}, desc:{ro:"Boost mic.", en:"Small boost."}, rules:["instant"] },
+        { id:14, x:410, y:616, icon:"🚀", label:{ro:"Shooter", en:"Shooter"}, desc:{ro:"Shooter arcade.", en:"Arcade shooter."}, rules:["survival","classic"] },
+        { id:15, x:312, y:616, icon:"🎭", label:{ro:"Fusion+", en:"Fusion+"}, desc:{ro:"Etapă grea.", en:"Hard mode."}, rules:["mix","chaos"] },
+        { id:16, x:214, y:616, icon:"💀", label:{ro:"Capcană", en:"Trap"}, desc:{ro:"Penalizare.", en:"Penalty tile."}, rules:["classic"] },
+        { id:17, x:116, y:616, icon:"🏀", label:{ro:"Basket+", en:"Basket+"}, desc:{ro:"Basket avansat.", en:"Advanced basket."}, rules:["classic","moving"] },
+        { id:18, x:18, y:616, icon:"🗺️", label:{ro:"Maze+", en:"Maze+"}, desc:{ro:"Labirint dificil.", en:"Hard maze."}, rules:["classic","fog"] },
+        { id:19, x:18, y:516, icon:"💣", label:{ro:"Bombă", en:"Bomb"}, desc:{ro:"Risc special.", en:"Special hazard."}, rules:["instant"] },
+        { id:20, x:18, y:416, icon:"🏒", label:{ro:"Hockey+", en:"Hockey+"}, desc:{ro:"Hockey rapid.", en:"Fast hockey."}, rules:["blitz","chaos"] },
+        { id:21, x:18, y:316, icon:"📦", label:{ro:"Breakout+", en:"Breakout+"}, desc:{ro:"Mai dificil.", en:"More difficult."}, rules:["blitz","chaos"] },
+        { id:22, x:18, y:216, icon:"🃏", label:{ro:"Mem.Pro", en:"Mem.Pro"}, desc:{ro:"Memory Pro.", en:"Memory Pro."}, rules:["timed","classic"] },
+        { id:23, x:18, y:116, icon:"⭐", label:{ro:"Final Bonus", en:"Final Bonus"}, desc:{ro:"Ultimul boost.", en:"Final boost."}, rules:["instant"] }
+      ];
+
+      const refs = {
+        langRoBtn: document.getElementById("langRoBtn"),
+        langEnBtn: document.getElementById("langEnBtn"),
+        resetBtn: document.getElementById("resetBtn"),
+        brandTitle: document.getElementById("brandTitle"),
+        brandSubtitle: document.getElementById("brandSubtitle"),
+        modeLabel: document.getElementById("modeLabel"),
+        ruleLabel: document.getElementById("ruleLabel"),
+        turnCountLabel: document.getElementById("turnCountLabel"),
+        turnCountSelect: document.getElementById("turnCountSelect"),
+        modeRow: document.getElementById("modeRow"),
+        ruleRow: document.getElementById("ruleRow"),
+        playBtn: document.getElementById("playBtn"),
+        flowTitle: document.getElementById("flowTitle"),
         flowText: document.getElementById("flowText"),
         flowNote: document.getElementById("flowNote"),
-        startBtn: document.getElementById("startBtn"),
-        previewBtn: document.getElementById("previewBtn"),
-        rulesBtn: document.getElementById("rulesBtn"),
-        panelTitle: document.getElementById("panelTitle"),
-        panelState: document.getElementById("panelState"),
-        panelHint: document.getElementById("panelHint"),
-        reloadBtn: document.getElementById("reloadBtn"),
-        openTabBtn: document.getElementById("openTabBtn"),
-        closeBtn: document.getElementById("closeBtn"),
-        finishWinBtn: document.getElementById("finishWinBtn"),
-        finishLoseBtn: document.getElementById("finishLoseBtn"),
-        finishCloseBtn: document.getElementById("finishCloseBtn"),
-        panelPlaceholder: document.getElementById("panelPlaceholder"),
-        panelOverlay: document.getElementById("panelOverlay"),
-        overlayTitle: document.getElementById("overlayTitle"),
-        overlayText: document.getElementById("overlayText"),
-        gameFrame: document.getElementById("gameFrame"),
-        tiles: document.getElementById("tiles"),
-        diceValue: document.getElementById("diceValue"),
+        centerTitle: document.getElementById("centerTitle"),
+        centerSubtitle: document.getElementById("centerSubtitle"),
+        board: document.getElementById("board"),
+        mobileScroller: document.getElementById("mobileScroller"),
+        turnCardTitle: document.getElementById("turnCardTitle"),
+        turnLabel: document.getElementById("turnLabel"),
+        diceLabel: document.getElementById("diceLabel"),
+        turnsLeftLabel: document.getElementById("turnsLeftLabel"),
         turnValue: document.getElementById("turnValue"),
-        lastRollValue: document.getElementById("lastRollValue"),
-        bonusBtn: document.getElementById("bonusBtn"),
-        turnResult: document.getElementById("turnResult"),
+        diceValue: document.getElementById("diceValue"),
+        turnsLeftValue: document.getElementById("turnsLeftValue"),
+        turnNote: document.getElementById("turnNote"),
+        selectedCardTitle: document.getElementById("selectedCardTitle"),
+        selectedIcon: document.getElementById("selectedIcon"),
+        selectedName: document.getElementById("selectedName"),
+        selectedDesc: document.getElementById("selectedDesc"),
+        selectedBadges: document.getElementById("selectedBadges"),
+        selectedNote: document.getElementById("selectedNote"),
+        progressCardTitle: document.getElementById("progressCardTitle"),
+        coinsLabel: document.getElementById("coinsLabel"),
+        xpStatLabel: document.getElementById("xpStatLabel"),
+        levelLabel: document.getElementById("levelLabel"),
         coinsValue: document.getElementById("coinsValue"),
         xpValue: document.getElementById("xpValue"),
         levelValue: document.getElementById("levelValue"),
-        xpLabel: document.getElementById("xpLabel"),
+        xpHeadLabel: document.getElementById("xpHeadLabel"),
+        xpHeadValue: document.getElementById("xpHeadValue"),
         xpFill: document.getElementById("xpFill"),
+        rewardCardTitle: document.getElementById("rewardCardTitle"),
         rewardList: document.getElementById("rewardList"),
-        rollBtn: document.getElementById("rollBtn")
+        rewardNote: document.getElementById("rewardNote")
       };
 
-      function getTileById(id) {
-        for (var i = 0; i < tiles.length; i++) {
-          if (tiles[i].id === id) return tiles[i];
-        }
-        return tiles[0];
+      function tr(key){ return dict[state.lang][key]; }
+      function currentTile(){ return tiles[state.playerPosition] || tiles[0]; }
+
+      function renderLanguage(){
+        refs.langRoBtn.classList.toggle("active", state.lang === "ro");
+        refs.langEnBtn.classList.toggle("active", state.lang === "en");
+        refs.brandTitle.textContent = tr("brandTitle");
+        refs.brandSubtitle.textContent = tr("brandSubtitle");
+        refs.resetBtn.textContent = tr("reset");
+        refs.modeLabel.textContent = tr("modeLabel");
+        refs.ruleLabel.textContent = tr("ruleLabel");
+        refs.turnCountLabel.textContent = tr("turnCountLabel");
+        refs.playBtn.textContent = tr("play");
+        refs.flowTitle.textContent = tr("flowTitle");
+        refs.flowText.textContent = tr("flowText");
+        refs.flowNote.textContent = tr("flowNote");
+        refs.centerTitle.innerHTML = tr("centerTitle").replace("\\n","<br>");
+        refs.centerSubtitle.textContent = tr("centerSubtitle");
+        refs.turnCardTitle.textContent = tr("turnCardTitle");
+        refs.turnLabel.textContent = tr("turnLabel");
+        refs.diceLabel.textContent = tr("diceLabel");
+        refs.turnsLeftLabel.textContent = tr("turnsLeftLabel");
+        refs.turnNote.textContent = tr("turnNote");
+        refs.selectedCardTitle.textContent = tr("selectedCardTitle");
+        refs.selectedNote.textContent = tr("selectedNote");
+        refs.progressCardTitle.textContent = tr("progressCardTitle");
+        refs.coinsLabel.textContent = tr("coins");
+        refs.xpStatLabel.textContent = tr("xp");
+        refs.levelLabel.textContent = tr("level");
+        refs.xpHeadLabel.textContent = tr("xpHeadLabel");
+        refs.rewardCardTitle.textContent = tr("rewardCardTitle");
+        refs.rewardNote.textContent = tr("rewardNote");
       }
 
-      function getSelectedTile() {
-        return getTileById(state.selectedTileId);
+      function renderModes(){
+        refs.modeRow.innerHTML = "";
+        modes.forEach(function(mode){
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "chip" + (state.selectedMode === mode ? " active" : "");
+          btn.title = dict[state.lang].modeDescs[mode];
+          btn.textContent = dict[state.lang].modes[mode];
+          btn.addEventListener("click", function(){ state.selectedMode = mode; renderModes(); });
+          refs.modeRow.appendChild(btn);
+        });
       }
 
-      function capitalize(text) {
-        return String(text || "").charAt(0).toUpperCase() + String(text || "").slice(1).replace(/-/g, " ");
+      function renderRules(){
+        const tile = currentTile();
+        if (!tile.rules.includes(state.selectedRule)) state.selectedRule = tile.rules[0];
+        refs.ruleRow.innerHTML = "";
+        tile.rules.forEach(function(rule){
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "chip" + (state.selectedRule === rule ? " active" : "");
+          btn.textContent = dict[state.lang].rules[rule] || rule;
+          btn.addEventListener("click", function(){ state.selectedRule = rule; renderRules(); });
+          refs.ruleRow.appendChild(btn);
+        });
       }
 
-      function normalizeEmbed(url) {
-        if (!url) return "";
-        if (url.indexOf("/embed/") !== -1) return url;
-        if (url.indexOf("/pen/") !== -1) {
-          return url.replace("/pen/", "/embed/") + (url.indexOf("?") === -1 ? "?default-tab=result" : "");
-        }
-        return url;
+      function renderBoard(){
+        refs.board.innerHTML = "";
+        tiles.forEach(function(tile){
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "tile" + (tile.id === state.selectedTileId ? " active" : "") + (tile.id === state.playerPosition ? " player" : "");
+          btn.style.left = tile.x + "px";
+          btn.style.top = tile.y + "px";
+          btn.innerHTML =
+            '<div class="tile-index">' + tile.id + '</div>' +
+            '<div class="tile-icon">' + tile.icon + '</div>' +
+            '<div class="tile-name">' + tile.label[state.lang] + '</div>' +
+            '<div class="tile-dot"></div>' +
+            (tile.id === state.playerPosition ? '<div class="player-marker">' + (state.lang === "ro" ? "TU" : "YOU") + '</div>' : '');
+          btn.addEventListener("click", function(){ state.selectedTileId = tile.id; renderBoard(); renderMobileTiles(); });
+          refs.board.appendChild(btn);
+        });
       }
 
-      function getEmbedForTile(tile) {
-        return normalizeEmbed(EMBEDS[tile.gameKey] || "");
+      function renderMobileTiles(){
+        refs.mobileScroller.innerHTML = "";
+        tiles.forEach(function(tile){
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "mobile-tile" + (tile.id === state.selectedTileId ? " active" : "") + (tile.id === state.playerPosition ? " player" : "");
+          btn.innerHTML = '<div class="mi">' + tile.icon + '</div><div class="mn">' + tile.label[state.lang] + '</div>';
+          btn.addEventListener("click", function(){ state.selectedTileId = tile.id; renderBoard(); renderMobileTiles(); });
+          refs.mobileScroller.appendChild(btn);
+        });
       }
 
-      function setPanelState(label, hint) {
-        els.panelState.textContent = label;
-        els.panelHint.textContent = hint;
+      function renderCurrentTile(){
+        const tile = currentTile();
+        refs.selectedIcon.textContent = tile.icon;
+        refs.selectedName.textContent = tile.label[state.lang];
+        refs.selectedDesc.textContent = tile.desc[state.lang];
+        refs.selectedBadges.innerHTML = "";
+        const badge1 = document.createElement("div");
+        badge1.className = "mini-badge";
+        badge1.textContent = dict[state.lang].modes[state.selectedMode];
+        refs.selectedBadges.appendChild(badge1);
+
+        const badge2 = document.createElement("div");
+        badge2.className = "mini-badge";
+        badge2.textContent = dict[state.lang].rules[state.selectedRule] || state.selectedRule;
+        refs.selectedBadges.appendChild(badge2);
       }
 
-      function showOverlay(title, text) {
-        els.overlayTitle.textContent = title || "Loading game...";
-        els.overlayText.textContent = text || "Preparing iframe.";
-        els.panelOverlay.classList.add("show");
+      function renderRewards(){
+        refs.rewardList.innerHTML = "";
+        [
+          { label: state.lang === "ro" ? "Win" : "Win", value: "+12 XP / +8 coins" },
+          { label: state.lang === "ro" ? "Lose" : "Lose", value: "+3 XP" }
+        ].forEach(function(row){
+          const el = document.createElement("div");
+          el.className = "reward-item";
+          el.innerHTML = "<span>" + row.label + "</span><strong>" + row.value + "</strong>";
+          refs.rewardList.appendChild(el);
+        });
       }
 
-      function hideOverlay() {
-        els.panelOverlay.classList.remove("show");
+      function renderProgress(){
+        refs.turnValue.textContent = state.turnIndex;
+        refs.diceValue.textContent = state.lastDice;
+        refs.turnsLeftValue.textContent = state.turnsLeft;
+        refs.coinsValue.textContent = state.progress.coins;
+        refs.xpValue.textContent = state.progress.xp;
+        refs.levelValue.textContent = state.progress.level;
+        refs.xpHeadValue.textContent = state.progress.xp + " / " + state.progress.xpMax + " XP";
+        refs.xpFill.style.width = Math.min((state.progress.xp / state.progress.xpMax) * 100, 100) + "%";
+        refs.playBtn.disabled = state.turnsLeft <= 0;
       }
 
-      function renderBadges(tile) {
-        els.badges.innerHTML = "";
-        var classes = ["blue", "green", "gold"];
-        for (var i = 0; i < tile.badges.length; i++) {
-          var badge = document.createElement("div");
-          badge.className = "badge " + classes[i % classes.length];
-          badge.textContent = tile.badges[i];
-          els.badges.appendChild(badge);
-        }
-        if (tile.rewardBase) {
-          var base = document.createElement("div");
-          base.className = "badge blue";
-          base.textContent = "base reward: " + tile.rewardBase;
-          els.badges.appendChild(base);
-        }
-      }
+      function rollDice(){
+        if (state.turnsLeft <= 0) { alert(tr("noTurnsLeft")); return; }
+        const roll = Math.floor(Math.random() * 6) + 1;
+        state.lastDice = roll;
+        state.playerPosition = (state.playerPosition + roll) % tiles.length;
+        state.selectedTileId = state.playerPosition;
+        state.turnIndex += 1;
+        state.turnsLeft -= 1;
 
-      function renderHeader() {
-        var tile = getSelectedTile();
-        els.selectedIcon.textContent = tile.icon;
-        els.selectedTitle.textContent = tile.name + " - Arcade Hub";
-        els.selectedSubtitle.textContent = tile.subtitle;
-        renderBadges(tile);
-
-        els.flowText.textContent = tile.questionPolicy === "disabled"
-          ? "Tile enters gameplay directly with standard rewards."
-          : "Play first. Bonus questions appear only after you finish the run.";
-        els.flowNote.textContent = tile.questionPolicy === "disabled"
-          ? "No question on this tile"
-          : "Questions never block gameplay";
-
-        if (state.session.status !== "playing") {
-          var url = getEmbedForTile(tile);
-          if (url) {
-            setPanelState("ready", "Start will load the real game in the iframe.");
-          } else {
-            setPanelState("fallback", "No embed set. Start will load local fallback.");
-          }
-        }
-      }
-
-      function renderModes() {
-        els.modes.innerHTML = "";
-        for (var i = 0; i < modes.length; i++) {
-          (function(mode) {
-            var btn = document.createElement("button");
-            btn.type = "button";
-            btn.className = "mode" + (state.selectedMode === mode.id ? " active" : "") + (mode.locked ? " locked" : "");
-            btn.innerHTML =
-              '<div class="mode-title">' + mode.title + '</div>' +
-              '<div class="mode-desc">' + (mode.locked ? mode.reason : mode.desc) + '</div>';
-            btn.addEventListener("click", function() {
-              if (mode.locked) return;
-              state.selectedMode = mode.id;
-              renderModes();
-              renderCTA();
-            });
-            els.modes.appendChild(btn);
-          })(modes[i]);
-        }
-      }
-
-      function renderRules() {
-        var tile = getSelectedTile();
-        var rules = tile.rules || ["classic"];
-        if (rules.indexOf(state.selectedRule) === -1) state.selectedRule = rules[0];
-        els.rules.innerHTML = "";
-        for (var i = 0; i < rules.length; i++) {
-          (function(rule) {
-            var btn = document.createElement("button");
-            btn.type = "button";
-            btn.className = "rule" + (state.selectedRule === rule ? " active" : "");
-            btn.textContent = capitalize(rule);
-            btn.addEventListener("click", function() {
-              state.selectedRule = rule;
-              renderRules();
-            });
-            els.rules.appendChild(btn);
-          })(rules[i]);
-        }
-      }
-
-      function renderCTA() {
-        var currentMode = modes[0];
-        for (var i = 0; i < modes.length; i++) {
-          if (modes[i].id === state.selectedMode) currentMode = modes[i];
-        }
-        els.startBtn.textContent = currentMode.cta;
-      }
-
-      function renderTiles() {
-        els.tiles.innerHTML = "";
-        for (var i = 0; i < tiles.length; i++) {
-          (function(tile, index) {
-            var btn = document.createElement("button");
-            btn.type = "button";
-            var cls = "tile";
-            if (tile.id === state.selectedTileId) cls += " active";
-            if (tile.badges.indexOf("bonus") !== -1) cls += " bonus";
-            btn.className = cls;
-            btn.style.left = tile.x + "px";
-            btn.style.top = tile.y + "px";
-            btn.innerHTML =
-              '<div class="tile-index">' + index + '</div>' +
-              '<div class="tile-icon">' + tile.icon + '</div>' +
-              '<div class="tile-name">' + tile.name + '</div>' +
-              '<div class="tile-dot"></div>';
-            btn.addEventListener("click", function() {
-              state.selectedTileId = tile.id;
-              state.selectedRule = tile.rules && tile.rules.length ? tile.rules[0] : "classic";
-              render();
-            });
-            els.tiles.appendChild(btn);
-          })(tiles[i], i);
-        }
-      }
-
-      function renderRewards() {
-        var tile = getSelectedTile();
-        els.rewardList.innerHTML = "";
-        for (var i = 0; i < tile.rewards.length; i++) {
-          var row = document.createElement("div");
-          row.className = "reward-item";
-          row.innerHTML = "<span>" + tile.rewards[i].label + "</span><strong>" + tile.rewards[i].value + "</strong>";
-          els.rewardList.appendChild(row);
-        }
-      }
-
-      function renderProgress() {
-        els.coinsValue.textContent = state.progress.coins;
-        els.xpValue.textContent = state.progress.xp;
-        els.levelValue.textContent = state.progress.level;
-        els.xpLabel.textContent = state.progress.xp + " / " + state.progress.xpMax + " XP";
-        els.xpFill.style.width = Math.min((state.progress.xp / state.progress.xpMax) * 100, 100) + "%";
-      }
-
-      function renderTurn() {
-        els.diceValue.textContent = state.lastRoll;
-        els.turnValue.textContent = state.turn;
-        els.lastRollValue.textContent = state.lastRoll;
-        els.bonusBtn.textContent = "✨ Bonus turn (" + state.bonusTurns + ")";
-        els.turnResult.textContent = state.resultText;
-        els.turnResult.className = "turn-result " + state.resultType;
-      }
-
-      function applyReward(reward) {
-        reward = reward || {};
-        state.progress.coins += Number(reward.coins || 0);
-        state.progress.xp += Number(reward.xp || 0);
-        state.bonusTurns += Number(reward.turns || 0);
-
+        state.progress.coins += Math.max(2, roll * 2);
+        state.progress.xp += roll * 5;
         while (state.progress.xp >= state.progress.xpMax) {
           state.progress.xp -= state.progress.xpMax;
           state.progress.level += 1;
         }
-
-        renderProgress();
-        renderTurn();
+        render();
       }
 
-      function buildReward(outcome) {
-        var tile = getSelectedTile();
-        var base = Number(tile.rewardBase || 0);
-
-        if (tile.gameKey === "bonus_tile") {
-          return outcome === "win" ? { turns: 2, xp: 15 } : {};
-        }
-
-        if (outcome === "win") {
-          return {
-            coins: Math.max(2, Math.round(base / 20) || 2),
-            xp: Math.max(8, Math.round(base / 10) || 8)
-          };
-        }
-
-        return {
-          xp: Math.max(2, Math.round(base / 28) || 2)
-        };
+      function resetState(){
+        state.selectedTileId = 0;
+        state.playerPosition = 0;
+        state.selectedMode = "solo";
+        state.selectedRule = "instant";
+        state.turnIndex = 0;
+        state.lastDice = "-";
+        state.totalTurns = Number(refs.turnCountSelect.value || 10);
+        state.turnsLeft = state.totalTurns;
+        state.progress = { coins: 0, xp: 0, level: 1, xpMax: 100 };
+        render();
       }
 
-      function buildFallbackHtml(tile) {
-        var safeTitle = tile.name.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        var safeMode = state.selectedMode.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        var safeRule = state.selectedRule.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>${safeTitle}</title>
-<style>
-  html,body{margin:0;height:100%;font-family:Inter,system-ui,sans-serif;background:#071120;color:#eef4ff}
-  .wrap{height:100%;display:grid;place-items:center;padding:24px;background:
-    radial-gradient(circle at top left, rgba(65,231,255,.12), transparent 28%),
-    radial-gradient(circle at top right, rgba(255,217,93,.1), transparent 22%),
-    linear-gradient(180deg,#071120 0%,#040915 100%)}
-  .card{
-    width:min(760px,100%);
-    border-radius:28px;
-    padding:28px;
-    background:rgba(12,24,50,.92);
-    border:1px solid rgba(120,160,255,.16);
-    box-shadow:0 20px 60px rgba(0,0,0,.35)
-  }
-  h1{margin:0 0 8px;font-size:34px;line-height:1.02}
-  p{margin:0;color:#a8bddf;line-height:1.5}
-  .meta{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 22px}
-  .pill{
-    padding:10px 14px;border-radius:999px;font-size:13px;font-weight:800;
-    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08)
-  }
-  .box{
-    margin-top:18px;padding:18px;border-radius:20px;
-    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)
-  }
-  .accent{color:#98fff5;font-weight:900}
-</style>
-</head>
-<body>
-  <div class="wrap">
-    <div class="card">
-      <h1>${safeTitle}</h1>
-      <p>This is the local fallback. Start works correctly, but you must set the real game link in EMBEDS.</p>
-      <div class="meta">
-        <div class="pill">Mode: ${safeMode}</div>
-        <div class="pill">Rule: ${safeRule}</div>
-        <div class="pill">Fallback local</div>
-      </div>
-      <div class="box">
-        <div class="accent">How to enable the real game</div>
-        <p style="margin-top:8px">In the main code, add the CodePen embed link for this gameKey in EMBEDS.</p>
-      </div>
-    </div>
-  </div>
-</body>
-</html>`;
-      }
-
-      function closePanel() {
-        state.session.status = "idle";
-        state.session.embedUrl = "";
-        state.session.activeGameKey = null;
-        els.gameFrame.classList.remove("visible");
-        els.gameFrame.src = "about:blank";
-        els.gameFrame.removeAttribute("srcdoc");
-        els.panelPlaceholder.style.display = "grid";
-        hideOverlay();
-        els.panelTitle.textContent = "Select a tile and press Start";
-        setPanelState("idle", "Panel closed. You can start again.");
-      }
-
-      function loadRealOrFallback() {
-        var tile = getSelectedTile();
-        var url = getEmbedForTile(tile);
-
-        state.session.status = "playing";
-        state.session.embedUrl = url;
-        state.session.activeGameKey = tile.gameKey;
-
-        els.panelPlaceholder.style.display = "none";
-        els.gameFrame.classList.add("visible");
-        els.panelTitle.textContent = tile.name + " • " + capitalize(state.selectedRule) + " • " + state.selectedMode.toUpperCase();
-
-        showOverlay("Loading " + tile.name, "Starting the current session.");
-
-        if (url) {
-          els.gameFrame.removeAttribute("srcdoc");
-          els.gameFrame.onload = function() {
-            hideOverlay();
-            setPanelState("playing", "Real game is running in the iframe.");
-          };
-          els.gameFrame.src = url;
-        } else {
-          els.gameFrame.onload = null;
-          els.gameFrame.src = "about:blank";
-          els.gameFrame.srcdoc = buildFallbackHtml(tile);
-          hideOverlay();
-          setPanelState("fallback", "Local fallback is running. Complete EMBEDS for the real game.");
-        }
-      }
-
-      function reloadCurrent() {
-        var tile = getSelectedTile();
-        if (state.session.status !== "playing" && state.session.status !== "finished") return;
-        showOverlay("Reload", "Reloading panel content.");
-        if (state.session.embedUrl) {
-          els.gameFrame.removeAttribute("srcdoc");
-          els.gameFrame.src = state.session.embedUrl;
-        } else {
-          els.gameFrame.src = "about:blank";
-          els.gameFrame.srcdoc = buildFallbackHtml(tile);
-          hideOverlay();
-        }
-      }
-
-      function openCurrentTab() {
-        var tile = getSelectedTile();
-        var url = state.session.embedUrl || getEmbedForTile(tile);
-        if (url) {
-          window.open(url, "_blank", "noopener");
-        } else {
-          alert("No real link exists in EMBEDS for this game.");
-        }
-      }
-
-      function finishSession(outcome) {
-        if (state.session.status !== "playing" && state.session.status !== "finished") return;
-
-        var tile = getSelectedTile();
-        var reward = buildReward(outcome);
-
-        state.session.status = "finished";
-        state.resultText = outcome === "win" ? "Victory" : "Defeat";
-        state.resultType = outcome === "win" ? "win" : "lose";
-        applyReward(reward);
-
-        setPanelState(
-          "finished",
-          outcome === "win"
-            ? "Session has been marked as victory."
-            : "Session has been marked as defeat."
-        );
-
-        if (tile.questionPolicy !== "disabled") {
-          setTimeout(function () {
-            var ok = window.confirm("Bonus question for " + tile.name + ":\n\nDid you answer correctly?");
-            var bonus = ok ? { xp: 15, coins: 3 } : { xp: 2 };
-            applyReward(bonus);
-          }, 80);
-        }
-
-        renderTurn();
-      }
-
-      function finishCloseOnly() {
-        closePanel();
-        state.resultText = "Session closed";
-        state.resultType = "lose";
-        renderTurn();
-      }
-
-      function previewRewards() {
-        var tile = getSelectedTile();
-        var lines = [];
-        for (var i = 0; i < tile.rewards.length; i++) {
-          lines.push(tile.rewards[i].label + ": " + tile.rewards[i].value);
-        }
-        alert("Reward preview - " + tile.name + "\n\n" + lines.join("\n"));
-      }
-
-      function showRules() {
-        var tile = getSelectedTile();
-        alert(
-          "Game: " + tile.name + "\n" +
-          "Rule set: " + capitalize(state.selectedRule) + "\n\n" +
-          "1. Start loads the real game or local fallback.\n" +
-          "2. Play inside the iframe.\n" +
-          "3. Marchezi sesiunea ca Victory sau Defeat.\n" +
-          "4. If a bonus question exists, it appears after finishing."
-        );
-      }
-
-      function rollDice() {
-        var roll = Math.floor(Math.random() * 6) + 1;
-        state.lastRoll = roll;
-        state.turn += 1;
-
-        var outcomes = [
-          { text: "Victory", type: "win" },
-          { text: "Defeat", type: "lose" },
-          { text: "Boss fight", type: "lose" },
-          { text: "Bonus tile", type: "win" }
-        ];
-        var out = outcomes[Math.floor(Math.random() * outcomes.length)];
-        state.resultText = out.text;
-        state.resultType = out.type;
-        if (out.type === "win") applyReward({ coins: roll, xp: 6 + roll });
-        renderTurn();
-      }
-
-      function useBonusTurn() {
-        if (state.bonusTurns <= 0) return;
-        state.bonusTurns -= 1;
-        state.resultText = "Bonus activ";
-        state.resultType = "win";
-        applyReward({ xp: 12 });
-        renderTurn();
-      }
-
-      function render() {
-        renderHeader();
+      function render(){
+        renderLanguage();
         renderModes();
         renderRules();
-        renderCTA();
-        renderTiles();
+        renderBoard();
+        renderMobileTiles();
+        renderCurrentTile();
         renderRewards();
         renderProgress();
-        renderTurn();
       }
 
-      els.startBtn.addEventListener("click", loadRealOrFallback);
-      els.previewBtn.addEventListener("click", previewRewards);
-      els.rulesBtn.addEventListener("click", showRules);
-      els.reloadBtn.addEventListener("click", reloadCurrent);
-      els.openTabBtn.addEventListener("click", openCurrentTab);
-      els.closeBtn.addEventListener("click", closePanel);
-      els.finishWinBtn.addEventListener("click", function () { finishSession("win"); });
-      els.finishLoseBtn.addEventListener("click", function () { finishSession("lose"); });
-      els.finishCloseBtn.addEventListener("click", finishCloseOnly);
-      els.rollBtn.addEventListener("click", rollDice);
-      els.bonusBtn.addEventListener("click", useBonusTurn);
+      refs.langRoBtn.addEventListener("click", function(){ state.lang = "ro"; render(); });
+      refs.langEnBtn.addEventListener("click", function(){ state.lang = "en"; render(); });
+      refs.turnCountSelect.addEventListener("change", function(){
+        state.totalTurns = Number(this.value || 10);
+        if (state.turnIndex === 0) state.turnsLeft = state.totalTurns;
+        renderProgress();
+      });
+      refs.resetBtn.addEventListener("click", resetState);
+      refs.playBtn.addEventListener("click", rollDice);
 
+      state.totalTurns = Number(refs.turnCountSelect.value || 10);
+      state.turnsLeft = state.totalTurns;
       render();
     })();
   </script>
