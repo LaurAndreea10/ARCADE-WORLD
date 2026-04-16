@@ -426,7 +426,7 @@
 
     .map{
       position:relative;
-      min-height:560px;
+      min-height:744px;
       overflow:hidden;
       background:
         radial-gradient(circle at center, rgba(48,100,190,.14), transparent 28%),
@@ -924,7 +924,7 @@
   <script>
     (function () {
       var state = {
-        selectedTileId: "basket",
+        selectedTileId: "start",
         selectedMode: "solo",
         selectedRule: "classic",
         turn: 2,
@@ -953,102 +953,30 @@
       ];
 
       var tiles = [
-        {
-          id: "basket",
-          x: 120, y: 18,
-          icon: "🏀",
-          name: "Basket",
-          subtitle: "Basket arcade with reliable Start and local fallback.",
-          gameKey: "basket",
-          rewardBase: 120,
-          questionPolicy: "bonus_after_match",
-          rules: ["classic", "blitz", "chaos", "moving"],
-          badges: ["sports", "timing", "reward:120"],
-          rewards: [
-            { label: "Base reward", value: "+120" },
-            { label: "Perfect shot", value: "+25 XP" },
-            { label: "Bonus question", value: "+coins / +XP" }
-          ]
-        },
-        {
-          id: "maze",
-          x: 228, y: 18,
-          icon: "🗺️",
-          name: "Labirint",
-          subtitle: "Navigate traps and exits.",
-          gameKey: "maze",
-          rewardBase: 95,
-          questionPolicy: "between_rounds",
-          rules: ["classic", "timed", "fog"],
-          badges: ["logic", "explore"],
-          rewards: [
-            { label: "Base reward", value: "+95" },
-            { label: "Chest bonus", value: "+coins" }
-          ]
-        },
-        {
-          id: "bomber",
-          x: 336, y: 18,
-          icon: "💣",
-          name: "Bomber",
-          subtitle: "Timing, bombs, and arcade risk.",
-          gameKey: "bomberman",
-          rewardBase: 130,
-          questionPolicy: "bonus_after_match",
-          rules: ["classic", "chaos"],
-          badges: ["action", "arcade"],
-          rewards: [
-            { label: "Base reward", value: "+130" },
-            { label: "Streak bonus", value: "+30 XP" }
-          ]
-        },
-        {
-          id: "void",
-          x: 444, y: 18,
-          icon: "🚀",
-          name: "Void",
-          subtitle: "Runner rapid cu lane switching.",
-          gameKey: "void_runner",
-          rewardBase: 110,
-          questionPolicy: "between_rounds",
-          rules: ["survival", "blitz"],
-          badges: ["speed", "runner"],
-          rewards: [
-            { label: "Base reward", value: "+110" },
-            { label: "Combo", value: "+coins" }
-          ]
-        },
-        {
-          id: "bonus",
-          x: 552, y: 18,
-          icon: "⭐",
-          name: "Bonus",
-          subtitle: "Bonus tile for extra progression.",
-          gameKey: "bonus_tile",
-          rewardBase: 0,
-          questionPolicy: "disabled",
-          rules: ["instant"],
-          badges: ["bonus"],
-          rewards: [
-            { label: "Bonus turn", value: "+2" },
-            { label: "XP", value: "+15" }
-          ]
-        },
-        {
-          id: "hockey",
-          x: 660, y: 18,
-          icon: "🏒",
-          name: "Hockey",
-          subtitle: "Fast reflexes and sharp angles.",
-          gameKey: "hockey",
-          rewardBase: 105,
-          questionPolicy: "bonus_after_match",
-          rules: ["classic", "blitz"],
-          badges: ["sports"],
-          rewards: [
-            { label: "Base reward", value: "+105" }
-          ]
-        }
+        { id:"start", x:18, y:18, icon:"🏁", name:"Start", subtitle:"Start point for each arcade run.", gameKey:"bonus_tile", rewardBase:0, questionPolicy:"disabled", rules:["instant"], badges:["checkpoint","bonus"], rewards:[{label:"Start boost", value:"+1 turn protection"}] },
+        { id:"basket", x:120, y:18, icon:"🏀", name:"Basket", subtitle:"Basket arena classic.", gameKey:"basket", rewardBase:120, questionPolicy:"bonus_after_match", rules:["classic","blitz","chaos","moving"], badges:["sports","timing"], rewards:[{label:"Base reward", value:"+120"},{label:"Perfect shot", value:"+25 XP"}] },
+        { id:"maze", x:222, y:18, icon:"🗺️", name:"Labirint", subtitle:"Navigate traps and exits.", gameKey:"maze", rewardBase:95, questionPolicy:"between_rounds", rules:["classic","timed","fog"], badges:["logic","explore"], rewards:[{label:"Base reward", value:"+95"},{label:"Chest bonus", value:"+coins"}] },
+        { id:"bonus3", x:324, y:18, icon:"⭐", name:"Bonus+3", subtitle:"Instant bonus points tile.", gameKey:"bonus_tile", rewardBase:0, questionPolicy:"disabled", rules:["instant"], badges:["bonus"], rewards:[{label:"Stars", value:"+3"}] },
+        { id:"bomber", x:426, y:18, icon:"💣", name:"Bomberman", subtitle:"Timing, bombs and arcade risk.", gameKey:"bomberman", rewardBase:130, questionPolicy:"bonus_after_match", rules:["classic","chaos"], badges:["action","arcade"], rewards:[{label:"Base reward", value:"+130"},{label:"Streak bonus", value:"+30 XP"}] },
+        { id:"void", x:528, y:18, icon:"🚀", name:"Void", subtitle:"Fast lane switching runner.", gameKey:"void_runner", rewardBase:110, questionPolicy:"between_rounds", rules:["survival","blitz"], badges:["speed","runner"], rewards:[{label:"Base reward", value:"+110"},{label:"Combo", value:"+coins"}] },
+        { id:"fusion", x:630, y:18, icon:"🎭", name:"Fusion", subtitle:"Arcade fusion challenge.", gameKey:"fusion", rewardBase:115, questionPolicy:"bonus_after_match", rules:["classic","combo"], badges:["fusion","arcade"], rewards:[{label:"Base reward", value:"+115"}] },
+        { id:"capcana1", x:630, y:120, icon:"💀", name:"Capcană", subtitle:"Risk tile with negative score.", gameKey:"bonus_tile", rewardBase:-20, questionPolicy:"disabled", rules:["instant"], badges:["trap"], rewards:[{label:"Penalty", value:"-2 puncte"}] },
+        { id:"hockey", x:630, y:222, icon:"🏒", name:"Hockey", subtitle:"Fast reflexes and angles.", gameKey:"hockey", rewardBase:105, questionPolicy:"bonus_after_match", rules:["classic","blitz"], badges:["sports"], rewards:[{label:"Base reward", value:"+105"}] },
+        { id:"tictac", x:630, y:324, icon:"✖️", name:"TicTacToe", subtitle:"Quick tactical puzzle.", gameKey:"maze", rewardBase:90, questionPolicy:"between_rounds", rules:["classic"], badges:["puzzle"], rewards:[{label:"Base reward", value:"+90"}] },
+        { id:"bounce", x:630, y:426, icon:"🔵", name:"Bounce", subtitle:"Bounce timing game.", gameKey:"void_runner", rewardBase:100, questionPolicy:"between_rounds", rules:["classic","hard"], badges:["speed"], rewards:[{label:"Base reward", value:"+100"}] },
+        { id:"bonus4", x:630, y:528, icon:"⭐", name:"Bonus+4", subtitle:"Large bonus tile.", gameKey:"bonus_tile", rewardBase:0, questionPolicy:"disabled", rules:["instant"], badges:["bonus"], rewards:[{label:"Stars", value:"+4"}] },
+        { id:"memory", x:630, y:630, icon:"🃏", name:"Memory", subtitle:"Particle memory mode.", gameKey:"maze", rewardBase:102, questionPolicy:"between_rounds", rules:["medium","hard"], badges:["memory"], rewards:[{label:"Base reward", value:"+102"}] },
+        { id:"breakout", x:528, y:630, icon:"🧱", name:"Breakout", subtitle:"Break bricks and combos.", gameKey:"bomberman", rewardBase:108, questionPolicy:"bonus_after_match", rules:["classic","colors"], badges:["arcade"], rewards:[{label:"Base reward", value:"+108"}] },
+        { id:"capcana2", x:426, y:630, icon:"💀", name:"Capcană", subtitle:"Trap with score penalty.", gameKey:"bonus_tile", rewardBase:-30, questionPolicy:"disabled", rules:["instant"], badges:["trap"], rewards:[{label:"Penalty", value:"-3 puncte"}] },
+        { id:"basketplus", x:324, y:630, icon:"🏀", name:"Basket+", subtitle:"Harder basket variation.", gameKey:"basket", rewardBase:135, questionPolicy:"bonus_after_match", rules:["blitz","moving"], badges:["sports","pro"], rewards:[{label:"Base reward", value:"+135"}] },
+        { id:"pvai", x:222, y:630, icon:"⚔️", name:"PvAI", subtitle:"Boss duel against AI.", gameKey:"hockey", rewardBase:140, questionPolicy:"bonus_after_match", rules:["duel"], badges:["boss"], rewards:[{label:"Base reward", value:"+140"}] },
+        { id:"bonus2", x:120, y:630, icon:"⭐", name:"Bonus+2", subtitle:"Small bonus tile.", gameKey:"bonus_tile", rewardBase:0, questionPolicy:"disabled", rules:["instant"], badges:["bonus"], rewards:[{label:"Stars", value:"+2"}] },
+        { id:"shooter2", x:18, y:630, icon:"🚀", name:"Shooter2", subtitle:"Advanced void shooter.", gameKey:"void_runner", rewardBase:112, questionPolicy:"between_rounds", rules:["hard","survival"], badges:["runner"], rewards:[{label:"Base reward", value:"+112"}] },
+        { id:"bomba", x:18, y:528, icon:"💣", name:"Bomba!", subtitle:"Hardcore bomber tile.", gameKey:"bomberman", rewardBase:128, questionPolicy:"bonus_after_match", rules:["hardcore"], badges:["action"], rewards:[{label:"Base reward", value:"+128"}] },
+        { id:"mempro", x:18, y:426, icon:"🃏", name:"Mem.Pro", subtitle:"Hard memory challenge.", gameKey:"maze", rewardBase:118, questionPolicy:"between_rounds", rules:["hard"], badges:["memory","pro"], rewards:[{label:"Base reward", value:"+118"}] },
+        { id:"hockeyplus", x:18, y:324, icon:"🏒", name:"Hockey+", subtitle:"Combo hockey version.", gameKey:"hockey", rewardBase:122, questionPolicy:"bonus_after_match", rules:["combo"], badges:["sports","combo"], rewards:[{label:"Base reward", value:"+122"}] },
+        { id:"breakoutplus", x:18, y:222, icon:"🧱", name:"Breakout+", subtitle:"Color breakout variant.", gameKey:"bomberman", rewardBase:120, questionPolicy:"bonus_after_match", rules:["colors","hard"], badges:["arcade","combo"], rewards:[{label:"Base reward", value:"+120"}] },
+        { id:"fusionplus", x:18, y:120, icon:"🎭", name:"Fusion+", subtitle:"Collapsed fusion challenge.", gameKey:"fusion", rewardBase:126, questionPolicy:"bonus_after_match", rules:["combo","hard"], badges:["fusion","pro"], rewards:[{label:"Base reward", value:"+126"}] }
       ];
 
       var EMBEDS = {
