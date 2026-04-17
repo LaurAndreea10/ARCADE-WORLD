@@ -1,8 +1,0 @@
-{
-  "games": [
-    {"id":"basket","title":"Basket","supportsPvp":true},
-    {"id":"maze","title":"Maze","supportsPvp":true},
-    {"id":"shooter","title":"Shooter","supportsPvp":true},
-    {"id":"fusion","title":"Fusion","supportsPvp":true}
-  ]
-}
