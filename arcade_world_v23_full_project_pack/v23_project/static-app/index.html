@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arcade World v23</title>
+  <meta name="description" content="Arcade World modular release build" />
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div>
+        <img class="brand-icon" src="assets/logo.svg" alt="Arcade World" />
+        <div>
+          <p class="eyebrow">Release build v23</p>
+          <h1>Arcade World</h1>
+        </div>
+      </div>
+      <nav class="top-actions">
+        <button id="btn-help">Help</button>
+        <button id="btn-export">Export save</button>
+        <button id="btn-import">Import save</button>
+        <input id="import-file" type="file" accept="application/json" hidden />
+      </nav>
+    </header>
+
+    <main class="layout">
+      <aside class="sidebar card">
+        <h2>Start sesiune</h2>
+        <label>Mode
+          <select id="session-mode">
+            <option value="solo">Solo</option>
+            <option value="vsAi">Vs AI</option>
+            <option value="pvp">PvP</option>
+          </select>
+        </label>
+        <label>Jucători
+          <select id="player-count">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+        </label>
+        <div id="players-form"></div>
+        <div class="stack-row">
+          <button id="btn-start" class="primary">Pornește</button>
+          <button id="btn-randomize">Randomize</button>
+        </div>
+
+        <h3>Panels</h3>
+        <div class="stack-col small">
+          <button data-panel="campaign">Campaign</button>
+          <button data-panel="qa">QA</button>
+          <button data-panel="economy">Economy</button>
+          <button data-panel="a11y">Accessibility</button>
+          <button data-panel="release">Release</button>
+          <button data-panel="bridge">Iframe Bridge</button>
+        </div>
+      </aside>
+
+      <section class="main-stage">
+        <section class="hud card">
+          <div><span>Mode</span><strong id="hud-mode">—</strong></div>
+          <div><span>Turn</span><strong id="hud-turn">—</strong></div>
+          <div><span>Current</span><strong id="hud-player">—</strong></div>
+          <div><span>Coins</span><strong id="hud-coins">—</strong></div>
+          <div><span>XP</span><strong id="hud-xp">—</strong></div>
+        </section>
+
+        <section class="board-wrap card">
+          <div class="board-shell" id="board"></div>
+        </section>
+
+        <section class="panels-grid">
+          <article class="card" id="panel-campaign">
+            <h3>Campaign</h3>
+            <div id="campaign-view"></div>
+          </article>
+          <article class="card" id="panel-analytics">
+            <h3>Analytics</h3>
+            <div id="analytics-view"></div>
+          </article>
+          <article class="card" id="panel-release">
+            <h3>Release Center</h3>
+            <div id="release-view"></div>
+          </article>
+          <article class="card" id="panel-bridge">
+            <h3>Full-game bridge demo</h3>
+            <div class="bridge-actions">
+              <button id="btn-open-bridge">Open bridge demo</button>
+              <button id="btn-sim-finish">Sim finish</button>
+              <button id="btn-sim-win">Sim win</button>
+            </div>
+            <iframe id="bridge-frame" title="Bridge demo"></iframe>
+          </article>
+        </section>
+      </section>
+    </main>
+
+    <dialog id="help-dialog">
+      <h3>Ajutor</h3>
+      <p>Acesta este build-ul modular v23. Include bază statică, structură React și backend scaffold în pachetul proiectului.</p>
+      <form method="dialog"><button>Închide</button></form>
+    </dialog>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
