@@ -20,3 +20,6 @@ Acest pachet livrează toate cele 10 direcții cerute la nivel de scaffold pract
 
 ## Notă sinceră
 Backend-ul și React-ul sunt scaffold-uri funcționale de pornire, nu produsul final complet migrat/deployat.
+## Plan de execuție recomandat
+- Folosește `MASTER_CONSOLIDATION_PLAN.md` pentru ordinea de execuție (consolidare → bugfix/playtest → modularizare → React port → bridge → AI/content/art → release/deploy).
+- Începe cu Faza 1 + Faza 2 pentru a valida baza unică înainte de extinderi.
