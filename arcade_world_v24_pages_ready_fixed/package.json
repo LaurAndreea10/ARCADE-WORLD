@@ -1,0 +1,16 @@
+{
+  "name": "arcade-world-v24",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Arcade World v24 monorepo: static master build, React migration app, and demo backend.",
+  "workspaces": [
+    "react-app",
+    "backend"
+  ],
+  "scripts": {
+    "start:static": "python3 -m http.server 8080 -d static-app",
+    "start:react": "npm --prefix react-app run dev",
+    "build:react": "npm --prefix react-app run build",
+    "start:backend": "npm --prefix backend run dev"
+  }
+}

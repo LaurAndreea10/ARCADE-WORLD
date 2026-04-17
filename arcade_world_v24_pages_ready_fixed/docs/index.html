@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arcade World v24 — Master Build</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body class="theme-cyan">
+<div class="app">
+  <div class="frame">
+    <div class="top">
+      <div class="hero">
+        <div class="eyebrow">Arcade Board Hub</div>
+        <h1>ARCADE WORLD V24</h1>
+        <p>Build master consolidat: fără dubluri inline, save/load unificat și bridge complet pentru full game.</p>
+        <div class="pillrow">
+          <div class="pill gold">24 perimetru</div>
+          <div class="pill">START pass reward</div>
+          <div class="pill green">BONUS = coins + XP + bonus turn</div>
+          <div class="pill red">CAPCANĂ = coins loss + skip</div>
+          <div class="pill purple">2–4 players</div>
+          <div class="pill">export/import save</div>
+        </div>
+      </div>
+      <div class="panel stats" id="top-stats"></div>
+    </div>
+
+    <div class="main">
+      <div class="stage">
+        <div class="board-card">
+          <div class="btnrow" style="justify-content:space-between;align-items:center;margin-bottom:12px">
+            <div>
+              <div class="section-k">Board</div>
+              <div class="muted">Traseu complet de 24 tile-uri. Dacă treci peste START primești reward. BONUS și CAPCANĂ trag event card random.</div>
+            </div>
+            <div class="btnrow">
+              <button class="btn-alt" onclick="toggleSound()" id="soundBtn">🔊 Sound</button>
+              <button class="btn-alt" onclick="nextTheme()">🎨 Theme</button>
+              <button class="btn-alt" onclick="openSavePanel()">💾 Save</button>
+            </div>
+          </div>
+          <div class="board-wrap" id="boardWrap">
+            <div id="boardToken" class="board-token">🎮</div>
+            <div id="boardTrail" class="trail"></div>
+            <div id="connectors"></div>
+            <div class="top-row" id="topRow"></div>
+            <div class="board-shell">
+              <div class="side-col" id="leftCol"></div>
+              <div class="center-screen">
+                <div class="center-panel screen" id="screen">
+                  <div class="center-brand">ARCADE<span class="small">WORLD</span></div>
+                  <div class="center-sub">ARUNCĂ ȘI AVANSEAZĂ</div>
+                </div>
+              </div>
+              <div class="side-col" id="rightCol"></div>
+            </div>
+            <div class="bottom-row" id="bottomRow"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="side">
+        <div class="side-card">
+          <div class="section-k">Turn system</div>
+          <div style="display:grid;grid-template-columns:100px 1fr;gap:12px;align-items:center;margin-top:10px">
+            <div class="dice" id="dice">🎲</div>
+            <div class="list">
+              <div class="quest"><div class="k">Current player</div><div class="v" id="turnPlayer">P1</div></div>
+              <div class="quest"><div class="k">Last roll</div><div class="v" id="lastRoll">—</div></div>
+            </div>
+          </div>
+          <div class="btnrow" style="margin-top:12px">
+            <button class="btn-gold" id="rollBtn" onclick="rollDice()">🎲 Aruncă zarul</button>
+            <button class="btn-purple" id="bonusBtn" onclick="useBonusTurn()">✨ Bonus turn</button>
+          </div>
+          <div class="tiny" id="turnHint" style="margin-top:10px">Aruncă → mută token-ul → rezolvă efectul tile-ului → joacă mini/full game.</div>
+        </div>
+
+        <div class="side-card" id="playersCard"></div>
+        <div class="side-card" id="dailyCard"></div>
+        <div class="side-card" id="questsCard"></div>
+        <div class="side-card" id="inventoryCard"></div>
+        <div class="side-card" id="shopCard"></div>
+        <div class="side-card" id="treeCard"></div>
+        <div class="side-card" id="badgeCard"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="fullModal">
+  <div class="modal-card">
+    <div class="modal-bar">
+      <div>
+        <div style="font-weight:1000;font-size:18px" id="modalTitle">Full game</div>
+        <div class="tiny" id="modalSub">Original embedded run</div>
+      </div>
+      <div class="btnrow">
+        <button class="btn-alt" onclick="openFullInTab()">↗ Tab</button>
+        <button class="btn-red" onclick="closeFullGame()">✕ Închide</button>
+      </div>
+    </div>
+    <iframe id="fullFrame" title="full game"></iframe>
+    <div class="modal-bar modal-foot">
+      <div class="tiny">Dacă jocul extern nu trimite rezultat prin <code>postMessage</code>, poți marca manual FINISH/WIN.</div>
+      <div class="btnrow">
+        <button class="btn-green" onclick="claimFull('win')">✅ WIN</button>
+        <button class="btn-alt" onclick="claimFull('finish')">🏁 FINISH</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="saveModal">
+  <div class="modal-card" style="height:auto;max-width:900px;grid-template-rows:auto 1fr auto">
+    <div class="modal-bar"><div style="font-weight:1000">Save / Profiles / Reset</div><button class="btn-red" onclick="toggleModal('saveModal',false)">Închide</button></div>
+    <div style="padding:16px;display:grid;gap:14px">
+      <div class="save-action">
+        <div style="font-weight:1000;margin-bottom:8px">Export progres</div>
+        <textarea id="saveText" style="width:100%;min-height:160px;border-radius:16px;padding:12px;background:#081321;color:#fff;border:1px solid rgba(255,255,255,.12)"></textarea>
+        <div class="btnrow" style="margin-top:10px">
+          <button class="btn-main" onclick="exportSave()">Export</button>
+          <button class="btn-main" onclick="importSave()">Import</button>
+          <button class="btn-alt" onclick="saveProfileSlot(1)">Save slot 1</button>
+          <button class="btn-alt" onclick="saveProfileSlot(2)">Save slot 2</button>
+          <button class="btn-alt" onclick="loadProfileSlot(1)">Load slot 1</button>
+          <button class="btn-alt" onclick="loadProfileSlot(2)">Load slot 2</button>
+        </div>
+      </div>
+      <div class="reset-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+        <div class="box"><div class="k">Reset stats</div><div class="v">Scores</div><div class="btnrow" style="margin-top:10px"><button class="btn-red" onclick="partialReset('stats')">Reset</button></div></div>
+        <div class="box"><div class="k">Reset inventory</div><div class="v">Items</div><div class="btnrow" style="margin-top:10px"><button class="btn-red" onclick="partialReset('inventory')">Reset</button></div></div>
+        <div class="box"><div class="k">Reset board</div><div class="v">Board</div><div class="btnrow" style="margin-top:10px"><button class="btn-red" onclick="partialReset('board')">Reset</button></div></div>
+      </div>
+      <div class="save-action"><div style="font-weight:1000;margin-bottom:8px">Reset total</div><button class="btn-red" onclick="hardReset()">Reset complet</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+  <script src="./js/config.js"></script>
+  <script src="./js/state.js"></script>
+  <script src="./js/save.js"></script>
+  <script src="./js/bridge.js"></script>
+
+  <script src="./app.js"></script>
+</body>
+</html>
