@@ -1,0 +1,776 @@
+<!-- ========== ARCADE WORLD — MOBILE PREMIUM PATCH v31 ========== -->
+<!-- Inject AFTER all existing scripts. Does NOT modify existing structure. -->
+
+<style id="mpp-styles">
+/* ===== MOBILE GAME ZONE — fills the empty space below board ===== */
+
+.mpp-game-zone {
+  display: none;
+  padding: 12px 10px 20px;
+  margin: 0 4px;
+}
+
+/* ===== ACTIVE TILE CARD — shows what tile you're on ===== */
+.mpp-active-card {
+  border-radius: 20px;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(12,28,58,.88), rgba(6,16,38,.92));
+  border: 1px solid rgba(110,231,255,.14);
+  backdrop-filter: blur(12px);
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.mpp-active-card::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 120px; height: 120px;
+  background: radial-gradient(circle, rgba(110,231,255,.12), transparent 70%);
+  pointer-events: none;
+}
+.mpp-active-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.mpp-active-icon {
+  width: 56px; height: 56px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(255,213,74,.15), rgba(110,231,255,.1));
+  border: 1px solid rgba(255,213,74,.2);
+  display: grid;
+  place-items: center;
+  font-size: 28px;
+  flex-shrink: 0;
+}
+.mpp-active-info {
+  flex: 1;
+  min-width: 0;
+}
+.mpp-active-name {
+  font-size: 18px;
+  font-weight: 1000;
+  letter-spacing: .03em;
+  color: #fff;
+}
+.mpp-active-meta {
+  font-size: 12px;
+  color: rgba(255,255,255,.55);
+  margin-top: 2px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.mpp-active-meta .mpp-tag {
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.08);
+  font-weight: 800;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.mpp-active-meta .mpp-tag.gold { background: rgba(255,213,74,.12); border-color: rgba(255,213,74,.2); color: #ffeaa0; }
+.mpp-active-meta .mpp-tag.cyan { background: rgba(110,231,255,.1); border-color: rgba(110,231,255,.18); color: #b8ecff; }
+.mpp-active-meta .mpp-tag.red { background: rgba(255,99,99,.12); border-color: rgba(255,99,99,.2); color: #ffcccc; }
+.mpp-active-meta .mpp-tag.green { background: rgba(48,210,124,.12); border-color: rgba(48,210,124,.2); color: #c8ffd8; }
+
+.mpp-play-btn {
+  margin-top: 14px;
+  width: 100%;
+  padding: 14px;
+  border-radius: 16px;
+  font-size: 15px;
+  font-weight: 900;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #c4f6ff, #6ee7ff);
+  color: #072133;
+  box-shadow: 0 8px 24px rgba(110,231,255,.2);
+  letter-spacing: .02em;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.mpp-play-btn:active {
+  transform: scale(.96);
+  box-shadow: 0 4px 12px rgba(110,231,255,.3);
+}
+.mpp-play-btn.gold {
+  background: linear-gradient(135deg, #ffe7a0, #ffd54a);
+  color: #382900;
+  box-shadow: 0 8px 24px rgba(255,213,74,.2);
+}
+.mpp-play-btn.purple {
+  background: linear-gradient(135deg, #e4d8ff, #a78bfa);
+  color: #1e1438;
+  box-shadow: 0 8px 24px rgba(167,139,250,.2);
+}
+
+/* ===== QUICK STATS ROW ===== */
+.mpp-quick-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.mpp-qs {
+  border-radius: 14px;
+  padding: 10px 8px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.06);
+  text-align: center;
+}
+.mpp-qs-val {
+  font-size: 20px;
+  font-weight: 1000;
+  color: #fff;
+  line-height: 1;
+}
+.mpp-qs-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.4);
+  margin-top: 4px;
+}
+
+/* ===== MODE SELECTOR GRID ===== */
+.mpp-modes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+.mpp-mode-card {
+  border-radius: 16px;
+  padding: 14px 12px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all .2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.mpp-mode-card:active {
+  transform: scale(.97);
+  border-color: rgba(110,231,255,.3);
+  background: rgba(110,231,255,.06);
+}
+.mpp-mode-card.locked {
+  opacity: .45;
+  pointer-events: none;
+}
+.mpp-mode-icon {
+  font-size: 24px;
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.06);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.mpp-mode-text {
+  flex: 1;
+}
+.mpp-mode-title {
+  font-weight: 900;
+  font-size: 13px;
+  color: #fff;
+}
+.mpp-mode-desc {
+  font-size: 10px;
+  color: rgba(255,255,255,.45);
+  margin-top: 1px;
+}
+
+/* ===== MINI QUEST TRACKER ===== */
+.mpp-quest-strip {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 2px 0;
+  margin-top: 12px;
+}
+.mpp-quest-strip::-webkit-scrollbar { display: none; }
+.mpp-quest-chip {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+  color: rgba(255,255,255,.7);
+}
+.mpp-quest-chip b { color: var(--gold); }
+.mpp-quest-chip .mpp-qbar {
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255,255,255,.1);
+  margin-top: 5px;
+  overflow: hidden;
+}
+.mpp-quest-chip .mpp-qbar span {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--gold));
+}
+
+/* ===== RECENT ACTIVITY FEED ===== */
+.mpp-feed {
+  margin-top: 12px;
+  border-radius: 16px;
+  background: rgba(0,0,0,.2);
+  border: 1px solid rgba(255,255,255,.06);
+  padding: 12px;
+}
+.mpp-feed-title {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.35);
+  margin-bottom: 8px;
+}
+.mpp-feed-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  font-size: 12px;
+  color: rgba(255,255,255,.6);
+}
+.mpp-feed-item:last-child { border: none; }
+.mpp-feed-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ===== NEXT UP PREVIEW ===== */
+.mpp-next-up {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 2px 0;
+}
+.mpp-next-up::-webkit-scrollbar { display: none; }
+.mpp-next-tile {
+  flex: 0 0 64px;
+  height: 64px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  display: grid;
+  place-items: center;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 800;
+  color: rgba(255,255,255,.5);
+  cursor: pointer;
+  transition: all .15s ease;
+}
+.mpp-next-tile .nt-icon { font-size: 20px; }
+.mpp-next-tile .nt-name { font-size: 7px; letter-spacing: .04em; margin-top: 2px; }
+.mpp-next-tile:active { border-color: rgba(110,231,255,.3); background: rgba(110,231,255,.06); }
+.mpp-next-tile.special { border-color: rgba(255,213,74,.2); }
+.mpp-next-tile.trap-tile { border-color: rgba(255,99,99,.2); }
+
+/* ===== SHOW ONLY ON MOBILE ===== */
+@media (max-width: 768px) {
+  .mpp-game-zone {
+    display: block;
+  }
+}
+
+/* ===== ENGLISH TRANSLATION OVERRIDES ===== */
+/* Hide Romanian-only labels that we'll replace via JS */
+</style>
+
+
+<script>
+// ========== MOBILE PREMIUM PATCH v31 ==========
+(function(){
+'use strict';
+if(!window.state || !window.TILES || !window.currentPlayer) return;
+
+// ============================================================
+// 1. TRANSLATION — Romanian → English
+// ============================================================
+const TR = {
+  // Board & tile states
+  'CURRENT': 'HERE',
+  'DONE': 'DONE',
+  'VISITED': 'SEEN',
+  'SPECIAL': 'EVENT',
+  'OPEN': 'OPEN',
+  // Buttons
+  'Aruncă zarul': 'Roll Dice',
+  'Bonus turn': 'Bonus Turn',
+  'Aruncă': 'Roll',
+  'Tura următoare': 'Next Turn',
+  'Închide': 'Close',
+  'Cumpără': 'Buy',
+  'Alege': 'Choose',
+  'Deschide': 'Open',
+  'Continuă': 'Continue',
+  'Replay': 'Replay',
+  // Section titles
+  'Turn system': 'Turn System',
+  'Multiplayer local': 'Local Multiplayer',
+  'Quest-uri': 'Quests',
+  'Badges / rarități': 'Badges',
+  'Unlock tree': 'Unlock Tree',
+  // Toasts and messages
+  'Aruncă → mută token-ul → rezolvă efectul tile-ului → joacă mini/full game.': 'Roll → move token → resolve tile effect → play mini/full game.',
+  'Coins insuficiente': 'Not enough coins',
+  'a trecut de START': 'passed START',
+  'Landing pe START': 'Landing on START',
+  'Shield a blocat CAPCANA': 'Shield blocked the TRAP',
+  'sare tura': 'skips turn',
+  // Setup
+  'Câți jucători?': 'How many players?',
+  'Jucători': 'Players',
+  'Jucător': 'Player',
+  'Alege modul de joc': 'Choose game mode',
+  'Pornește sesiunea': 'Start Session',
+  'Continuă fără setup': 'Continue without setup',
+  'Numele jucătorilor': 'Player names',
+  'Temă vizuală': 'Visual theme',
+  'START JOC': 'START GAME',
+  'Număr jucători la start': 'Starting player count',
+  // Hero
+  'Traseu complet de 24 tile-uri': 'Complete 24-tile board circuit',
+  // Modes
+  'SOLO': 'SOLO',
+  'Moduri': 'Modes',
+  'Detalii': 'Details',
+  'Stats': 'Stats',
+  // Game families
+  'CAPCANĂ': 'TRAP',
+  'BONUS': 'BONUS',
+};
+
+function translateTextNodes(root) {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+  while(walker.nextNode()) {
+    const node = walker.currentNode;
+    let text = node.textContent;
+    // Replace known Romanian phrases
+    for(const [ro, en] of Object.entries(TR)) {
+      if(text.includes(ro)) {
+        text = text.split(ro).join(en);
+      }
+    }
+    if(text !== node.textContent) node.textContent = text;
+  }
+}
+
+// Translate buttons specifically
+function translateButtons() {
+  document.querySelectorAll('button, .btn-main, .btn-gold, .btn-alt, .btn-green, .btn-red, .btn-purple').forEach(btn => {
+    let t = btn.textContent.trim();
+    if(t.includes('Aruncă zarul')) btn.textContent = btn.textContent.replace('Aruncă zarul', 'Roll Dice');
+    if(t.includes('Bonus turn')) btn.textContent = btn.textContent.replace('Bonus turn', 'Bonus Turn');
+    if(t === 'Cumpără') btn.textContent = 'Buy';
+    if(t === 'Alege') btn.textContent = 'Choose';
+    if(t === 'Deschide') btn.textContent = 'Open';
+    if(t.includes('Închide')) btn.textContent = btn.textContent.replace('Închide', 'Close');
+    if(t.includes('Tura următoare')) btn.textContent = btn.textContent.replace('Tura următoare', 'Next Turn');
+    if(t.includes('Continuă')) btn.textContent = btn.textContent.replace('Continuă', 'Continue');
+  });
+  
+  // Translate dice inline
+  const rollInline = document.getElementById('rollBtnInline');
+  if(rollInline && rollInline.textContent.includes('Aruncă')) rollInline.textContent = '🎲 Roll Dice';
+  
+  const rollSide = document.getElementById('rollBtn');
+  if(rollSide && rollSide.textContent.includes('Aruncă')) rollSide.textContent = '🎲 Roll Dice';
+
+  // Translate section-k labels
+  document.querySelectorAll('.section-k').forEach(el => {
+    for(const [ro, en] of Object.entries(TR)) {
+      if(el.textContent.includes(ro)) el.textContent = el.textContent.replace(ro, en);
+    }
+  });
+
+  // Translate tile states
+  document.querySelectorAll('.tile .state').forEach(el => {
+    const t = el.textContent.trim();
+    if(TR[t]) el.textContent = TR[t];
+  });
+
+  // Translate tile names
+  document.querySelectorAll('.tile .name').forEach(el => {
+    if(el.textContent.includes('CAPCANĂ')) el.textContent = 'TRAP';
+  });
+
+  // Setup overlay
+  const setupH2 = document.querySelector('.setup-card h2, #sessionModeModal h2');
+  if(setupH2 && setupH2.textContent.includes('Alege')) setupH2.textContent = 'Choose Game Mode';
+  
+  // Score strip
+  const mStripInner = document.getElementById('mStripInner');
+  if(mStripInner) {
+    mStripInner.innerHTML = mStripInner.innerHTML
+      .replace(/Aruncă/g, 'Roll')
+      .replace(/Tura următoare/g, 'Next Turn');
+  }
+
+  // Tab bar
+  document.querySelectorAll('.m-tab, .tab-item').forEach(btn => {
+    const t = btn.textContent.trim();
+    if(t.includes('Board')) return;
+    if(t.includes('Play')) return;
+    if(t.includes('Stats')) return;
+    if(t.includes('Shop')) return;
+    if(t.includes('More')) return;
+  });
+
+  // Hint
+  const hint = document.getElementById('turnHint');
+  if(hint && hint.textContent.includes('Aruncă')) {
+    hint.textContent = 'Roll → move token → resolve tile → play mini/full game → earn rewards.';
+  }
+
+  // Hero
+  const heroH1 = document.querySelector('.hero h1');
+  if(heroH1) heroH1.textContent = 'ARCADE WORLD';
+  const heroP = document.querySelector('.hero p');
+  if(heroP) heroP.textContent = 'Board game with 11 mini-games, territory capture, boss fights, ranked mode, seasons, and local multiplayer.';
+
+  // Center brand
+  const centerSub = document.querySelector('.center-sub');
+  if(centerSub && centerSub.textContent.includes('ARUNCĂ')) centerSub.textContent = 'ROLL AND ADVANCE';
+
+  // Eyebrow
+  const eyebrow = document.querySelector('.eyebrow');
+  if(eyebrow) eyebrow.textContent = 'Arcade Board Hub';
+}
+
+// ============================================================
+// 2. MOBILE GAME ZONE — fills empty space below board
+// ============================================================
+function createGameZone() {
+  if(document.getElementById('mppGameZone')) return;
+  const zone = document.createElement('div');
+  zone.className = 'mpp-game-zone';
+  zone.id = 'mppGameZone';
+  
+  // Insert after board-card
+  const boardCard = document.querySelector('.board-card');
+  if(boardCard && boardCard.parentNode) {
+    boardCard.parentNode.insertBefore(zone, boardCard.nextSibling);
+  }
+}
+
+function renderGameZone() {
+  const zone = document.getElementById('mppGameZone');
+  if(!zone) return;
+  if(window.innerWidth > 768) { zone.style.display = 'none'; return; }
+  
+  const p = currentPlayer();
+  const t = tile(p.position);
+  const isGame = t.type === 'game';
+  const isSpecial = t.type === 'special';
+
+  // Quick stats
+  const statsHTML = `<div class="mpp-quick-stats">
+    <div class="mpp-qs"><div class="mpp-qs-val">${p.coins}</div><div class="mpp-qs-label">Coins</div></div>
+    <div class="mpp-qs"><div class="mpp-qs-val">${p.level}</div><div class="mpp-qs-label">Level</div></div>
+    <div class="mpp-qs"><div class="mpp-qs-val">${p.totalWins || 0}</div><div class="mpp-qs-label">Wins</div></div>
+    <div class="mpp-qs"><div class="mpp-qs-val">${(p.completed || []).length}</div><div class="mpp-qs-label">Done</div></div>
+  </div>`;
+
+  // Active tile card
+  const effectTag = isSpecial 
+    ? (t.effect === 'bonus' ? '<span class="mpp-tag gold">BONUS</span>' : t.effect === 'trap' ? '<span class="mpp-tag red">TRAP</span>' : '<span class="mpp-tag cyan">START</span>')
+    : `<span class="mpp-tag cyan">${t.family || 'game'}</span>`;
+  const rewardTag = isGame ? `<span class="mpp-tag gold">${t.reward || 100}c</span>` : '';
+  const completedTag = (p.completed || []).includes(p.position) ? '<span class="mpp-tag green">DONE</span>' : '';
+
+  const activeCardHTML = `<div class="mpp-active-card">
+    <div class="mpp-active-top">
+      <div class="mpp-active-icon">${t.icon || '🎮'}</div>
+      <div class="mpp-active-info">
+        <div class="mpp-active-name">${t.name}</div>
+        <div class="mpp-active-meta">${effectTag}${rewardTag}${completedTag}<span class="mpp-tag">Tile ${p.position}</span></div>
+      </div>
+    </div>
+    ${isGame ? `
+      <div class="mpp-modes">
+        <div class="mpp-mode-card" onclick="chooseMode('solo')">
+          <div class="mpp-mode-icon">🎮</div>
+          <div class="mpp-mode-text"><div class="mpp-mode-title">Solo</div><div class="mpp-mode-desc">Practice run</div></div>
+        </div>
+        <div class="mpp-mode-card ${modeUnlocked('ai', p) ? '' : 'locked'}" onclick="if(modeUnlocked('ai'))chooseMode('ai')">
+          <div class="mpp-mode-icon">🤖</div>
+          <div class="mpp-mode-text"><div class="mpp-mode-title">vs AI</div><div class="mpp-mode-desc">${modeUnlocked('ai', p) ? 'Challenge AI' : 'Lv2 required'}</div></div>
+        </div>
+        <div class="mpp-mode-card ${modeUnlocked('full', p) ? '' : 'locked'}" onclick="if(modeUnlocked('full'))chooseMode('full')">
+          <div class="mpp-mode-icon">🕹️</div>
+          <div class="mpp-mode-text"><div class="mpp-mode-title">Full Game</div><div class="mpp-mode-desc">${modeUnlocked('full', p) ? 'Original game' : 'Lv2 required'}</div></div>
+        </div>
+        <div class="mpp-mode-card ${modeUnlocked('quiz', p) ? '' : 'locked'}" onclick="if(modeUnlocked('quiz'))chooseMode('quiz')">
+          <div class="mpp-mode-icon">🧠</div>
+          <div class="mpp-mode-text"><div class="mpp-mode-title">Quiz</div><div class="mpp-mode-desc">${modeUnlocked('quiz', p) ? 'Skill + trivia' : 'Lv3 required'}</div></div>
+        </div>
+      </div>
+    ` : `
+      <button class="mpp-play-btn ${t.effect === 'bonus' ? 'gold' : t.effect === 'trap' ? 'purple' : ''}" onclick="endTurn()">
+        ${t.effect === 'start' ? '🏁 Collect START Reward' : t.effect === 'bonus' ? '⭐ Reveal Bonus Card' : t.effect === 'trap' ? '💀 Face the Trap' : '➡️ Next Turn'}
+      </button>
+    `}
+  </div>`;
+
+  // Next 5 tiles preview
+  let nextTilesHTML = '<div class="mpp-next-up">';
+  for(let i = 1; i <= 6; i++) {
+    const idx = (p.position + i) % TILES.length;
+    const nt = tile(idx);
+    const cls = nt.type === 'special' ? (nt.effect === 'trap' ? 'trap-tile' : 'special') : '';
+    nextTilesHTML += `<div class="mpp-next-tile ${cls}" onclick="selectTile(${idx})">
+      <div class="nt-icon">${nt.icon || '🎮'}</div>
+      <div class="nt-name">${nt.name}</div>
+    </div>`;
+  }
+  nextTilesHTML += '</div>';
+
+  // Quest strip (horizontal scrollable)
+  let questHTML = '';
+  if(typeof QUESTS !== 'undefined') {
+    questHTML = '<div class="mpp-quest-strip">';
+    QUESTS.forEach(qs => {
+      const pr = Math.min(qs.target, qs.progress(p));
+      const done = (p.questsDone || []).includes(qs.id);
+      const pct = Math.round(pr / qs.target * 100);
+      questHTML += `<div class="mpp-quest-chip">
+        ${done ? '✅' : '🎯'} <b>${pr}/${qs.target}</b> ${qs.title.replace('Lovește','Hit').replace('Treci de','Pass').replace('de','').replace('Termină','Finish').replace('victorii','wins').replace('Cumpără','Buy').replace('iteme','items').replace('ori','x')}
+        <div class="mpp-qbar"><span style="width:${pct}%"></span></div>
+      </div>`;
+    });
+    questHTML += '</div>';
+  }
+
+  // Activity feed
+  const history = (p.history || []).slice(0, 4);
+  let feedHTML = '';
+  if(history.length) {
+    feedHTML = '<div class="mpp-feed"><div class="mpp-feed-title">Recent Activity</div>';
+    history.forEach(h => {
+      const isWin = /win/i.test(h.result || '');
+      const color = isWin ? '#30d27c' : '#ff6363';
+      const tileName = TILES[h.tile] ? TILES[h.tile].name : 'Tile ' + h.tile;
+      feedHTML += `<div class="mpp-feed-item">
+        <div class="mpp-feed-dot" style="background:${color}"></div>
+        <span>${isWin ? '✅' : '❌'} ${tileName} · +${h.coins || 0}c +${h.xp || 0}xp</span>
+      </div>`;
+    });
+    feedHTML += '</div>';
+  }
+
+  zone.innerHTML = statsHTML + activeCardHTML + nextTilesHTML + questHTML + feedHTML;
+}
+
+// ============================================================
+// 3. HOOK INTO RENDER CYCLE
+// ============================================================
+createGameZone();
+
+const _renderAll = window.renderAll;
+if(_renderAll) {
+  window.renderAll = function() {
+    _renderAll.apply(this, arguments);
+    renderGameZone();
+    translateButtons();
+  };
+}
+
+// Also translate on initial load
+setTimeout(() => {
+  translateButtons();
+  renderGameZone();
+}, 100);
+
+// Translate after setup overlay closes
+const setupObs = new MutationObserver(() => {
+  translateButtons();
+  renderGameZone();
+});
+setupObs.observe(document.body, { subtree: true, childList: true, characterData: true });
+
+// Translate renderScreen output
+const _renderScreen = window.renderScreen;
+if(_renderScreen) {
+  window.renderScreen = function(tab, custom, autoEnd) {
+    _renderScreen.apply(this, arguments);
+    setTimeout(translateButtons, 10);
+    setTimeout(renderGameZone, 20);
+  };
+}
+
+// Translate toast messages
+const _toast = window.toast;
+if(_toast) {
+  window.toast = function(text, type) {
+    // Translate common Romanian toast messages
+    let t = text;
+    t = t.replace(/a trecut de START/g, 'passed START');
+    t = t.replace(/a cumpărat/g, 'bought');
+    t = t.replace(/a completat quest/g, 'completed quest');
+    t = t.replace(/a urcat la level/g, 'leveled up to');
+    t = t.replace(/și a primit bonus turn/g, 'and got a bonus turn');
+    t = t.replace(/Coins insuficiente/g, 'Not enough coins');
+    t = t.replace(/sare tura/g, 'skips turn');
+    t = t.replace(/Shield a blocat CAPCANA/g, 'Shield blocked the TRAP');
+    t = t.replace(/Multiplayer setat la/g, 'Multiplayer set to');
+    t = t.replace(/jucători/g, 'players');
+    t = t.replace(/Joc configurat! Aruncă zarul./g, 'Game configured! Roll the dice.');
+    t = t.replace(/Mod setat:/g, 'Mode set:');
+    t = t.replace(/Save exportat/g, 'Save exported');
+    t = t.replace(/Save importat/g, 'Save imported');
+    t = t.replace(/Import invalid/g, 'Invalid import');
+    t = t.replace(/Slot gol/g, 'Empty slot');
+    t = t.replace(/salvat/g, 'saved');
+    t = t.replace(/încărcat/g, 'loaded');
+    t = t.replace(/Reset complet/g, 'Full reset');
+    t = t.replace(/Login zilnic/g, 'Daily login');
+    t = t.replace(/Ai ratat/g, 'Missed');
+    t = t.replace(/Ai câștigat/g, 'You won');
+    t = t.replace(/Coș marcat/g, 'Basket scored');
+    t = t.replace(/Gol marcat/g, 'Goal scored');
+    t = t.replace(/Execuție reușită/g, 'Successful execution');
+    t = t.replace(/Execuție ratată/g, 'Missed execution');
+    t = t.replace(/Duel câștigat/g, 'Duel won');
+    t = t.replace(/AI a câștigat/g, 'AI won');
+    t = t.replace(/Prea multe capcane/g, 'Too many traps');
+    t = t.replace(/Ai ieșit din labirint/g, 'Escaped the maze');
+    t = t.replace(/Sector curățat/g, 'Sector cleared');
+    t = t.replace(/Toate perechile găsite/g, 'All pairs found');
+    t = t.replace(/Remiză/g, 'Draw');
+    t = t.replace(/Safe crate/g, 'Safe crate');
+    t = t.replace(/Boom/g, 'Boom');
+    t = t.replace(/Run reușit/g, 'Successful run');
+    t = t.replace(/Sub target/g, 'Below target');
+    t = t.replace(/Fusion clear/g, 'Fusion clear');
+    t = t.replace(/x2 reward activat/g, 'x2 reward activated');
+    t = t.replace(/Sesiune pornită/g, 'Session started');
+    t = t.replace(/profiluri complete/g, 'complete profiles');
+    return _toast(t, type);
+  };
+}
+
+// ============================================================
+// 4. PREMIUM: Translate the tile state function
+// ============================================================
+const _tileState = window.tileState;
+if(_tileState) {
+  window.tileState = function(player, idx) {
+    const result = _tileState(player, idx);
+    if(result.label === 'CURRENT') result.label = 'HERE';
+    if(result.label === 'DONE') result.label = 'DONE';
+    if(result.label === 'VISITED') result.label = 'SEEN';
+    if(result.label === 'SPECIAL') result.label = 'EVENT';
+    if(result.label === 'OPEN') result.label = 'OPEN';
+    return result;
+  };
+}
+
+// ============================================================
+// 5. PREMIUM: Translate renderScreen internal content
+// ============================================================
+const _layoutGame = window.layoutGame;
+if(_layoutGame) {
+  window.layoutGame = function(title, subtitle, hud, body, foot) {
+    // Translate HUD labels
+    hud = hud.map(h => {
+      let k = h.k;
+      k = k.replace('Shots total', 'Total Shots');
+      k = k.replace('Zone', 'Zone');
+      k = k.replace('Speed', 'Speed');
+      k = k.replace('Mode', 'Mode');
+      k = k.replace('Reward', 'Reward');
+      k = k.replace('Tutorial', 'Tutorial');
+      return { ...h, k };
+    });
+    // Translate subtitle
+    subtitle = subtitle
+      .replace('Primele 2 shot-uri sunt slow tutorial', 'First 2 shots are slow tutorial')
+      .replace('apoi viteza crește treptat', 'then speed increases gradually')
+      .replace('Oprește markerul în zona verde', 'Stop the marker in the green zone')
+      .replace('Timing și reflex', 'Timing and reflexes')
+      .replace('Rhythm și control', 'Rhythm and control')
+      .replace('Alege lada sigură', 'Choose the safe crate')
+      .replace('Mergi spre ieșire și evită capcanele', 'Go to exit and avoid traps')
+      .replace('Crește score-ul și termină boss-ul', 'Increase score and finish the boss')
+      .replace('Combină mecanici arcade', 'Combine arcade mechanics')
+      .replace('3 în linie', '3 in a row')
+      .replace('Găsește toate perechile', 'Find all pairs')
+      .replace('Sparge suficiente bricks', 'Break enough bricks')
+      .replace('înainte să expire timpul', 'before time runs out');
+    return _layoutGame(title, subtitle, hud, body, foot);
+  };
+}
+
+// ============================================================
+// 6. PREMIUM: Translate finishMini messages
+// ============================================================
+const _finishMini = window.finishMini;
+if(_finishMini) {
+  window.finishMini = function(win, msg, opts) {
+    msg = msg
+      .replace('Perfect release', 'Perfect release')
+      .replace('Ai ratat', 'You missed')
+      .replace('AI mai precis', 'AI more precise')
+      .replace('Egal', 'Draw')
+      .replace('Tu ai găsit', 'You found')
+      .replace('AI a ales mai bine', 'AI chose better')
+      .replace('Ai bătut AI', 'You beat AI')
+      .replace('AI mai bun', 'AI was better')
+      .replace('Ai depășit AI', 'You beat AI')
+      .replace('Ai câștigat TTT', 'You won TTT')
+      .replace('AI a câștigat', 'AI won')
+      .replace('Toate perechile găsite', 'All pairs found')
+      .replace('Duel câștigat', 'Duel won')
+      .replace('Ai ieșit din labirint', 'Escaped maze')
+      .replace('Prea multe capcane', 'Too many traps')
+      .replace('Run reușit', 'Successful run')
+      .replace('Sub target', 'Below target')
+      .replace('Sector curățat', 'Sector cleared')
+      .replace('Fusion clear', 'Fusion clear')
+      .replace('Quiz greșit', 'Quiz wrong')
+      .replace('Quiz corect', 'Quiz correct')
+      .replace('Coș marcat', 'Basket scored')
+      .replace('Gol marcat', 'Goal scored')
+      .replace('Șut ratat', 'Shot missed')
+      .replace('Ritm ratat', 'Rhythm missed')
+      .replace('Control bun', 'Good control')
+      .replace('Execuție reușită', 'Success')
+      .replace('Execuție ratată', 'Missed');
+    return _finishMini(win, msg, opts);
+  };
+}
+
+// Disconnect observer after a bit to avoid performance issues
+setTimeout(() => setupObs.disconnect(), 15000);
+
+// Re-translate on resize (mode switch)
+window.addEventListener('resize', () => {
+  renderGameZone();
+  translateButtons();
+});
+
+console.log('%c🌐 Mobile Premium Patch v31 loaded — EN translation + game zone', 'font-size:12px;font-weight:bold;color:#6ee7ff');
+
+})();
+</script>
