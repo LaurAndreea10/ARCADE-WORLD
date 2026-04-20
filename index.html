@@ -2446,6 +2446,31 @@ html { scroll-behavior: smooth; }
 <style id="game-zone-fix">
 /* ===== GAME ZONE FIX ===== */
 
+/* Desktop: expand board/game area into unused vertical space */
+@media (min-width: 769px) {
+  .board-card {
+    min-height: calc(100vh - 120px) !important;
+  }
+
+  .board-wrap {
+    min-height: clamp(760px, calc(100vh - 220px), 1220px) !important;
+    display: grid !important;
+    grid-template-rows: auto 1fr auto !important;
+    align-content: stretch !important;
+  }
+
+  .board-shell {
+    min-height: 0 !important;
+    height: 100% !important;
+    align-items: stretch !important;
+  }
+
+  .center-screen {
+    min-height: clamp(520px, calc(100vh - 340px), 920px) !important;
+    height: 100% !important;
+  }
+}
+
 /* Center panel fills entire center-screen */
 .center-panel.screen {
   width: 100% !important;
