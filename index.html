@@ -2745,7 +2745,7 @@ window.openAWModal = function(html){ var m=document.getElementById('awModal'), c
             <div class="btnrow">
               <button class="btn-alt" onclick="toggleSound()" id="soundBtn">🔊 Sound</button>
               <button class="btn-alt" onclick="nextTheme()">🎨 Theme</button>
-              <button class="btn-alt" onclick="openSavePanel()">💾 Save</button>
+              <button class="btn-alt" onclick="openSavePanel()" id="saveBtn">💾 Save</button><button class="btn-alt" onclick="toggleLanguage()" id="langBtn">🌐 RO</button>
             </div>
           </div>
           <div class="board-wrap" id="boardWrap">
@@ -2957,7 +2957,7 @@ const QUESTS=[
 ];
 
 const state={
-  activePlayer:0,selectedTile:0,mode:null,difficulty:null,screenTab:'modes',sound:true,timer:null,aux:null,animating:false,daily:null,fullSession:null,basketSession:null,themeIndex:0,
+  activePlayer:0,selectedTile:0,mode:null,difficulty:null,screenTab:'modes',sound:true,timer:null,aux:null,animating:false,daily:null,fullSession:null,basketSession:null,themeIndex:0,lang:'ro',setupPlayers:2,
   players:[], multiplayerCount:2
 };
 
@@ -2972,13 +2972,13 @@ function levelNeed(l){return 100+(l-1)*65}
 function safeText(s){return String(s).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}
 
 function defaultPlayer(i){return {id:i,name:'P'+(i+1),position:0,coins:120,xp:0,level:1,totalWins:0,bonusTurns:0,skipTurns:0,completed:[],visited:[0],questsDone:[],inventory:{shield:0,reroll:0,double:0,themeToken:0},badges:{},stats:{},history:[],boardPasses:0,bonusHits:0,trapHits:0,shopBuys:0,full:{started:0,finished:0,wins:0},chests:{common:0,rare:0,epic:0},unlocks:{}}}
-function defaultSave(){return {players:[defaultPlayer(0),defaultPlayer(1)],activePlayer:0,selectedTile:0,sound:true,themeIndex:0,multiplayerCount:2}}
+function defaultSave(){return {players:[defaultPlayer(0),defaultPlayer(1)],activePlayer:0,selectedTile:0,sound:true,themeIndex:0,multiplayerCount:2,lang:'ro',setupPlayers:2}}
 
 function addXpToPlayer(p,amount){p.xp+=amount;while(p.xp>=levelNeed(p.level)){p.xp-=levelNeed(p.level);p.level++;p.bonusTurns++;toast(`${p.name} a urcat la level ${p.level} și a primit bonus turn!`,'green')}}
 function grantChest(p,rarity='common'){p.chests[rarity]=(p.chests[rarity]||0)+1;const roll=Math.random();if(rarity==='rare'&&roll<.45){p.coins+=90}else if(rarity==='rare'){addXpToPlayer(p,55)}else if(rarity==='epic'){p.coins+=130;addXpToPlayer(p,80);p.bonusTurns++}else{p.coins+=40}}
 
-function save(){localStorage.setItem(STORAGE,JSON.stringify({players:state.players,activePlayer:state.activePlayer,selectedTile:state.selectedTile,sound:state.sound,themeIndex:state.themeIndex,multiplayerCount:state.multiplayerCount}))}
-function load(){try{const raw=localStorage.getItem(STORAGE);if(!raw)return;const s=JSON.parse(raw);state.players=(s.players||[defaultPlayer(0),defaultPlayer(1)]).map((p,i)=>Object.assign(defaultPlayer(i),p));state.activePlayer=s.activePlayer||0;state.selectedTile=s.selectedTile||0;state.sound=s.sound!==false;state.themeIndex=s.themeIndex||0;state.multiplayerCount=s.multiplayerCount||state.players.length||2;}catch(e){}}
+function save(){localStorage.setItem(STORAGE,JSON.stringify({players:state.players,activePlayer:state.activePlayer,selectedTile:state.selectedTile,sound:state.sound,themeIndex:state.themeIndex,multiplayerCount:state.multiplayerCount,lang:state.lang,setupPlayers:state.setupPlayers}))}
+function load(){try{const raw=localStorage.getItem(STORAGE);if(!raw)return;const s=JSON.parse(raw);state.players=(s.players||[defaultPlayer(0),defaultPlayer(1)]).map((p,i)=>Object.assign(defaultPlayer(i),p));state.activePlayer=s.activePlayer||0;state.selectedTile=s.selectedTile||0;state.sound=s.sound!==false;state.themeIndex=s.themeIndex||0;state.multiplayerCount=s.multiplayerCount||state.players.length||2;state.lang=s.lang||'ro';state.setupPlayers=s.setupPlayers||state.multiplayerCount||2;}catch(e){}}
 function ensurePlayers(){while(state.players.length<state.multiplayerCount)state.players.push(defaultPlayer(state.players.length));state.players=state.players.slice(0,state.multiplayerCount)}
 
 function dailyKey(){const d=new Date();return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`}
@@ -3026,7 +3026,7 @@ function renderBoard(){
   requestAnimationFrame(()=>{drawConnectors();moveTokenTo(p.position,false)})
 }
 
-function selectTile(idx){state.selectedTile=idx;renderScreen('details')}
+function selectTile(idx){sfx('tap');state.selectedTile=idx;renderScreen('details')}
 
 function centerOfIdx(idx){const wrap=q('boardWrap');const el=document.querySelector(`.tile-wrap[data-idx="${idx}"]`);if(!wrap||!el)return null;const a=wrap.getBoundingClientRect(),b=el.getBoundingClientRect();return {x:b.left-a.left+b.width/2,y:b.top-a.top+b.height/2}}
 function drawConnectors(){const host=q('connectors');host.innerHTML='';for(let i=0;i<TILES.length;i++){const a=centerOfIdx(i),b=centerOfIdx((i+1)%TILES.length);if(!a||!b)continue;const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy),ang=Math.atan2(dy,dx)*180/Math.PI;const d=document.createElement('div');d.className='connector';d.style.left=a.x+'px';d.style.top=(a.y-4)+'px';d.style.width=len+'px';d.style.transform=`rotate(${ang}deg)`;host.appendChild(d)}}
@@ -3050,7 +3050,7 @@ function renderTree(){const p=currentPlayer();for(const n of TREE)p.unlocks[n.id
 
 function renderBadges(){const p=currentPlayer();for(const b of BADGES)p.badges[b.id]=b.ok(p);q('badgeCard').innerHTML=`<div class="section-k">Badges / rarități</div><div class="badgegrid" style="margin-top:10px">${BADGES.map(b=>`<div class="badge ${p.badges[b.id]?'':'locked'}"><div class="icon">${b.icon}</div><div style="font-weight:1000">${b.id}</div><div class="tiny">${b.rarity}</div></div>`).join('')}</div>`}
 
-function renderAll(){renderTopStats();renderBoard();renderPlayers();renderDaily();renderQuests();renderInventory();renderShop();renderTree();renderBadges();q('soundBtn').textContent=state.sound?'🔊 Sound':'🔇 Sound';q('bonusBtn').textContent=`✨ Bonus turn (${currentPlayer().bonusTurns})`;q('lastRoll').textContent=currentPlayer().lastRoll||'—'}
+function renderAll(){renderTopStats();renderBoard();renderPlayers();renderDaily();renderQuests();renderInventory();renderShop();renderTree();renderBadges();q('soundBtn').textContent=state.sound?'🔊 Sound':'🔇 Sound';q('bonusBtn').textContent=`✨ Bonus turn (${currentPlayer().bonusTurns})`;q('bonusBtnInline').textContent=`✨ Bonus (${currentPlayer().bonusTurns})`;q('lastRoll').textContent=currentPlayer().lastRoll||'—';applyLanguageUI();}
 
 function rewardBaseForTile(t){if(t.type==='special')return 60;return t.reward||100}
 function currentReward(mult=1){return Math.round(rewardBaseForTile(currentTile())*mult)}
@@ -3058,28 +3058,60 @@ function claimReward(win,extra={coins:0,xp:0,score:0,partial:1,result:'finish',s
 
 function setHint(t){q('turnHint').textContent=t}
 function toggleSound(){state.sound=!state.sound;save();renderAll()}
+
+const I18N={
+  ro:{roll:'🎲 Aruncă zarul',bonus:'✨ Bonus turn',hint:'Aruncă → mută token-ul → rezolvă efectul tile-ului → joacă mini/full game.',players:'Selectează numărul de jucători:'},
+  en:{roll:'🎲 Roll dice',bonus:'✨ Bonus turn',hint:'Roll → move token → resolve tile effect → play mini/full game.',players:'Select number of players:'}
+};
+function applyLanguageUI(){
+  const t=I18N[state.lang]||I18N.ro;
+  if(q('rollBtn')) q('rollBtn').textContent=t.roll;
+  if(q('rollBtnInline')) q('rollBtnInline').textContent=t.roll;
+  if(q('turnHint')) q('turnHint').textContent=t.hint;
+  if(q('langBtn')) q('langBtn').textContent=state.lang==='ro'?'🌐 RO':'🌐 EN';
+  const setupLabel=document.querySelector('#setupCountWrap .tiny');
+  if(setupLabel) setupLabel.textContent=t.players;
+}
+function toggleLanguage(){state.lang=state.lang==='ro'?'en':'ro';save();renderAll();renderScreen(state.screenTab||'modes');toast(state.lang==='ro'?'Limbă: Română':'Language: English','purple')}
+function sfx(type='tap'){
+  if(!state.sound) return;
+  try{
+    const Ctx=window.AudioContext||window.webkitAudioContext; if(!Ctx) return;
+    window.__awAudio=window.__awAudio||new Ctx();
+    const ctx=window.__awAudio;
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    const map={tap:[520,.03,'triangle'],roll:[220,.08,'square'],win:[760,.12,'sine'],trap:[140,.14,'sawtooth']};
+    const [f,d,w]=map[type]||map.tap;
+    o.type=w;o.frequency.value=f;g.gain.value=.0001;
+    o.connect(g);g.connect(ctx.destination);
+    const now=ctx.currentTime;
+    g.gain.exponentialRampToValueAtTime(.06,now+.01);
+    g.gain.exponentialRampToValueAtTime(.0001,now+d);
+    o.start(now);o.stop(now+d+.01);
+  }catch(e){}
+}
 function toast(text,type=''){const el=q('toast');el.className='toast show';el.innerHTML=`<div class="chiprow"><div class="chip ${type}">${safeText(text)}</div></div>`;setTimeout(()=>el.className='toast',1800)}
 function burst(){for(let i=0;i<26;i++){const d=document.createElement('div');d.className='particle';d.style.left=(innerWidth/2)+'px';d.style.top=(innerHeight/2)+'px';d.style.setProperty('--dx',rand(-220,220)+'px');d.style.setProperty('--dy',rand(-220,220)+'px');document.body.appendChild(d);setTimeout(()=>d.remove(),920)}}
 function nextTheme(){state.themeIndex=(state.themeIndex+1)%THEMES.length;document.body.className=THEMES[state.themeIndex];save()}
 
-async function rollDice(){if(state.animating)return;const p=currentPlayer();if(p.skipTurns>0){p.skipTurns--;toast(`${p.name} sare tura`,'red');endTurn();return}const dice=q('dice');dice.classList.add('rolling');q('rollBtn').disabled=true;for(let i=0;i<10;i++){dice.textContent=rand(1,6);await sleep(70)}const n=rand(1,6);dice.classList.remove('rolling');dice.textContent=n;p.lastRoll=n;q('lastRoll').textContent=n;await moveBy(n);q('rollBtn').disabled=false}
+async function rollDice(){if(state.animating)return;sfx('roll');const p=currentPlayer();if(p.skipTurns>0){p.skipTurns--;toast(`${p.name} sare tura`,'red');endTurn();return}const dice=q('dice');dice.classList.add('rolling');q('rollBtn').disabled=true;for(let i=0;i<10;i++){dice.textContent=rand(1,6);await sleep(70)}const n=rand(1,6);dice.classList.remove('rolling');dice.textContent=n;p.lastRoll=n;q('lastRoll').textContent=n;await moveBy(n);q('rollBtn').disabled=false}
 
 async function useBonusTurn(){const p=currentPlayer();if(p.bonusTurns<=0)return;p.bonusTurns--;save();renderAll();await rollDice()}
 
 async function moveBy(steps){state.animating=true;const p=currentPlayer();for(let i=0;i<steps;i++){const prev=p.position;p.position=(p.position+1)%TILES.length;if(p.position===0){p.boardPasses++;p.coins+=SPECIAL_START_PASS_REWARD.coins;addXpToPlayer(p,SPECIAL_START_PASS_REWARD.xp+(p.unlocks.start_runner?15:0));toast(`${p.name} a trecut de START`,'gold')}if(!p.visited.includes(p.position))p.visited.push(p.position);showTrail(prev,p.position);moveTokenTo(p.position,true);await sleep(270)}state.selectedTile=p.position;state.animating=false;save();renderAll();resolveLanding()}
 
 function resolveLanding(){const p=currentPlayer(),t=currentTile();if(t.type==='special'){if(t.effect==='start'){p.coins+=50;addXpToPlayer(p,30);toast('Landing pe START: +50 coins +30 XP','gold');renderScreen('event',`<div class="event-card"><b>🏁 START</b><div class="tiny">Landing reward acordat.</div></div>`,true);return endTurnPrompt()}if(t.effect==='bonus')return resolveBonus();if(t.effect==='trap')return resolveTrap()}state.mode=null;state.difficulty=null;renderScreen('modes')}
-function resolveBonus(){const p=currentPlayer();p.bonusHits++;const ev=BONUS_EVENTS[rand(0,BONUS_EVENTS.length-1)];if(p.unlocks.bonus_master)p.coins+=10;ev.apply(p);save();renderAll();renderScreen('event',`<div class="event-card"><h3>⭐ BONUS</h3><p class="muted">${ev.name}: ${ev.text}</p></div>`,true);toast(`${p.name}: ${ev.name}`,'green');endTurnPrompt(false,true)}
-function resolveTrap(){const p=currentPlayer();if((p.inventory.shield||0)>0){p.inventory.shield--;toast('Shield a blocat CAPCANA','green');renderScreen('event',`<div class="event-card"><h3>🛡️ CAPCANĂ blocată</h3><p class="muted">Shield consumat. Nu primești penalizare.</p></div>`,true);save();renderAll();return endTurnPrompt()}p.trapHits++;const ev=TRAP_EVENTS[rand(0,TRAP_EVENTS.length-1)];ev.apply(p);save();renderAll();renderScreen('event',`<div class="event-card"><h3>💀 CAPCANĂ</h3><p class="muted">${ev.name}: ${ev.text}</p></div>`,true);toast(`${p.name}: ${ev.name}`,'red');endTurnPrompt()}
+function resolveBonus(){sfx('win');const p=currentPlayer();p.bonusHits++;const ev=BONUS_EVENTS[rand(0,BONUS_EVENTS.length-1)];if(p.unlocks.bonus_master)p.coins+=10;ev.apply(p);save();renderAll();renderScreen('event',`<div class="event-card"><h3>⭐ BONUS</h3><p class="muted">${ev.name}: ${ev.text}</p></div>`,true);toast(`${p.name}: ${ev.name}`,'green');endTurnPrompt(false,true)}
+function resolveTrap(){sfx('trap');const p=currentPlayer();if((p.inventory.shield||0)>0){p.inventory.shield--;toast('Shield a blocat CAPCANA','green');renderScreen('event',`<div class="event-card"><h3>🛡️ CAPCANĂ blocată</h3><p class="muted">Shield consumat. Nu primești penalizare.</p></div>`,true);save();renderAll();return endTurnPrompt()}p.trapHits++;const ev=TRAP_EVENTS[rand(0,TRAP_EVENTS.length-1)];ev.apply(p);save();renderAll();renderScreen('event',`<div class="event-card"><h3>💀 CAPCANĂ</h3><p class="muted">${ev.name}: ${ev.text}</p></div>`,true);toast(`${p.name}: ${ev.name}`,'red');endTurnPrompt()}
 
 function modeUnlocked(mode,p=currentPlayer()){if(mode==='solo')return true;if(mode==='ai')return p.level>=2||p.unlocks.unlock_ai;if(mode==='quiz')return p.level>=3||p.unlocks.unlock_quiz;if(mode==='full')return p.level>=2||p.unlocks.unlock_full;return false}
 function renderTabs(active='modes'){return `<div class="screen-tabs"><button class="${active==='modes'?'btn-main':'btn-alt'}" onclick="renderScreen('modes')">🎮 Moduri</button><button class="${active==='details'?'btn-main':'btn-alt'}" onclick="renderScreen('details')">ℹ️ Detalii</button><button class="${active==='stats'?'btn-main':'btn-alt'}" onclick="renderScreen('stats')">📊 Stats</button></div>`}
 function renderScreen(tab,custom='',autoEnd=false){const p=currentPlayer(),t=currentTile();state.screenTab=tab;
   if(tab==='event'){q('screen').innerHTML=`${renderTabs('details')}${custom}<div class="btnrow" style="margin-top:12px"><button class="btn-alt" onclick="endTurn()">Tura următoare</button></div>`;if(autoEnd)return;}
-  if(tab==='details'){q('screen').innerHTML=`${renderTabs('details')}<h3>${t.icon} ${t.name}</h3><p class="muted">${t.type==='special'?'Tile special cu efect imediat.':'Family: '+t.family+' · kind: '+t.kind+' · reward bază: '+t.reward}</p><div class="hud"><div class="box"><div class="k">Poziție</div><div class="v">${p.position}</div></div><div class="box"><div class="k">Visited</div><div class="v">${p.visited.length}</div></div><div class="box"><div class="k">Completed</div><div class="v">${p.completed.length}</div></div><div class="box"><div class="k">Reward</div><div class="v">${rewardBaseForTile(t)}</div></div></div>`;return}
+  if(tab==='details'){q('screen').innerHTML=`${renderTabs('details')}<h3>${t.icon} ${t.name}</h3><p class="muted">${t.type==='special'?'Tile special cu efect imediat.':'Family: '+t.family+' · kind: '+t.kind+' · reward bază: '+t.reward}</p><div class="hud"><div class="box"><div class="k">Poziție</div><div class="v">${p.position}</div></div><div class="box"><div class="k">Visited</div><div class="v">${p.visited.length}</div></div><div class="box"><div class="k">Completed</div><div class="v">${p.completed.length}</div></div><div class="box"><div class="k">Reward</div><div class="v">${rewardBaseForTile(t)}</div></div></div><div class="game-zone"><div class="zone-card"><div class="zone-title">${state.lang==='en'?'Play area':'Zona de joc'}</div><div class="tiny">${state.lang==='en'?'Use the center board as your main arena and jump directly into mini-games.':'Folosește zona centrală ca arenă principală și intră rapid în mini-games.'}</div><div class="btnrow" style="margin-top:10px"><button class="btn-main" onclick="renderScreen('modes')">${state.lang==='en'?'Open modes':'Deschide moduri'}</button><button class="btn-alt" onclick="rollDice()">${state.lang==='en'?'Quick roll':'Aruncare rapidă'}</button></div></div><div class="zone-card"><div class="zone-title">${state.lang==='en'?'Current objective':'Obiectiv curent'}</div><div class="tiny">${state.lang==='en'?'Reach BONUS/START tiles for extra rewards.' :'Țintește tile-urile BONUS/START pentru rewards suplimentare.'}</div></div></div>`;return}
   if(tab==='stats'){q('screen').innerHTML=`${renderTabs('stats')}<h3>Stats · ${p.name}</h3><div class="hud"><div class="box"><div class="k">Level</div><div class="v">${p.level}</div></div><div class="box"><div class="k">XP need</div><div class="v">${levelNeed(p.level)}</div></div><div class="box"><div class="k">Full runs</div><div class="v">${p.full.finished}</div></div><div class="box"><div class="k">Best family</div><div class="v">${Object.entries(p.stats).sort((a,b)=>b[1]-a[1])[0]?.[0]||'—'}</div></div></div><div class="xpbar"><div class="xpfill" style="width:${Math.round(p.xp/levelNeed(p.level)*100)}%"></div></div><div class="log" style="margin-top:12px">Coins ${p.coins} · Wins ${p.totalWins} · Pass START ${p.boardPasses} · BONUS ${p.bonusHits} · CAPCANĂ ${p.trapHits}</div>`;return}
   if(t.type==='special'){q('screen').innerHTML=`${renderTabs('modes')}<h3>${t.icon} ${t.name}</h3><p class="muted">Acest tile rezolvă efectul automat. Apasă pentru tura următoare.</p><button class="btn-alt" onclick="endTurn()">Tura următoare</button>`;return}
-  q('screen').innerHTML=`${renderTabs('modes')}<h3>${t.icon} ${t.name}</h3><p class="muted">Alege modul. Full Game folosește linkul original în overlay. Pentru site-uri externe, reward-ul automat depinde de <code>postMessage</code>; altfel rămâne fallback manual.</p><div class="choices">${['solo','ai','quiz','full'].map(m=>`<div class="choice"><div class="i">${m==='full'?'🕹️':m==='quiz'?'🧠':m==='ai'?'🤖':'🎮'}</div><div class="t">${m.toUpperCase()}</div><div class="d">${modeUnlocked(m,p)?'Open':'Locked'}</div><button class="${m==='full'?'btn-purple':'btn-main'}" ${modeUnlocked(m,p)?`onclick="chooseMode('${m}')"`:'disabled'}>${m==='full'?'Deschide':'Alege'}</button></div>`).join('')}</div>`}
+  q('screen').innerHTML=`${renderTabs('modes')}<h3>${t.icon} ${t.name}</h3><p class="muted">Alege modul. Full Game folosește linkul original în overlay. Pentru site-uri externe, reward-ul automat depinde de <code>postMessage</code>; altfel rămâne fallback manual.</p><div class="choices">${['solo','ai','quiz','full'].map(m=>`<div class="choice"><div class="i">${m==='full'?'🕹️':m==='quiz'?'🧠':m==='ai'?'🤖':'🎮'}</div><div class="t">${m.toUpperCase()}</div><div class="d">${modeUnlocked(m,p)?'Open':'Locked'}</div><button class="${m==='full'?'btn-purple':'btn-main'}" ${modeUnlocked(m,p)?`onclick="chooseMode('${m}')"`:'disabled'}>${m==='full'?'Deschide':'Alege'}</button></div>`).join('')}</div><div class="game-zone"><div class="zone-card"><div class="zone-title">${state.lang==='en'?'Quick actions':'Acțiuni rapide'}</div><div class="btnrow"><button class="btn-gold" onclick="rollDice()">${state.lang==='en'?'Roll now':'Aruncă acum'}</button><button class="btn-alt" onclick="renderScreen('stats')">${state.lang==='en'?'See stats':'Vezi stats'}</button></div></div><div class="zone-card"><div class="zone-title">${state.lang==='en'?'Board focus':'Focus board'}</div><div class="tiny">${state.lang==='en'?'Center area now stays active to reduce empty space, including shortcuts and objectives.':'Zona centrală rămâne activă pentru a evita spațiul gol, cu shortcut-uri și obiective.'}</div></div></div>`}
 
 function endTurnPrompt(){setHint('Efect rezolvat. Tura următoare.');}
 function endTurn(){state.mode=null;state.difficulty=null;state.activePlayer=(state.activePlayer+1)%state.players.length;save();renderAll();renderScreen('details');setHint('Jucătorul următor poate arunca zarul.')}
@@ -3149,7 +3181,7 @@ function loadProfileSlot(n){const s=localStorage.getItem(PROFILE_PREFIX+n);if(!s
 function partialReset(type){if(type==='stats'){for(const p of state.players){p.stats={};p.history=[];p.totalWins=0;p.full={started:0,finished:0,wins:0};p.completed=[];p.questsDone=[]}}if(type==='inventory'){for(const p of state.players){p.inventory={shield:0,reroll:0,double:0,themeToken:0};p.chests={common:0,rare:0,epic:0};p.shopBuys=0}}if(type==='board'){for(const p of state.players){p.position=0;p.visited=[0];p.completed=[];p.boardPasses=0;p.bonusHits=0;p.trapHits=0;p.skipTurns=0;p.bonusTurns=0}}save();renderAll();toast(`Reset ${type}`,'red')}
 function hardReset(){localStorage.removeItem(STORAGE);state.players=[defaultPlayer(0),defaultPlayer(1)];state.activePlayer=0;state.selectedTile=0;state.multiplayerCount=2;state.themeIndex=0;state.sound=true;save();renderAll();renderScreen('details');toast('Reset complet','red')}
 
-function init(){load();ensurePlayers();state.daily=buildDaily();document.body.className=THEMES[state.themeIndex];renderAll();renderScreen('modes');setHint('Aruncă zarul sau alege un mod de joc.')}
+function init(){load();ensurePlayers();state.daily=buildDaily();document.body.className=THEMES[state.themeIndex];renderAll();renderScreen('modes');setHint(state.lang==='en'?'Roll the dice or choose a game mode.':'Aruncă zarul sau alege un mod de joc.');}
 window.addEventListener('resize',()=>requestAnimationFrame(()=>{drawConnectors();moveTokenTo(currentPlayer().position,false)}))
 init();
 </script>
@@ -4025,12 +4057,21 @@ init();
 .session-option:hover{transform:translateY(-2px);border-color:rgba(110,231,255,.28);background:rgba(110,231,255,.08)}
 .session-option .big{font-size:30px}.session-option .title{font-size:22px;font-weight:1000}.session-option .desc{font-size:13px;color:rgba(255,255,255,.74);line-height:1.4}
 @media (max-width: 760px){.session-grid{grid-template-columns:1fr}}
+
+.setup-count{margin:8px 0 14px;padding:10px 12px;border:1px solid rgba(255,255,255,.1);border-radius:14px;background:rgba(255,255,255,.04)}
+.setup-pcount.active{border-color:rgba(110,231,255,.55);background:rgba(110,231,255,.14)}
+.game-zone{display:grid;grid-template-columns:1.4fr 1fr;gap:10px;margin-top:12px}
+.game-zone .zone-card{padding:12px;border-radius:16px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04)}
+.game-zone .zone-title{font-weight:900;margin-bottom:6px}
+@media (max-width: 820px){.game-zone{grid-template-columns:1fr}.center-screen{min-height:360px!important}.center-panel.screen{min-height:unset!important;padding:14px}.screen-tabs button{flex:1 1 calc(33% - 8px)}.dice-inline-actions button{flex:1 1 100%}}
+
 </style>
 <div id="sessionModeModal" class="session-modal hidden">
   <div class="session-card">
     <div class="section-k">Start game</div>
     <h2 style="margin:6px 0 8px">Alege modul de joc</h2>
     <p class="tiny" style="font-size:14px;margin-bottom:14px">Setarea asta definește sesiunea de la începutul jocului.</p>
+    <div class="setup-count" id="setupCountWrap"><div class="tiny" style="font-size:13px">Selectează numărul de jucători:</div><div class="btnrow" style="margin-top:8px"><button class="btn-alt setup-pcount" onclick="setSetupPlayers(1)">1</button><button class="btn-alt setup-pcount" onclick="setSetupPlayers(2)">2</button><button class="btn-alt setup-pcount" onclick="setSetupPlayers(3)">3</button><button class="btn-alt setup-pcount" onclick="setSetupPlayers(4)">4</button></div></div>
     <div class="session-grid">
       <button class="session-option" onclick="configureSessionMode('solo')">
         <div class="big">🎮</div><div class="title">Solo</div><div class="desc">1 jucător pe board. Focus pe progres personal.</div>
@@ -4049,6 +4090,7 @@ init();
   if(!window.state) return;
   state.sessionMode = state.sessionMode || null;
   state.onboardingDone = !!state.onboardingDone;
+  state.setupPlayers = state.setupPlayers || state.multiplayerCount || 2;
   state.players = (state.players || []).map((p,i)=>Object.assign({isAI:false}, p || {}, {isAI: !!(p && p.isAI)}));
 
   const originalSave = window.save;
@@ -4062,7 +4104,9 @@ init();
         themeIndex: state.themeIndex,
         multiplayerCount: state.multiplayerCount,
         sessionMode: state.sessionMode,
-        onboardingDone: state.onboardingDone
+        onboardingDone: state.onboardingDone,
+        setupPlayers: state.setupPlayers,
+        lang: state.lang
       }));
     }catch(e){ if(typeof originalSave==='function') originalSave(); }
   };
@@ -4073,6 +4117,7 @@ init();
       const s = JSON.parse(raw);
       if('sessionMode' in s) state.sessionMode = s.sessionMode;
       if('onboardingDone' in s) state.onboardingDone = !!s.onboardingDone;
+      if('setupPlayers' in s) state.setupPlayers = s.setupPlayers || 2;
       state.players = (s.players || state.players || []).map((p,i)=>Object.assign(defaultPlayer(i), p || {}, {isAI: !!(p && p.isAI)}));
     }catch(e){}
   }
@@ -4097,6 +4142,12 @@ init();
     if(m) m.classList.add('hidden');
   };
 
+
+  window.setSetupPlayers = function(n){
+    state.setupPlayers = Math.max(1, Math.min(4, n|0));
+    document.querySelectorAll('.setup-pcount').forEach((b,i)=>b.classList.toggle('active', i+1===state.setupPlayers));
+    save();
+  };
   window.configureSessionMode = function(mode){
     state.sessionMode = mode;
     state.onboardingDone = true;
@@ -4111,9 +4162,13 @@ init();
     if(mode === 'solo'){
       state.multiplayerCount = 1;
       state.players = [p0];
-    } else {
+    } else if(mode === 'vsai') {
       state.multiplayerCount = 2;
       state.players = [p0, p1];
+    } else {
+      const count = Math.max(2, state.setupPlayers||2);
+      state.multiplayerCount = count;
+      state.players = Array.from({length:count}, (_,i)=>Object.assign(defaultPlayer(i), state.players[i] || {}, {name:'P'+(i+1), isAI:false}));
     }
 
     if(typeof ensurePlayers === 'function') ensurePlayers();
@@ -4249,6 +4304,7 @@ init();
     };
   }
 
+  setTimeout(()=>{ if(typeof setSetupPlayers==='function') setSetupPlayers(state.setupPlayers||2); },0);
   if(!state.sessionMode || !state.onboardingDone) {
     openSessionModeModal();
   } else {
