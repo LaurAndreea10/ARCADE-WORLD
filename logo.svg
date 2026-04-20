@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="ring" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#74f6ea"/>
+      <stop offset="50%" stop-color="#6ee7ff"/>
+      <stop offset="100%" stop-color="#ffd54a"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%">
+      <stop offset="0%" stop-color="rgba(116,246,234,.2)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+  </defs>
+  <circle cx="60" cy="60" r="56" fill="none" stroke="url(#ring)" stroke-width="4" opacity=".9"/>
+  <circle cx="60" cy="60" r="48" fill="#0b1630"/>
+  <circle cx="60" cy="60" r="48" fill="url(#glow)"/>
+  <text x="60" y="54" text-anchor="middle" font-family="sans-serif" font-weight="900" font-size="28" fill="#74f6ea" letter-spacing="2">AW</text>
+  <text x="60" y="76" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="9" fill="rgba(255,255,255,.5)" letter-spacing="4">ARCADE</text>
+  <path d="M30 90 L40 82 L50 88 L60 80 L70 86 L80 78 L90 84" fill="none" stroke="rgba(110,231,255,.3)" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

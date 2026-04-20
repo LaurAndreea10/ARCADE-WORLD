@@ -1,0 +1,459 @@
+<!-- ========== ARCADE WORLD — PREMIUM PATCH v31 ========== -->
+<!-- PASTE THIS BEFORE </body> IN YOUR EXISTING HTML -->
+<!-- Does NOT modify any existing code — only adds/wraps -->
+
+<style id="v31-patch">
+/* ===== MOBILE GAME ZONE — fills the dead space below board ===== */
+.mgz{display:none;padding:10px 8px 24px;margin:0 4px}
+.mgz-card{border-radius:20px;padding:16px;background:linear-gradient(135deg,rgba(12,28,58,.88),rgba(6,16,38,.92));border:1px solid rgba(110,231,255,.14);backdrop-filter:blur(12px);margin-bottom:10px;position:relative;overflow:hidden}
+.mgz-card::before{content:'';position:absolute;top:0;right:0;width:120px;height:120px;background:radial-gradient(circle,rgba(110,231,255,.12),transparent 70%);pointer-events:none}
+.mgz-top{display:flex;align-items:center;gap:12px}
+.mgz-icon{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,rgba(255,213,74,.15),rgba(110,231,255,.1));border:1px solid rgba(255,213,74,.2);display:grid;place-items:center;font-size:26px;flex-shrink:0}
+.mgz-name{font-size:17px;font-weight:1000;color:#fff}
+.mgz-meta{font-size:11px;color:rgba(255,255,255,.5);margin-top:3px;display:flex;gap:6px;flex-wrap:wrap}
+.mgz-t{padding:2px 7px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);font-weight:800;font-size:9px;text-transform:uppercase;letter-spacing:.05em}
+.mgz-t.gold{background:rgba(255,213,74,.12);border-color:rgba(255,213,74,.2);color:#ffeaa0}
+.mgz-t.cyan{background:rgba(110,231,255,.1);border-color:rgba(110,231,255,.18);color:#b8ecff}
+.mgz-t.red{background:rgba(255,99,99,.12);border-color:rgba(255,99,99,.2);color:#ffcccc}
+.mgz-t.grn{background:rgba(48,210,124,.12);border-color:rgba(48,210,124,.2);color:#c8ffd8}
+.mgz-modes{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:14px}
+.mgz-m{border-radius:14px;padding:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s ease}
+.mgz-m:active{transform:scale(.97);border-color:rgba(110,231,255,.3);background:rgba(110,231,255,.06)}
+.mgz-m.off{opacity:.4;pointer-events:none}
+.mgz-mi{font-size:22px;width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.06);display:grid;place-items:center;flex-shrink:0}
+.mgz-mt{font-weight:900;font-size:12px;color:#fff}
+.mgz-md{font-size:9px;color:rgba(255,255,255,.4);margin-top:1px}
+.mgz-qs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.mgz-q{border-radius:12px;padding:8px 6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);text-align:center}
+.mgz-qv{font-size:18px;font-weight:1000;color:#fff;line-height:1}
+.mgz-ql{font-size:8px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:3px}
+.mgz-next{display:flex;gap:5px;margin-top:10px;overflow-x:auto;scrollbar-width:none;padding:2px 0}
+.mgz-next::-webkit-scrollbar{display:none}
+.mgz-nt{flex:0 0 60px;height:60px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);display:grid;place-items:center;text-align:center;cursor:pointer;transition:all .15s ease}
+.mgz-nt:active{border-color:rgba(110,231,255,.3)}
+.mgz-nt .ni{font-size:18px}.mgz-nt .nn{font-size:6px;font-weight:800;margin-top:1px;color:rgba(255,255,255,.45)}
+.mgz-nt.bonus{border-color:rgba(255,213,74,.18)}.mgz-nt.trap{border-color:rgba(255,99,99,.18)}
+.mgz-pb{width:100%;padding:14px;border-radius:14px;font-size:15px;font-weight:900;border:none;cursor:pointer;margin-top:12px;background:linear-gradient(135deg,#c4f6ff,#6ee7ff);color:#072133;box-shadow:0 6px 20px rgba(110,231,255,.18)}
+.mgz-pb:active{transform:scale(.96)}
+.mgz-pb.gold{background:linear-gradient(135deg,#ffe7a0,#ffd54a);color:#382900}
+.mgz-pb.purple{background:linear-gradient(135deg,#e4d8ff,#a78bfa);color:#1e1438}
+.mgz-qstrip{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-top:10px;padding:2px 0}
+.mgz-qstrip::-webkit-scrollbar{display:none}
+.mgz-qc{flex-shrink:0;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);font-size:11px;font-weight:800;white-space:nowrap;color:rgba(255,255,255,.7)}
+.mgz-qc b{color:var(--gold)}
+.mgz-qb{height:3px;border-radius:2px;background:rgba(255,255,255,.1);margin-top:4px;overflow:hidden}
+.mgz-qb span{display:block;height:100%;border-radius:2px;background:linear-gradient(90deg,var(--cyan),var(--gold))}
+.mgz-feed{margin-top:10px;border-radius:14px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.06);padding:10px}
+.mgz-ft{font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:6px}
+.mgz-fi{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:11px;color:rgba(255,255,255,.55)}
+.mgz-fi:last-child{border:none}
+.mgz-fd{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+
+/* Clean first load — hide stacked modals */
+.setup-overlay:not(.hidden) ~ .session-modal:not(.hidden),
+.session-modal:not(.hidden) ~ .setup-overlay:not(.hidden){display:none!important}
+
+@media(max-width:768px){
+  .mgz{display:block}
+  /* Kill duplicate mobile navs from earlier versions */
+  .mobile-tab-bar,.mobile-dice-fab,.mobile-score-strip,.mobile-panel,.side-toggle,.mobile-ribbon,.m-fab,.m-tabs:not(#mobTabs),.m-score-strip:not(#mobStrip){display:none!important}
+}
+</style>
+
+<script>
+// ========== v31 PREMIUM PATCH ==========
+(function(){
+'use strict';
+if(!window.state||!window.TILES||!window.currentPlayer) return;
+
+// ============================================================
+// 1. ENGLISH TRANSLATION LAYER
+// ============================================================
+const RO_EN={
+  'Aruncă zarul':'Roll Dice','Bonus turn':'Bonus Turn','Tura următoare':'Next Turn',
+  'Închide':'Close','Cumpără':'Buy','Alege':'Choose','Deschide':'Open','Continuă':'Continue',
+  'Coins insuficiente':'Not enough coins','a trecut de START':'passed START',
+  'Landing pe START':'Landing on START','Shield a blocat CAPCANA':'Shield blocked the TRAP',
+  'sare tura':'skips turn','Multiplayer setat la':'Multiplayer set to','jucători':'players',
+  'a cumpărat':'bought','a completat quest':'completed quest','a urcat la level':'leveled up to',
+  'și a primit bonus turn':'and got a bonus turn','Mod setat':'Mode set',
+  'Save exportat':'Save exported','Save importat':'Save imported','Import invalid':'Invalid import',
+  'Slot gol':'Empty slot','salvat':'saved','încărcat':'loaded','Reset complet':'Full reset',
+  'Ai ratat':'You missed','Ai câștigat':'You won','Coș marcat':'Basket scored',
+  'Gol marcat':'Goal scored','Execuție reușită':'Success','Execuție ratată':'Missed',
+  'Duel câștigat':'Duel won','AI a câștigat':'AI won','Prea multe capcane':'Too many traps',
+  'Ai ieșit din labirint':'Escaped the maze','Sector curățat':'Sector cleared',
+  'Toate perechile găsite':'All pairs found','Remiză':'Draw','Run reușit':'Successful run',
+  'Sub target':'Below target','Fusion clear':'Fusion clear','x2 reward activat':'x2 reward activated',
+  'Joc configurat! Aruncă zarul.':'Game configured! Roll the dice.',
+  'Sesiune pornită':'Session started','profiluri complete':'with profiles',
+  'Quiz greșit':'Quiz wrong','Quiz corect':'Quiz correct',
+  'Tu ai găsit':'You found','AI a ales mai bine':'AI chose better',
+  'Ai bătut AI':'You beat AI','AI mai bun':'AI was better','Ai depășit AI':'You beat AI',
+  'Ai câștigat TTT':'You won TTT','Safe crate':'Safe crate',
+  'Login zilnic':'Daily login','Perfect release':'Perfect release',
+  'AI mai precis':'AI more precise','Egal':'Draw','Control bun':'Good control',
+  'Ritm ratat':'Rhythm missed','Șut ratat':'Shot missed',
+  'ARUNCĂ ȘI AVANSEAZĂ':'ROLL AND ADVANCE','CAPCANĂ':'TRAP',
+  'Traseu complet de 24 tile-uri. Dacă treci peste START primești reward. BONUS și CAPCANĂ trag event card random.':'Complete 24-tile circuit. Pass START for rewards. BONUS and TRAP tiles draw random event cards.',
+  'Aruncă → mută token-ul → rezolvă efectul tile-ului → joacă mini/full game.':'Roll → move token → resolve tile → play mini/full game.',
+  'Primele 2 shot-uri sunt slow tutorial, apoi viteza crește treptat.':'First 2 shots are slow tutorial, then speed ramps up.',
+  'Oprește markerul în zona verde.':'Stop the marker in the green zone.',
+  'Timing și reflex':'Timing and reflexes','Rhythm și control':'Rhythm and control',
+  'Alege lada sigură.':'Choose the safe crate.',
+  'Mergi spre ieșire și evită capcanele.':'Go to exit and avoid traps.',
+  'Crește score-ul și termină boss-ul.':'Increase score and finish the boss.',
+  'Combină mecanici arcade.':'Combine arcade mechanics.',
+  'Găsește toate perechile.':'Find all pairs.',
+  'Sparge suficiente bricks înainte să expire timpul.':'Break enough bricks before time runs out.',
+  'Alege modul de joc':'Choose game mode',
+  'Attack bate Feint, Block bate Attack, Feint bate Block.':'Attack beats Feint, Block beats Attack, Feint beats Block.',
+};
+
+function tr(text){
+  let t=text;
+  for(const[ro,en] of Object.entries(RO_EN)){
+    if(t.includes(ro)) t=t.split(ro).join(en);
+  }
+  return t;
+}
+
+// Wrap toast
+const _toast=window.toast;
+if(_toast){window.toast=function(text,type){return _toast(tr(text),type)};}
+
+// Wrap finishMini
+const _finishMini=window.finishMini;
+if(_finishMini){window.finishMini=function(win,msg,opts){return _finishMini(win,tr(msg),opts)};}
+
+// Wrap layoutGame
+const _layoutGame=window.layoutGame;
+if(_layoutGame){window.layoutGame=function(title,subtitle,hud,body,foot){return _layoutGame(title,tr(subtitle),hud,body,foot)};}
+
+// Translate static elements
+function translateUI(){
+  // Hero
+  const h1=document.querySelector('.hero h1');
+  if(h1&&h1.textContent.includes('V')) h1.textContent='ARCADE WORLD';
+  const hp=document.querySelector('.hero p');
+  if(hp&&(hp.textContent.includes('finalizează')||hp.textContent.includes('adaugă')||hp.textContent.includes('Enhanced')||hp.textContent.includes('Complete')||hp.textContent.includes('Ultimate')||hp.textContent.includes('Final')||hp.textContent.includes('Premium')))
+    hp.textContent='Board game with 11 mini-games, territory capture, boss fights, and local multiplayer. Roll dice, play arcade challenges, and compete for the highest score.';
+  
+  // Center brand
+  const cs=document.querySelector('.center-sub');
+  if(cs&&cs.textContent.includes('ARUNCĂ')) cs.textContent='ROLL AND ADVANCE';
+  
+  // Board description
+  document.querySelectorAll('.muted').forEach(el=>{
+    if(el.textContent.includes('Traseu complet')) el.textContent='Complete 24-tile circuit. Pass START for rewards. BONUS and TRAP tiles draw random event cards.';
+  });
+  
+  // Buttons
+  document.querySelectorAll('button').forEach(btn=>{
+    let t=btn.textContent;
+    if(t.includes('Aruncă zarul')) btn.textContent=t.replace('Aruncă zarul','Roll Dice');
+    if(t.includes('Bonus turn')) btn.textContent=t.replace('Bonus turn','Bonus Turn');
+    if(t==='Cumpără') btn.textContent='Buy';
+    if(t==='Alege') btn.textContent='Choose';
+    if(t==='Deschide') btn.textContent='Open';
+    if(t.includes('Închide')) btn.textContent=t.replace('Închide','Close');
+    if(t.includes('Tura următoare')) btn.textContent=t.replace('Tura următoare','Next Turn');
+  });
+  
+  // Tile names
+  document.querySelectorAll('.tile .name').forEach(el=>{
+    if(el.textContent.includes('CAPCANĂ')) el.textContent='TRAP';
+    if(el.textContent.includes('LABIRINTO')) el.textContent='MAZE';
+  });
+  
+  // Tile states
+  document.querySelectorAll('.tile .state').forEach(el=>{
+    const m={'CURRENT':'HERE','DONE':'DONE','VISITED':'SEEN','SPECIAL':'EVENT','OPEN':'OPEN'};
+    if(m[el.textContent.trim()]) el.textContent=m[el.textContent.trim()];
+  });
+  
+  // Hint
+  const hint=q('turnHint');
+  if(hint&&hint.textContent.includes('Aruncă')) hint.textContent='Roll → move token → resolve tile → play mini/full game → earn rewards.';
+  
+  // Section labels
+  document.querySelectorAll('.section-k').forEach(el=>{
+    const m={'Board':'Board','Turn system':'Turn System','Multiplayer local':'Local Multiplayer','Quest-uri':'Quests','Badges / rarități':'Badges','Unlock tree':'Unlock Tree','Shop':'Shop','Inventory':'Inventory','Daily':'Daily'};
+    if(m[el.textContent.trim()]) el.textContent=m[el.textContent.trim()];
+  });
+
+  // Setup overlay
+  document.querySelectorAll('h2').forEach(el=>{
+    if(el.textContent.includes('Alege modul')) el.textContent='Choose Game Mode';
+    if(el.textContent.includes('Profiluri')) el.textContent='Player Profiles';
+  });
+  document.querySelectorAll('.setup-label').forEach(el=>{
+    if(el.textContent.includes('Câți')) el.textContent='How many players?';
+    if(el.textContent.includes('Numele')) el.textContent='Player names';
+    if(el.textContent.includes('Temă')) el.textContent='Visual theme';
+  });
+  const startBtn=document.getElementById('setupStartBtn');
+  if(startBtn&&startBtn.textContent.includes('START JOC')) startBtn.textContent='🎮 START GAME';
+  document.querySelectorAll('.setup-skip button').forEach(b=>{
+    if(b.textContent.includes('Continuă')) b.textContent='Continue without setup →';
+  });
+  document.querySelectorAll('.setup-player-text').forEach(el=>{
+    if(el.textContent.includes('Jucători')) el.textContent=el.textContent.replace('Jucători','Players');
+  });
+}
+
+// ============================================================
+// 2. MOBILE GAME ZONE — fills the empty viewport space
+// ============================================================
+function createGameZone(){
+  if(document.getElementById('mgzRoot')) return;
+  const zone=document.createElement('div');
+  zone.className='mgz';
+  zone.id='mgzRoot';
+  const boardCard=document.querySelector('.board-card');
+  if(boardCard&&boardCard.parentNode) boardCard.parentNode.insertBefore(zone,boardCard.nextSibling);
+}
+
+function renderGameZone(){
+  const zone=document.getElementById('mgzRoot');
+  if(!zone||window.innerWidth>768) return;
+  
+  const p=currentPlayer();
+  const t=tile(p.position);
+  const isGame=t.type==='game';
+
+  // Quick stats
+  let html=`<div class="mgz-qs">
+    <div class="mgz-q"><div class="mgz-qv">${p.coins}</div><div class="mgz-ql">Coins</div></div>
+    <div class="mgz-q"><div class="mgz-qv">${p.level}</div><div class="mgz-ql">Level</div></div>
+    <div class="mgz-q"><div class="mgz-qv">${p.totalWins||0}</div><div class="mgz-ql">Wins</div></div>
+    <div class="mgz-q"><div class="mgz-qv">${(p.completed||[]).length}</div><div class="mgz-ql">Done</div></div>
+  </div>`;
+
+  // Active tile card
+  const effectTag=!isGame
+    ?(t.effect==='bonus'?'<span class="mgz-t gold">BONUS</span>':t.effect==='trap'?'<span class="mgz-t red">TRAP</span>':'<span class="mgz-t cyan">START</span>')
+    :`<span class="mgz-t cyan">${t.family||'game'}</span>`;
+  const rewardTag=isGame?`<span class="mgz-t gold">${t.reward||100}c</span>`:'';
+  const doneTag=(p.completed||[]).includes(p.position)?'<span class="mgz-t grn">DONE</span>':'';
+
+  html+=`<div class="mgz-card"><div class="mgz-top">
+    <div class="mgz-icon">${t.icon||'🎮'}</div>
+    <div><div class="mgz-name">${t.name}</div><div class="mgz-meta">${effectTag}${rewardTag}${doneTag}<span class="mgz-t">Tile ${p.position}</span></div></div>
+  </div>`;
+
+  if(isGame){
+    html+=`<div class="mgz-modes">
+      <div class="mgz-m" onclick="chooseMode('solo')"><div class="mgz-mi">🎮</div><div><div class="mgz-mt">Solo</div><div class="mgz-md">Practice run</div></div></div>
+      <div class="mgz-m ${modeUnlocked('ai',p)?'':'off'}" onclick="if(modeUnlocked('ai'))chooseMode('ai')"><div class="mgz-mi">🤖</div><div><div class="mgz-mt">vs AI</div><div class="mgz-md">${modeUnlocked('ai',p)?'Challenge AI':'Lv2 needed'}</div></div></div>
+      <div class="mgz-m ${modeUnlocked('full',p)?'':'off'}" onclick="if(modeUnlocked('full'))chooseMode('full')"><div class="mgz-mi">🕹️</div><div><div class="mgz-mt">Full Game</div><div class="mgz-md">${modeUnlocked('full',p)?'Original':'Lv2 needed'}</div></div></div>
+      <div class="mgz-m ${modeUnlocked('quiz',p)?'':'off'}" onclick="if(modeUnlocked('quiz'))chooseMode('quiz')"><div class="mgz-mi">🧠</div><div><div class="mgz-mt">Quiz</div><div class="mgz-md">${modeUnlocked('quiz',p)?'Skill + trivia':'Lv3 needed'}</div></div></div>
+    </div>`;
+  } else {
+    html+=`<button class="mgz-pb ${t.effect==='bonus'?'gold':t.effect==='trap'?'purple':''}" onclick="endTurn()">
+      ${t.effect==='start'?'🏁 Collect START Reward':t.effect==='bonus'?'⭐ Reveal Bonus Card':t.effect==='trap'?'💀 Face the Trap':'➡️ Next Turn'}
+    </button>`;
+  }
+  html+='</div>';
+
+  // Next 6 tiles preview
+  html+='<div class="mgz-next">';
+  for(let i=1;i<=6;i++){
+    const idx=(p.position+i)%TILES.length;
+    const nt=tile(idx);
+    const cls=nt.type==='special'?(nt.effect==='trap'?'trap':'bonus'):'';
+    html+=`<div class="mgz-nt ${cls}" onclick="selectTile(${idx})"><div class="ni">${nt.icon||'🎮'}</div><div class="nn">${nt.name}</div></div>`;
+  }
+  html+='</div>';
+
+  // Quest strip
+  if(typeof QUESTS!=='undefined'){
+    html+='<div class="mgz-qstrip">';
+    QUESTS.forEach(qs=>{
+      const pr=Math.min(qs.target,qs.progress(p));
+      const done=(p.questsDone||[]).includes(qs.id);
+      const pct=Math.round(pr/qs.target*100);
+      const title=qs.title.replace('Lovește','Hit').replace('Treci de START de','Pass START').replace('ori','x').replace('Termină','Finish').replace('victorii','wins').replace('Cumpără','Buy').replace('iteme','items');
+      html+=`<div class="mgz-qc">${done?'✅':'🎯'} <b>${pr}/${qs.target}</b> ${title}<div class="mgz-qb"><span style="width:${pct}%"></span></div></div>`;
+    });
+    html+='</div>';
+  }
+
+  // Activity feed
+  const history=(p.history||[]).slice(0,3);
+  if(history.length){
+    html+='<div class="mgz-feed"><div class="mgz-ft">Recent Activity</div>';
+    history.forEach(h=>{
+      const isWin=/win/i.test(h.result||'');
+      const color=isWin?'#30d27c':'#ff6363';
+      const tileName=TILES[h.tile]?TILES[h.tile].name:'Tile '+h.tile;
+      html+=`<div class="mgz-fi"><div class="mgz-fd" style="background:${color}"></div>${isWin?'✅':'❌'} ${tileName} · +${h.coins||0}c +${h.xp||0}xp</div>`;
+    });
+    html+='</div>';
+  }
+
+  zone.innerHTML=html;
+}
+
+// ============================================================
+// 3. CLEAN FIRST-LOAD FLOW
+// ============================================================
+function cleanFirstLoad(){
+  // Hide conflicting overlays — only show ONE setup flow
+  const setup=document.getElementById('setupOverlay');
+  const session=document.getElementById('sessionModeModal');
+  
+  // If both exist and both visible, hide session modal (setup is enough)
+  if(setup&&session&&!setup.classList.contains('hidden')&&!session.classList.contains('hidden')){
+    session.classList.add('hidden');
+  }
+  
+  // If no save exists, make sure setup is visible and clean
+  if(!localStorage.getItem(STORAGE)){
+    if(session) session.classList.add('hidden');
+    // Setup overlay handles onboarding
+  } else {
+    // Has save — hide all overlays
+    if(setup) setup.classList.add('hidden');
+    if(session) session.classList.add('hidden');
+  }
+  
+  // Hide duplicate mobile UI elements from earlier versions
+  ['mScoreStrip','mFab','mTabs','mPanel','mobileRibbon','mobileFab'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.display='none';
+  });
+}
+
+// ============================================================
+// 4. HOOK INTO RENDER CYCLE
+// ============================================================
+createGameZone();
+cleanFirstLoad();
+
+const _renderAll=window.renderAll;
+if(_renderAll){
+  window.renderAll=function(){
+    _renderAll.apply(this,arguments);
+    renderGameZone();
+    translateUI();
+  };
+}
+
+const _renderScreen=window.renderScreen;
+if(_renderScreen){
+  window.renderScreen=function(tab,custom,autoEnd){
+    _renderScreen.apply(this,arguments);
+    setTimeout(()=>{translateUI();renderGameZone()},15);
+  };
+}
+
+// Mobile FAB click
+const fab=document.getElementById('mobFab');
+if(fab) fab.onclick=function(){if(typeof rollDice==='function'&&!state.animating)rollDice()};
+
+// Mobile tabs
+document.querySelectorAll('#mobTabs .mob-tab').forEach(btn=>{
+  btn.onclick=function(){
+    const t=this.dataset.t;
+    document.querySelectorAll('#mobTabs .mob-tab').forEach(b=>b.classList.toggle('active',b.dataset.t===t));
+    const panel=document.getElementById('mobPanel');
+    if(t==='board'){panel.classList.remove('open');window.scrollTo({top:0,behavior:'smooth'})}
+    else if(t==='play'){
+      const scr=document.getElementById('screen');
+      panel.innerHTML='<div class="mob-panel-head"><h2>🕹️ Play</h2><button class="mob-panel-close" onclick="document.getElementById(\'mobPanel\').classList.remove(\'open\')">✕</button></div>'+(scr?scr.innerHTML:'<p>Roll the dice to play.</p>');
+      panel.classList.add('open');
+    }
+    else if(t==='stats'){
+      const p=currentPlayer();
+      panel.innerHTML=`<div class="mob-panel-head"><h2>📊 Stats</h2><button class="mob-panel-close" onclick="document.getElementById('mobPanel').classList.remove('open')">✕</button></div>
+      <div class="hud" style="grid-template-columns:repeat(2,1fr)">
+        <div class="box"><div class="k">Level</div><div class="v">${p.level}</div></div>
+        <div class="box"><div class="k">Coins</div><div class="v">${p.coins}</div></div>
+        <div class="box"><div class="k">Wins</div><div class="v">${p.totalWins}</div></div>
+        <div class="box"><div class="k">Tiles</div><div class="v">${(p.completed||[]).length}/24</div></div>
+      </div>
+      <div class="players" style="margin-top:12px">${state.players.map((pl,i)=>`<div class="player-card ${i===state.activePlayer?'active':''}"><b>${pl.name}</b><div class="tiny">Tile ${pl.position} · ${pl.coins}c · Lv${pl.level} · W${pl.totalWins}</div></div>`).join('')}</div>`;
+      panel.classList.add('open');
+    }
+    else if(t==='shop'){
+      const p=currentPlayer();
+      panel.innerHTML=`<div class="mob-panel-head"><h2>🛒 Shop</h2><button class="mob-panel-close" onclick="document.getElementById('mobPanel').classList.remove('open')">✕</button></div>
+      <div class="tiny" style="margin-bottom:10px">Coins: <b style="color:var(--gold)">${p.coins}</b></div>
+      ${typeof SHOP_ITEMS!=='undefined'?SHOP_ITEMS.map(it=>`<div class="quest" style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div style="font-size:24px">${it.icon}</div><div style="flex:1"><b>${it.name}</b><div class="tiny">${it.desc}</div></div><button class="btn-main" style="min-width:70px" onclick="buyItem('${it.id}')">${it.price}c</button></div>`).join(''):''}
+      <div style="margin-top:14px"><b>Inventory</b></div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:8px">
+        <div class="event-card"><b>🛡️</b> ${p.inventory?.shield||0}</div>
+        <div class="event-card"><b>🎲</b> ${p.inventory?.reroll||0}</div>
+        <div class="event-card"><b>💎</b> ${p.inventory?.double||0}</div>
+        <div class="event-card"><b>📦</b> C${p.chests?.common||0} R${p.chests?.rare||0}</div>
+      </div>`;
+      panel.classList.add('open');
+    }
+    else if(t==='more'){
+      panel.innerHTML=`<div class="mob-panel-head"><h2>⚙️ More</h2><button class="mob-panel-close" onclick="document.getElementById('mobPanel').classList.remove('open')">✕</button></div>
+      <div class="list">
+        <div class="quest" onclick="openSavePanel();document.getElementById('mobPanel').classList.remove('open')" style="cursor:pointer"><b>💾 Save / Load</b></div>
+        <div class="quest" onclick="if(typeof openPodium==='function')openPodium();document.getElementById('mobPanel').classList.remove('open')" style="cursor:pointer"><b>🏆 Podium</b></div>
+        <div class="quest" onclick="if(typeof openLeaderboard==='function')openLeaderboard();document.getElementById('mobPanel').classList.remove('open')" style="cursor:pointer"><b>📊 Leaderboard</b></div>
+        <div class="quest" onclick="nextTheme()" style="cursor:pointer"><b>🎨 Theme</b></div>
+        <div class="quest" onclick="toggleSound()" style="cursor:pointer"><b>${state.sound?'🔊 Sound ON':'🔇 Sound OFF'}</b></div>
+        <div class="quest" onclick="if(typeof toggleFullscreen==='function')toggleFullscreen()" style="cursor:pointer"><b>⛶ Fullscreen</b></div>
+        <div class="quest" onclick="if(typeof shareResults==='function')shareResults()" style="cursor:pointer"><b>📤 Share</b></div>
+      </div>
+      <div class="tiny" style="margin-top:16px;text-align:center;opacity:.4">ARCADE WORLD</div>`;
+      panel.classList.add('open');
+    }
+  };
+});
+
+// Score strip update
+function updateMobStrip(){
+  const el=document.getElementById('mobStripInner');
+  if(!el||!state.players) return;
+  const colors=['#ffd54a','#3fa8ff','#ff72c4','#30d27c'];
+  el.innerHTML=state.players.map((p,i)=>{
+    const on=i===state.activePlayer?'on':'';
+    return `<div class="mob-chip ${on}"><div class="mob-cdot" style="background:${colors[i]}"></div>${p.name} · ${p.coins}c · Lv${p.level}</div>`;
+  }).join('')+`<div class="mob-chip" style="color:#ffd54a">🎲 ${currentPlayer().lastRoll||'—'}</div>`;
+}
+
+// Enhanced renderAll with strip update
+const _renderAll2=window.renderAll;
+if(_renderAll2){
+  window.renderAll=function(){
+    _renderAll2.apply(this,arguments);
+    updateMobStrip();
+  };
+}
+
+// Initial calls
+setTimeout(()=>{translateUI();renderGameZone();updateMobStrip()},200);
+
+// Scroll to current tile after move
+const _moveBy=window.moveBy;
+if(_moveBy){
+  window.moveBy=async function(steps){
+    const result=await _moveBy.apply(this,arguments);
+    if(window.innerWidth<=768){
+      const tw=document.querySelector('.tile-wrap[data-idx="'+currentPlayer().position+'"]');
+      if(tw) tw.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+    }
+    return result;
+  };
+}
+
+// Close panel on endTurn
+const _endTurn=window.endTurn;
+if(_endTurn){
+  window.endTurn=function(){
+    _endTurn.apply(this,arguments);
+    document.getElementById('mobPanel')?.classList.remove('open');
+  };
+}
+
+console.log('%c🎮 ARCADE WORLD v31 Premium Patch loaded','font-size:14px;font-weight:bold;color:#6ee7ff');
+console.log('%cEN translation ✓ | Mobile game zone ✓ | Clean first-load ✓','font-size:11px;color:#30d27c');
+
+})();
+</script>
