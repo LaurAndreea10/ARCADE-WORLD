@@ -306,6 +306,25 @@
   grid-template-columns:repeat(3,minmax(0,1fr));
   gap:10px;
 }
+.board-fallback{
+  margin-top:14px;
+  border-radius:20px;
+  border:1px solid rgba(110,231,255,.18);
+  background:
+    radial-gradient(circle at 20% 15%, rgba(110,231,255,.12), transparent 35%),
+    radial-gradient(circle at 80% 100%, rgba(255,213,74,.10), transparent 40%),
+    linear-gradient(180deg, rgba(8,21,46,.9), rgba(3,11,24,.94));
+  min-height:300px;
+  padding:18px;
+  display:none;
+  grid-template-rows:auto 1fr auto;
+  gap:12px;
+}
+.board-fallback.show{display:grid}
+.board-fallback-title{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:900}
+.board-fallback-main{display:grid;place-items:center;text-align:center;border:1px dashed rgba(255,255,255,.12);border-radius:16px;padding:16px}
+.board-fallback-main b{font-size:clamp(20px,2.4vw,30px);line-height:1.05}
+.board-fallback-main .tiny{max-width:560px}
 .insight-card{
   background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
   border:1px solid rgba(255,255,255,.1);
@@ -333,6 +352,7 @@
     justify-content: center;
   }
   .board-insights{grid-template-columns:1fr}
+  .board-fallback{min-height:220px;padding:14px}
 }
 
 </style>
@@ -2803,6 +2823,20 @@ window.openAWModal = function(html){ var m=document.getElementById('awModal'), c
             </div>
           </div>
           <div class="board-insights" id="boardInsights"></div>
+          <div class="board-fallback" id="boardFallback">
+            <div class="board-fallback-title">Board focus</div>
+            <div class="board-fallback-main">
+              <div>
+                <b id="boardFallbackTitle">Zona centrală se pregătește…</b>
+                <div class="tiny" id="boardFallbackMeta">Dacă layout-ul ascunde tabla pe ecrane joase, păstrăm aici acțiunile esențiale și obiectivul curent.</div>
+              </div>
+            </div>
+            <div class="btnrow">
+              <button class="btn-gold" onclick="rollDice()">🎲 Aruncă acum</button>
+              <button class="btn-alt" onclick="renderScreen('modes')">🧭 Deschide moduri</button>
+              <button class="btn-alt" onclick="renderScreen('stats')">📊 Vezi stats</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -3076,8 +3110,9 @@ function renderTree(){const p=currentPlayer();for(const n of TREE)p.unlocks[n.id
 function renderBadges(){const p=currentPlayer();for(const b of BADGES)p.badges[b.id]=b.ok(p);q('badgeCard').innerHTML=`<div class="section-k">Badges / rarități</div><div class="badgegrid" style="margin-top:10px">${BADGES.map(b=>`<div class="badge ${p.badges[b.id]?'':'locked'}"><div class="icon">${b.icon}</div><div style="font-weight:1000">${b.id}</div><div class="tiny">${b.rarity}</div></div>`).join('')}</div>`}
 
 function renderBoardInsights(){const host=q('boardInsights');if(!host)return;const p=currentPlayer();const next=state.players[(state.activePlayer+1)%state.players.length]||p;const dailyTile=tile(state.daily?.tile??0);host.innerHTML=`<div class="insight-card"><div class="insight-title">${state.lang==='en'?'Starting player':'Jucător la start'}</div><div class="insight-value">${safeText(p.name)}</div><div class="insight-meta">${state.lang==='en'?'Active turn':'Tură activă'} · roll ${p.lastRoll||'—'} · bonus ${p.bonusTurns||0}</div></div><div class="insight-card"><div class="insight-title">${state.lang==='en'?'Quick objective':'Obiectiv rapid'}</div><div class="insight-value">${dailyTile.icon} ${safeText(dailyTile.name)}</div><div class="insight-meta">Daily: +${state.daily?.coins||0} coins · +${state.daily?.xp||0} XP</div></div><div class="insight-card"><div class="insight-title">${state.lang==='en'?'Next player':'Următorul la rând'}</div><div class="insight-value">${safeText(next.name)}</div><div class="insight-meta">${state.lang==='en'?'Target START/BONUS for extra reward.':'Țintește START/BONUS pentru reward extra.'}</div></div>`}
+function syncBoardFallback(){const box=q('boardFallback');if(!box)return;const center=document.querySelector('.center-screen');const hasTiles=document.querySelectorAll('#boardWrap .tile-wrap').length>0;const centerHidden=!center||getComputedStyle(center).display==='none'||center.getBoundingClientRect().height<120;const show=!hasTiles||centerHidden;box.classList.toggle('show',show);const title=q('boardFallbackTitle');const meta=q('boardFallbackMeta');if(!title||!meta)return;const p=currentPlayer();if(state.lang==='en'){title.textContent=show?`Quick board access for ${p.name}`:'Board fully visible';meta.textContent=show?'We filled the remaining area with fast actions so you can keep playing without dead space.':'Main board is visible, fallback panel hidden automatically.'}else{title.textContent=show?`Acces rapid pentru ${p.name}`:'Tabla este afișată complet';meta.textContent=show?'Am completat spațiul rămas cu acțiuni rapide ca să poți continua fără zonă goală.':'Tabla principală este vizibilă, panelul fallback se ascunde automat.'}}
 
-function renderAll(){renderTopStats();renderBoard();renderPlayers();renderDaily();renderQuests();renderInventory();renderShop();renderTree();renderBadges();renderBoardInsights();q('soundBtn').textContent=state.sound?'🔊 Sound':'🔇 Sound';q('bonusBtn').textContent=`✨ Bonus turn (${currentPlayer().bonusTurns})`;q('bonusBtnInline').textContent=`✨ Bonus (${currentPlayer().bonusTurns})`;q('lastRoll').textContent=currentPlayer().lastRoll||'—';applyLanguageUI();}
+function renderAll(){renderTopStats();renderBoard();renderPlayers();renderDaily();renderQuests();renderInventory();renderShop();renderTree();renderBadges();renderBoardInsights();syncBoardFallback();q('soundBtn').textContent=state.sound?'🔊 Sound':'🔇 Sound';q('bonusBtn').textContent=`✨ Bonus turn (${currentPlayer().bonusTurns})`;q('bonusBtnInline').textContent=`✨ Bonus (${currentPlayer().bonusTurns})`;q('lastRoll').textContent=currentPlayer().lastRoll||'—';applyLanguageUI();}
 
 function rewardBaseForTile(t){if(t.type==='special')return 60;return t.reward||100}
 function currentReward(mult=1){return Math.round(rewardBaseForTile(currentTile())*mult)}
@@ -3209,7 +3244,7 @@ function partialReset(type){if(type==='stats'){for(const p of state.players){p.s
 function hardReset(){localStorage.removeItem(STORAGE);state.players=[defaultPlayer(0),defaultPlayer(1)];state.activePlayer=0;state.selectedTile=0;state.multiplayerCount=2;state.themeIndex=0;state.sound=true;save();renderAll();renderScreen('details');toast('Reset complet','red')}
 
 function init(){load();ensurePlayers();state.activePlayer=0;state.selectedTile=state.players[0]?.position||0;state.daily=buildDaily();document.body.className=THEMES[state.themeIndex];renderAll();renderScreen('modes');setHint(state.lang==='en'?'Player 1 starts. Roll the dice or choose a game mode.':'Player 1 începe. Aruncă zarul sau alege un mod de joc.');}
-window.addEventListener('resize',()=>requestAnimationFrame(()=>{drawConnectors();moveTokenTo(currentPlayer().position,false)}))
+window.addEventListener('resize',()=>requestAnimationFrame(()=>{drawConnectors();moveTokenTo(currentPlayer().position,false);syncBoardFallback()}))
 init();
 </script>
 
