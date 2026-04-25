@@ -18,24 +18,8 @@
   <img src="https://img.shields.io/badge/Vanilla_JS-F7DF1E?style=flat-square&logo=javascript&logoColor=000" alt="JavaScript"/>
   <img src="https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=fff" alt="HTML5"/>
   <img src="https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=fff" alt="CSS3"/>
-  <img src="https://img.shields.io/badge/No_Dependencies-30d27c?style=flat-square" alt="Zero Dependencies"/>
   <img src="https://img.shields.io/badge/Mobile_First-a78bfa?style=flat-square" alt="Mobile First"/>
-</p>
-
----
-
-## Screenshots
-
-<p align="center">
-  <img src="docs/screenshot-desktop.png" width="720" alt="Desktop Board View"/>
-</p>
-
-<p align="center">
-  <img src="docs/screenshot-mobile.png" width="280" alt="Mobile View"/>
-  &nbsp;&nbsp;
-  <img src="docs/screenshot-game.png" width="280" alt="Mini-Game Active"/>
-  &nbsp;&nbsp;
-  <img src="docs/screenshot-setup.png" width="280" alt="Player Setup"/>
+  <img src="https://img.shields.io/badge/Quality-CI_Ready-30d27c?style=flat-square" alt="Quality CI Ready"/>
 </p>
 
 ---
@@ -44,7 +28,7 @@
 
 Arcade World is a **digital board game** where 2–4 players roll dice, move around a 24-tile circuit, and play mini-games to earn coins, XP, and territory. Think Mario Party meets a browser arcade.
 
-**Built as a portfolio project** to demonstrate frontend architecture, game state management, animation systems, and responsive design — all in vanilla JavaScript with zero dependencies.
+**Built as a portfolio project** to demonstrate frontend architecture, game state management, animation systems, quality tooling, and responsive design — all while keeping the live game deployable as a static site.
 
 ---
 
@@ -53,90 +37,93 @@ Arcade World is a **digital board game** where 2–4 players roll dice, move aro
 ### Core Gameplay
 - **24-tile board** with game tiles, bonus events, traps, and a START reward
 - **11 unique mini-games** — Basket, Hockey, Bounce, Maze, Bomber, Shooter, TicTacToe, Memory, Breakout, Fusion, PvAI duel
+- **Pizza tiles** — PIZZA GAME and PIZZA DELUXE are tracked for the pizza quest
+- **2–4 local players** — player-count helpers are ready for setup UI wiring
 - **4 play modes** per tile — Solo, vs AI (3 difficulties), Quiz, Full Game (iframe overlay)
 - **Dice roll → move → resolve → play** turn loop with smooth token animation
 
-### Multiplayer & Competition
-- **2–4 local players** with custom names, avatars, and token colors
-- **PvP duels** — dedicated 2-player versions of every mini-game
-- **vs AI mode** — AI opponent with safe/balanced/greedy behavior profiles
-- **Territory system** — win tiles to own them; opponents pay tolls
-- **Ranked ELO** — local rating system tracks player skill
-- **Season pass** — 10-level reward track with milestone bonuses
-- **Cup/tournament** — bracket system with season standings table
+### Product Systems Ready for UI Wiring
+- **Player count setup** — helpers for choosing, clamping, creating, and resizing 2–4 players
+- **Pizza quest** — helper that completes the quest after a pizza mini-game is finished
+- **Mini-game registry** — one source of truth for game IDs, modes, categories, scoring, iframe URLs, and fallbacks
+- **Save migrations** — versioned migration path for old local saves and imported JSON
+- **Recovery helpers** — reset, repair, or download broken saves instead of losing player progress
+- **Settings model** — theme, sound, reduced motion, large UI, high contrast, auto-save, and haptics
+- **Player profiles** — wins, losses, coins earned, XP earned, tiles captured, favorite game, streaks, and ELO history
+- **Achievements gallery** — unlock metadata with rarity levels
+- **Daily challenge** — deterministic daily objective, reward, progress, and streak helpers
+- **Match summary** — replay-style timeline and formatted event summaries
 
-### Progression & Economy
-- **XP & leveling** — unlock game modes and skill tree perks
-- **Shop** — shields, rerolls, x2 multipliers, freeze cards
-- **Quests** — 5 tracked objectives with coin/XP rewards
-- **Badges** — Common → Legendary rarity system
-- **Streak combos** — consecutive wins multiply rewards (3x, 5x, 10x)
-- **Daily login** — 7-day reward cycle with increasing bonuses
+### Technical Highlights
 
-### Visual & UX
-- **3 color themes** — Cyan, Purple, Sunset
-- **SVG tile icons** — custom-drawn for each game family
-- **Glassmorphism UI** — blur, gradients, animated borders
-- **Event card flip** — 3D card reveal for bonus/trap events
-- **Confetti & particles** — ambient board particles, win celebrations
-- **Sound FX** — synthesized AudioContext sounds (dice, win, lose, buy)
-- **Keyboard shortcuts** — Space=roll, B=bonus, T=theme, F=fullscreen, arrows=browse
-
-### Mobile
-- **Bottom tab bar** — Board / Play / Stats / Shop / More
-- **Floating dice FAB** — always-accessible roll button
-- **Score strip** — fixed top bar with all player stats
-- **Swipe navigation** — browse tiles with horizontal swipe
-- **Touch-optimized** — 44px+ targets, safe-area insets, haptic feedback
-- **Game zone** — fills mobile viewport with active tile card, mode selector, quest tracker
-
-### Technical
-- **Zero dependencies** — pure HTML/CSS/JS, no build step
-- **LocalStorage persistence** — auto-save, 2 profile slots, JSON export/import
-- **Iframe bridge** — postMessage protocol for full-game score integration
-- **Sync links** — share save state via URL hash (no backend needed)
-- **Spectator mode** — minimal HUD for streaming/recording
-- **Screenshot mode** — clean board-only view
-- **Dev metrics** — FPS, DOM nodes, storage usage (Ctrl+Shift+D)
-- **Accessibility** — reduced motion, large UI, high contrast, keyboard nav, ARIA labels, skip link
-
----
-
-## Tech Stack
-
-| Layer | Tech |
-|-------|------|
-| **Markup** | Semantic HTML5 |
-| **Styling** | CSS3 with CSS custom properties, `@media` queries, `backdrop-filter`, CSS Grid/Flexbox |
-| **Logic** | Vanilla ES6+ JavaScript — no framework, no bundler |
-| **Audio** | Web Audio API (AudioContext oscillator synthesis) |
-| **Storage** | localStorage with JSON serialization |
-| **Fonts** | Google Fonts (Outfit, JetBrains Mono) |
-| **Hosting** | GitHub Pages (static) |
-| **Mini-games** | 11 embedded via iframe (CodePen-hosted) + local mini-engine fallbacks |
+- State-machine-friendly turn loop: `roll → move → resolve → mini-game/event → reward → save → next player`
+- Testable pure helper modules for dice, board movement, economy, ELO, player setup, pizza quest, save validation, iframe messages, player stats, settings, achievements, daily challenges, and match summaries
+- Versioned local save envelope with migration and recovery helpers
+- Static GitHub Pages deployment with optional Vite dev server for local work
+- Dedicated docs for architecture, iframe security, accessibility, performance, save migrations, mini-game contribution, player count, pizza quest, security, and contribution workflow
+- CI workflow for format checks, linting, and unit tests
 
 ---
 
 ## Architecture
 
+The playable app is still served by `index.html`, while new testable logic is being extracted into `src/` incrementally.
+
+```text
+Player Count Setup
+  ↓
+Player Input
+  ↓
+Turn Engine
+  ↓
+Dice Roll → Board Movement → Tile Resolution
+  ↓
+Mini-game Engine / iframe Bridge
+  ↓
+Rewards, XP, ELO, Shop, Quests, Pizza Quest
+  ↓
+Profiles, Achievements, Daily Challenge, Match Summary
+  ↓
+Save System → Migrations → Recovery
+  ↓
+UI Render + Audio + Particles
 ```
-index.html          — Single-file build (CodePen-compatible)
-├── <style>         — CSS: layout, board, tiles, animations, mobile, themes
-├── <body>          — DOM: board grid, center screen, sidebar, modals, mobile nav
-└── <script>        — JS modules (inline):
-    ├── Data        — TILES[], SHOP_ITEMS[], QUESTS[], BADGES[], TREE[]
-    ├── State       — Game state object, save/load, player defaults
-    ├── Board       — Render tiles, connectors, token movement, SVG icons
-    ├── Turn        — Dice roll, movement, landing resolution, turn cycle
-    ├── Mini-games  — 11 game engines (basket, maze, bomber, etc.)
-    ├── PvP         — Dedicated 2-player versions of each mini-game
-    ├── Economy     — Rewards, shop, XP, leveling, streaks, season pass
-    ├── Events      — Bonus/trap card system with flip animation
-    ├── Full Game   — Iframe overlay with postMessage bridge
-    ├── Mobile      — Tab bar, FAB, game zone, score strip, panels
-    ├── Audio       — AudioContext SFX synthesis
-    └── Polish      — Confetti, particles, tour, accessibility, dev tools
+
+### Current Structure
+
+```text
+index.html          — playable static game entry point
+src/data/           — mini-game registry and future extracted data tables
+src/game/           — extracted pure gameplay and product-system helpers
+src/integration/    — iframe bridge and external game communication helpers
+tests/              — Vitest coverage for core helpers and product systems
+docs/               — architecture, accessibility, performance, save, player-count, pizza, and iframe docs
+.github/workflows/  — CI quality checks
 ```
+
+---
+
+## Quality
+
+```bash
+npm install
+npm run format:check
+npm run lint
+npm test
+```
+
+| Check | Status |
+|---|---|
+| Formatting | Prettier config added |
+| Linting | ESLint config added |
+| Unit tests | Vitest tests added for core helpers, player count, pizza quest, and product systems |
+| CI | GitHub Actions workflow added |
+| Accessibility/performance | Checklist documented in `docs/accessibility-performance.md` |
+| iframe safety | Contract documented in `docs/iframe-bridge.md` |
+| Save safety | Migrations and recovery documented in `docs/save-system.md` |
+| Player count and pizza quest | Documented in `docs/player-count-and-pizza-quest.md` |
+| Contribution flow | `CONTRIBUTING.md` and `docs/add-mini-game.md` added |
+| Security | `SECURITY.md` added |
 
 ---
 
@@ -147,38 +134,36 @@ index.html          — Single-file build (CodePen-compatible)
 git clone https://github.com/LaurAndreea10/ARCADE-WORLD.git
 cd ARCADE-WORLD
 
-# Open directly — no build step needed
+# Option 1: open directly — no build step needed
 open index.html
-# or
+
+# Option 2: simple static server
 python -m http.server 8000
+
+# Option 3: local dev server with tooling
+npm install
+npm run dev
 ```
 
 ---
 
-## Keyboard Shortcuts
+## Pizza Quest
 
-| Key | Action |
-|-----|--------|
-| `Space` | Roll dice |
-| `B` | Use bonus turn |
-| `T` | Cycle theme |
-| `F` | Toggle fullscreen |
-| `←` `→` | Browse tiles |
-| `1-4` | Select game mode |
-| `Ctrl+Shift+D` | Dev metrics overlay |
-| `Ctrl+Shift+S` | Spectator mode |
-| `Ctrl+Shift+P` | Screenshot mode |
+Pentru misiunea cu pizza: aterizează pe tile-ul **PIZZA GAME** sau **PIZZA DELUXE**, pornește mini-game-ul și finalizează-l. După ce rezultatul mini-game-ului este înregistrat, progresul misiunii devine **1/1**.
 
 ---
 
-## Roadmap
+## Documentation
 
-- [ ] React/Next.js port with component architecture
-- [ ] Online multiplayer via WebSocket
-- [ ] Cloud save with OAuth
-- [ ] Custom tile editor
-- [ ] Additional mini-game packs
-- [ ] Leaderboard API
+- [`CONTRIBUTING.md`](CONTRIBUTING.md) — local setup, PR checklist, and contribution flow
+- [`SECURITY.md`](SECURITY.md) — iframe, save import, DOM, and dependency security policy
+- [`docs/architecture.md`](docs/architecture.md) — system architecture and migration plan
+- [`docs/add-mini-game.md`](docs/add-mini-game.md) — checklist for adding a new mini-game
+- [`docs/player-count-and-pizza-quest.md`](docs/player-count-and-pizza-quest.md) — player-count setup and pizza quest behavior
+- [`docs/iframe-bridge.md`](docs/iframe-bridge.md) — validated mini-game iframe contract
+- [`docs/save-system.md`](docs/save-system.md) — save envelope, migrations, and recovery flow
+- [`docs/accessibility-performance.md`](docs/accessibility-performance.md) — repeatable accessibility and performance checklist
+- [`CHANGELOG.md`](CHANGELOG.md) — release and migration notes
 
 ---
 
@@ -189,5 +174,5 @@ MIT — see [LICENSE](LICENSE)
 ---
 
 <p align="center">
-  <sub>Built by <a href="https://github.com/LaurAndreea10">Laura Andreea</a> — a portfolio project demonstrating frontend architecture, game design, and responsive UI.</sub>
+  <sub>Built by <a href="https://github.com/LaurAndreea10">Laura Andreea</a> — a portfolio project demonstrating frontend architecture, game design, responsive UI, and maintainable frontend engineering.</sub>
 </p>
