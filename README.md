@@ -73,6 +73,16 @@ Arcade World is a **digital board game** where 2–4 players roll dice, move aro
 - **Streak combos** — consecutive wins multiply rewards (3x, 5x, 10x)
 - **Daily login** — 7-day reward cycle with increasing bonuses
 
+### Product Systems Ready for UI Wiring
+- **Mini-game registry** — one source of truth for game IDs, modes, categories, scoring, iframe URLs, and fallbacks
+- **Save migrations** — versioned migration path for old local saves and imported JSON
+- **Recovery helpers** — reset, repair, or download broken saves instead of losing player progress
+- **Settings model** — theme, sound, reduced motion, large UI, high contrast, auto-save, and haptics
+- **Player profiles** — wins, losses, coins earned, XP earned, tiles captured, favorite game, streaks, and ELO history
+- **Achievements gallery** — unlock metadata with rarity levels
+- **Daily challenge** — deterministic daily objective, reward, progress, and streak helpers
+- **Match summary** — replay-style timeline and formatted event summaries
+
 ### Visual & UX
 - **3 color themes** — Cyan, Purple, Sunset
 - **SVG tile icons** — custom-drawn for each game family
@@ -106,10 +116,10 @@ Arcade World is a **digital board game** where 2–4 players roll dice, move aro
 ## Technical Highlights
 
 - State-machine-friendly turn loop: `roll → move → resolve → mini-game/event → reward → save → next player`
-- Testable pure helper modules for dice, board movement, economy, ELO, save validation, and iframe message validation
-- Versioned local save envelope for future data migrations
+- Testable pure helper modules for dice, board movement, economy, ELO, save validation, iframe messages, player stats, settings, achievements, daily challenges, and match summaries
+- Versioned local save envelope with migration and recovery helpers
 - Static GitHub Pages deployment with optional Vite dev server for local work
-- Dedicated docs for architecture, iframe security, accessibility, and performance
+- Dedicated docs for architecture, iframe security, accessibility, performance, save migrations, mini-game contribution, security, and contribution workflow
 - CI workflow for format checks, linting, and unit tests
 
 ---
@@ -123,7 +133,7 @@ Arcade World is a **digital board game** where 2–4 players roll dice, move aro
 | **Logic** | Vanilla ES6+ JavaScript with extracted testable modules |
 | **Tooling** | Vite, ESLint, Prettier, Vitest |
 | **Audio** | Web Audio API (AudioContext oscillator synthesis) |
-| **Storage** | localStorage with JSON serialization and schema helpers |
+| **Storage** | localStorage with JSON serialization, schema helpers, migrations, and recovery helpers |
 | **Fonts** | Google Fonts (Outfit, JetBrains Mono) |
 | **Hosting** | GitHub Pages (static) |
 | **Mini-games** | 11 embedded via iframe (CodePen-hosted) + local mini-engine fallbacks |
@@ -145,7 +155,9 @@ Mini-game Engine / iframe Bridge
   ↓
 Rewards, XP, ELO, Shop, Quests
   ↓
-Save System
+Profiles, Achievements, Daily Challenge, Match Summary
+  ↓
+Save System → Migrations → Recovery
   ↓
 UI Render + Audio + Particles
 ```
@@ -154,10 +166,11 @@ UI Render + Audio + Particles
 
 ```text
 index.html          — playable static game entry point
-src/game/           — extracted pure gameplay helpers
+src/data/           — mini-game registry and future extracted data tables
+src/game/           — extracted pure gameplay and product-system helpers
 src/integration/    — iframe bridge and external game communication helpers
-tests/              — Vitest coverage for core helpers
-docs/               — architecture, accessibility, performance, and iframe docs
+tests/              — Vitest coverage for core helpers and product systems
+docs/               — architecture, accessibility, performance, save, and iframe docs
 .github/workflows/  — CI quality checks
 ```
 
@@ -166,6 +179,7 @@ docs/               — architecture, accessibility, performance, and iframe doc
 ```text
 src/
   data/
+    miniGameRegistry.js
     tiles.js
     quests.js
     shop.js
@@ -176,6 +190,13 @@ src/
     economy.js
     elo.js
     saveSchema.js
+    saveMigrations.js
+    recovery.js
+    settings.js
+    playerStats.js
+    achievements.js
+    dailyChallenge.js
+    matchSummary.js
   integration/
     iframeBridge.js
   minigames/
@@ -208,10 +229,13 @@ npm test
 |---|---|
 | Formatting | Prettier config added |
 | Linting | ESLint config added |
-| Unit tests | Vitest tests added for core helpers |
+| Unit tests | Vitest tests added for core helpers and product systems |
 | CI | GitHub Actions workflow added |
 | Accessibility/performance | Checklist documented in `docs/accessibility-performance.md` |
 | iframe safety | Contract documented in `docs/iframe-bridge.md` |
+| Save safety | Migrations and recovery documented in `docs/save-system.md` |
+| Contribution flow | `CONTRIBUTING.md` and `docs/add-mini-game.md` added |
+| Security | `SECURITY.md` added |
 
 ---
 
@@ -258,10 +282,23 @@ npm run dev
 - [x] Add ESLint, Prettier, Vitest, and GitHub Actions
 - [x] Add MIT license file
 - [x] Add changelog
+- [x] Add contribution guide and security policy
 - [x] Extract core helper modules into `src/`
-- [x] Add tests for dice, movement, economy, ELO, save schema, and iframe bridge helpers
+- [x] Add tests for dice, movement, economy, ELO, save schema, iframe bridge, settings, migrations, stats, achievements, daily challenges, and match summaries
 - [ ] Continue extracting the existing inline game code from `index.html` into modules
 - [ ] Remove legacy version comments from the HTML during the full extraction pass
+
+### Product Polish
+- [x] Add mini-game registry
+- [x] Add save migration helpers
+- [x] Add save recovery helpers
+- [x] Add settings model
+- [x] Add player profile stats helpers
+- [x] Add achievement helpers
+- [x] Add daily challenge helpers
+- [x] Add match summary helpers
+- [ ] Wire product-system helpers into the visible UI
+- [ ] Add onboarding/tutorial UI
 
 ### Gameplay and Platform
 - [ ] React/Next.js port with component architecture
@@ -281,8 +318,12 @@ npm run dev
 
 ## Documentation
 
+- [`CONTRIBUTING.md`](CONTRIBUTING.md) — local setup, PR checklist, and contribution flow
+- [`SECURITY.md`](SECURITY.md) — iframe, save import, DOM, and dependency security policy
 - [`docs/architecture.md`](docs/architecture.md) — system architecture and migration plan
+- [`docs/add-mini-game.md`](docs/add-mini-game.md) — checklist for adding a new mini-game
 - [`docs/iframe-bridge.md`](docs/iframe-bridge.md) — validated mini-game iframe contract
+- [`docs/save-system.md`](docs/save-system.md) — save envelope, migrations, and recovery flow
 - [`docs/accessibility-performance.md`](docs/accessibility-performance.md) — repeatable accessibility and performance checklist
 - [`CHANGELOG.md`](CHANGELOG.md) — release and migration notes
 
