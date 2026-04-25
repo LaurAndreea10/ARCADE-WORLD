@@ -24,6 +24,13 @@ import {
   updateDailyStreak,
 } from '../src/game/dailyChallenge.js';
 import { createMatchEvent, createMatchSummary, formatMatchEvent } from '../src/game/matchSummary.js';
+import {
+  createDefaultPlayers,
+  getPlayerCountOptions,
+  normalizePlayerCount,
+  resizePlayers,
+} from '../src/game/playerSetup.js';
+import { explainPizzaQuest, getPizzaQuestProgress, isPizzaTile, PIZZA_QUEST } from '../src/game/pizzaQuest.js';
 
 describe('mini-game registry', () => {
   it('contains the expected 11 mini-games', () => {
@@ -35,6 +42,48 @@ describe('mini-game registry', () => {
     expect(validateMiniGameRegistry()).toEqual({ valid: true });
     expect(supportsMode('basket', MINI_GAME_MODES.PVP)).toBe(true);
     expect(supportsMode('missing', MINI_GAME_MODES.PVP)).toBe(false);
+  });
+});
+
+describe('player setup helpers', () => {
+  it('supports choosing 2-4 players', () => {
+    expect(getPlayerCountOptions()).toEqual([2, 3, 4]);
+    expect(normalizePlayerCount(1)).toBe(2);
+    expect(normalizePlayerCount(3)).toBe(3);
+    expect(normalizePlayerCount(5)).toBe(4);
+  });
+
+  it('creates and resizes player lists safely', () => {
+    expect(createDefaultPlayers(3)).toHaveLength(3);
+    expect(resizePlayers([{ name: 'Laura', coins: 250 }], 2)).toEqual([
+      expect.objectContaining({ id: 'p1', name: 'Laura', coins: 250 }),
+      expect.objectContaining({ id: 'p2', name: 'Player 2' }),
+    ]);
+  });
+});
+
+describe('pizza quest helpers', () => {
+  it('detects pizza tiles and explains the mission', () => {
+    expect(isPizzaTile({ id: 'pizza_game', name: 'PIZZA GAME' })).toBe(true);
+    expect(isPizzaTile({ id: 'pizza_deluxe', name: 'PIZZA DELUXE' })).toBe(true);
+    expect(explainPizzaQuest()).toContain('PIZZA GAME');
+  });
+
+  it('completes when a pizza mini-game is finished', () => {
+    const progress = getPizzaQuestProgress([
+      {
+        type: 'mini-game-completed',
+        payload: { tile: { id: 'pizza_game', name: 'PIZZA GAME' }, completed: true },
+      },
+    ]);
+
+    expect(progress).toEqual({
+      quest: PIZZA_QUEST,
+      current: 1,
+      target: 1,
+      completed: true,
+      percent: 100,
+    });
   });
 });
 
