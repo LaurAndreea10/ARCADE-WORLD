@@ -1,0 +1,32 @@
+{
+  "name": "arcade-world",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Browser-based arcade board game with local multiplayer, mini-games, progression, and responsive UI.",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "preview": "vite preview --host 0.0.0.0",
+    "lint": "eslint .",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": [
+    "arcade",
+    "board-game",
+    "vanilla-javascript",
+    "local-multiplayer",
+    "browser-game"
+  ],
+  "author": "Laura Andreea",
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.0.0",
+    "vite": "^5.0.0",
+    "vitest": "^1.0.0"
+  }
+}
