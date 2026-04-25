@@ -31,6 +31,11 @@ import {
   resizePlayers,
 } from '../src/game/playerSetup.js';
 import { explainPizzaQuest, getPizzaQuestProgress, isPizzaTile, PIZZA_QUEST } from '../src/game/pizzaQuest.js';
+import {
+  buildHudDashboardModel,
+  buildStandings,
+  getEmptySpaceFillRecommendations,
+} from '../src/ui/hudDashboard.js';
 
 describe('mini-game registry', () => {
   it('contains the expected 11 mini-games', () => {
@@ -84,6 +89,42 @@ describe('pizza quest helpers', () => {
       completed: true,
       percent: 100,
     });
+  });
+});
+
+describe('HUD dashboard helpers', () => {
+  it('builds a dashboard model that fills empty play space', () => {
+    const model = buildHudDashboardModel({
+      currentPlayerIndex: 0,
+      players: [
+        { id: 'p1', name: 'P1', coins: 100, xp: 10, elo: 1000, inventory: ['shield'] },
+        { id: 'p2', name: 'P2', coins: 150, xp: 5, elo: 1000, inventory: [] },
+      ],
+      activeQuest: { title: 'Pizza Game', current: 0, target: 1 },
+      timeline: [{ type: 'roll' }, { type: 'move' }, { type: 'land' }, { type: 'quest' }, { type: 'next' }, { type: 'extra' }],
+      bonusTurns: 1,
+    });
+
+    expect(model.sections.map((section) => section.id)).toContain('quest-progress');
+    expect(model.currentPlayer.name).toBe('P1');
+    expect(model.inventory).toEqual(['shield']);
+    expect(model.timeline).toHaveLength(5);
+    expect(model.quickActions.find((action) => action.id === 'bonus')).toMatchObject({ enabled: true });
+  });
+
+  it('sorts standings and recommends responsive sections', () => {
+    expect(
+      buildStandings([
+        { id: 'p1', name: 'P1', coins: 10, xp: 0, elo: 1000 },
+        { id: 'p2', name: 'P2', coins: 100, xp: 20, elo: 1000 },
+      ])[0].id,
+    ).toBe('p2');
+
+    expect(getEmptySpaceFillRecommendations({ width: 500 })).toEqual([
+      'quest-progress',
+      'player-standings',
+      'quick-actions',
+    ]);
   });
 });
 
