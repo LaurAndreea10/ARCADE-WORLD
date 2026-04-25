@@ -2,6 +2,12 @@
 
 The current desktop play HUD can leave a large empty area under the dice/status cards. Use that space as a functional dashboard instead of leaving it blank.
 
+## Implemented Files
+
+- `src/ui/hudDashboard.js` — builds the dashboard model from game state.
+- `src/ui/renderHudDashboard.js` — renders dashboard cards into a container.
+- `src/ui/hudDashboard.css` — production-ready styles for the dashboard cards.
+
 ## Recommended Layout
 
 ```text
@@ -81,7 +87,13 @@ Use `getEmptySpaceFillRecommendations` from `src/ui/hudDashboard.js`:
 - medium screens: quest, standings, inventory, timeline;
 - large screens: all dashboard sections.
 
-## Integration Sketch for `index.html`
+## Integration for `index.html`
+
+Add the stylesheet in `<head>` when the project starts loading external CSS:
+
+```html
+<link rel="stylesheet" href="src/ui/hudDashboard.css" />
+```
 
 Add a dashboard container below the current three status cards:
 
@@ -89,34 +101,29 @@ Add a dashboard container below the current three status cards:
 <section id="hudDashboard" class="hud-dashboard" aria-label="Game dashboard"></section>
 ```
 
-Recommended CSS:
-
-```css
-.hud-dashboard {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  margin-top: 16px;
-}
-
-.hud-dashboard-card {
-  min-height: 120px;
-  padding: 16px;
-  border-radius: 22px;
-  background: linear-gradient(180deg, rgba(15, 30, 56, .88), rgba(7, 15, 28, .88));
-  border: 1px solid rgba(255, 255, 255, .08);
-}
-
-.hud-dashboard-card.wide {
-  grid-column: 1 / -1;
-}
-```
-
-Recommended render loop:
+Add the renderer import when the project starts loading ES modules:
 
 ```js
-const model = buildHudDashboardModel(state);
-renderHudDashboard(model);
+import { renderHudDashboard } from './src/ui/renderHudDashboard.js';
+```
+
+Call it after each state update:
+
+```js
+renderHudDashboard(document.querySelector('#hudDashboard'), {
+  players: state.players,
+  currentPlayerIndex: state.currentPlayer,
+  activeQuest: state.activeQuest,
+  currentTile: state.currentTile,
+  nextTile: state.nextTile,
+  timeline: state.timeline,
+  bonusTurns: state.bonusTurns,
+  canRoll: !state.busy,
+});
 ```
 
 The dashboard should update after dice roll, movement, tile resolution, mini-game completion, shop purchase, and next-player transitions.
+
+## Inline Integration Fallback
+
+If `index.html` remains fully inline, copy the CSS from `src/ui/hudDashboard.css` into the existing `<style>` block and copy the renderer logic from `src/ui/renderHudDashboard.js` into the existing `<script>` block. Keep the same `#hudDashboard` container.
