@@ -36,6 +36,7 @@ import {
   buildStandings,
   getEmptySpaceFillRecommendations,
 } from '../src/ui/hudDashboard.js';
+import { inferDashboardState } from '../src/ui/autoHudDashboard.js';
 
 describe('mini-game registry', () => {
   it('contains the expected 11 mini-games', () => {
@@ -125,6 +126,23 @@ describe('HUD dashboard helpers', () => {
       'player-standings',
       'quick-actions',
     ]);
+  });
+
+  it('infers state from the current single-file HUD text', () => {
+    const root = {
+      body: {
+        innerText: '3 P1 · Roll: 3 Aruncă zarul Bonus (1) JUCĂTOR LA START P1 OBIECTIV RAPID 🍕 PIZZA GAME URMĂTORUL LA RÂND P2',
+      },
+    };
+
+    const state = inferDashboardState(root);
+
+    expect(state.players.map((player) => player.name)).toEqual(['P1', 'P2']);
+    expect(state.currentPlayerIndex).toBe(0);
+    expect(state.activeQuest.title).toContain('Pizza');
+    expect(state.nextTile).toEqual({ name: 'PIZZA GAME' });
+    expect(state.bonusTurns).toBe(1);
+    expect(state.timeline.map((event) => event.type ?? event.label)).toContain('roll');
   });
 });
 
