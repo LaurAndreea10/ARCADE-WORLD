@@ -15,6 +15,7 @@ export default [
         document: 'readonly',
         localStorage: 'readonly',
         URLSearchParams: 'readonly',
+        structuredClone: 'readonly',
       },
     },
     rules: {
