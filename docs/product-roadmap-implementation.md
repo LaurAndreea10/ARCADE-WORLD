@@ -19,6 +19,26 @@ The module `src/game/productLoop.js` adds a testable product layer for the roadm
 - local progress serialization and safe recovery;
 - Play Store listing copy and screenshot checklist.
 
+## Implemented UI overlay
+
+The module `src/game/productLoopUi.js` mounts a non-invasive product loop assistant over the existing page.
+
+It renders:
+
+- first-run onboarding;
+- profile/avatar cycling;
+- level, XP, coins, and boss progress;
+- reward preview;
+- simulated shared result screen;
+- daily challenge card;
+- progressive mini-game unlock grid;
+- haptic feedback where supported;
+- local progress persistence.
+
+To enable it in the live page, load `src/game/productLoopAutoMount.js` as a module near the end of `index.html`.
+
+The overlay is intentionally separate from the monolithic `index.html` so it can be tested and iterated without risking regressions in the playable board.
+
 ## Recommended UI wiring order
 
 ### 1. First 60 seconds
@@ -33,11 +53,7 @@ Persist completion in local save data so returning players skip onboarding.
 
 ### 2. Profile / avatar step
 
-Use `createPlayerProfile()` when a new player starts. The UI should ask for:
-
-- display name;
-- avatar emoji/icon;
-- optional color/skin.
+Use `createPlayerProfile()` when a new player starts. The UI should ask for display name, avatar emoji/icon, and optional color/skin.
 
 The profile starts with only the starter mini-games unlocked.
 
@@ -55,27 +71,13 @@ Locked cards should show their requirement, for example `Reach 120 XP` or `Captu
 
 ### 4. Reward preview
 
-Before launching a mini-game, call `buildRewardPreview(miniGameId, difficulty)` and show:
-
-- possible win coins;
-- possible win XP;
-- participation reward;
-- why the player should care.
+Before launching a mini-game, call `buildRewardPreview(miniGameId, difficulty)` and show possible win coins, possible win XP, participation reward, and why the player should care.
 
 ### 5. Shared result screen
 
 After a mini-game ends, call `buildMiniGameResult()` and then `applyMiniGameResult()`.
 
-The result screen should show:
-
-- Victory / Round complete;
-- medal;
-- score;
-- coins gained;
-- XP gained;
-- boss damage;
-- newly unlocked mini-games, if any;
-- `Roll again` or `Boss unlocked` CTA.
+The result screen should show victory state, medal, score, coins gained, XP gained, boss damage, newly unlocked mini-games, and the next CTA.
 
 ### 6. Daily challenge UI
 
@@ -85,32 +87,23 @@ Recommended placement: right sidebar or top HUD.
 
 ### 7. Android back behavior
 
-Use:
-
-- `createAndroidBackStack()` on app start;
-- `pushScreen(stack, screen)` when opening overlays, mini-games, shop, settings, or result screens;
-- `handleAndroidBack(stack)` when the Android/browser back action happens.
+Use `createAndroidBackStack()` on app start, `pushScreen(stack, screen)` when opening overlays, and `handleAndroidBack(stack)` when the Android/browser back action happens.
 
 Expected behavior:
 
-- result screen → mini-game;
-- mini-game → board;
-- board → confirm exit.
+- result screen to mini-game;
+- mini-game to board;
+- board to confirm exit.
 
 ### 8. Local progress
 
-Use `serializeLocalProgress(profile, extra)` before saving to `localStorage`.
-Use `parseLocalProgress(raw)` when loading.
+Use `serializeLocalProgress(profile, extra)` before saving to localStorage. Use `parseLocalProgress(raw)` when loading.
 
 Broken saves return a recovered fallback instead of crashing.
 
 ## Store listing preparation
 
-`DEFAULT_STORE_LISTING` contains:
-
-- tagline;
-- short description;
-- 8 screenshot prompts.
+`DEFAULT_STORE_LISTING` contains the tagline, short description, and 8 screenshot prompts.
 
 This is not a substitute for final artwork, but it gives the exact capture list needed for a Play Store-style listing.
 
