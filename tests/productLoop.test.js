@@ -93,4 +93,18 @@ describe('productLoop', () => {
     expect(parsed.profile.name).toBe('Saved Player');
     expect(recovered.recovered).toBe(true);
   });
+
+  it('preserves extra local progress fields used by the overlay', () => {
+    const profile = createPlayerProfile();
+    const parsed = parseLocalProgress(
+      serializeLocalProgress(profile, {
+        onboarding: { completed: true, index: 2 },
+        selectedMiniGame: 'memory',
+      }),
+    );
+
+    expect(parsed.onboarding.completed).toBe(true);
+    expect(parsed.onboarding.index).toBe(2);
+    expect(parsed.selectedMiniGame).toBe('memory');
+  });
 });
