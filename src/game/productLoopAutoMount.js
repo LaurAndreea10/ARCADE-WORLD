@@ -1,5 +1,8 @@
 import { installArcadeProductLoopUi } from './productLoopUi.js';
 
 window.addEventListener('DOMContentLoaded', () => {
-  installArcadeProductLoopUi();
+  installArcadeProductLoopUi({
+    enableDebugActions: false,
+    decorateTiles: true,
+  });
 });

@@ -231,6 +231,7 @@ export function parseLocalProgress(raw, fallbackProfile = createPlayerProfile())
   try {
     const parsed = JSON.parse(raw);
     return {
+      ...parsed,
       version: Number(parsed.version ?? 1),
       profile: parsed.profile ?? fallbackProfile,
       savedAt: parsed.savedAt ?? null,
