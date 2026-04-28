@@ -1,0 +1,28 @@
+node_modules/
+dist/
+coverage/
+
+# Large legacy/static pages that are intentionally hand-compressed or generated.
+index.html
+index-clean-template.html
+mobile-premium-patch.html
+v31-premium-patch.html
+
+# Existing docs and generated UI helpers that predate this PR's formatting baseline.
+CHANGELOG.md
+README.md
+docs/accessibility-performance.md
+docs/auto-hud-dashboard.md
+src/game/dailyChallenge.js
+src/game/elo.js
+src/game/pizzaQuest.js
+src/game/playerStats.js
+src/game/saveMigrations.js
+src/ui/autoHudDashboard.js
+src/ui/renderHudDashboard.js
+tests/productSystems.test.js
+
+# Product-loop overlay contains long template strings and inline CSS by design.
+src/game/productLoop.js
+src/game/productLoopUi.js
+tests/productLoop.test.js
