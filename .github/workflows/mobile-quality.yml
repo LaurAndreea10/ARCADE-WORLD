@@ -1,0 +1,36 @@
+name: Mobile quality audit
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: "20 5 1 * *"
+permissions:
+  contents: read
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate JavaScript syntax
+        run: |
+          find . -maxdepth 2 -name "*.js" -not -path "./node_modules/*" -print0 | xargs -0 -r -n1 node --check
+      - name: Install audit tools
+        run: npm install --global @lhci/cli@0.14.x http-server
+      - name: Start static site
+        run: http-server . -p 4173 -c-1 &
+      - name: Run three Lighthouse audits
+        run: |
+          lhci collect --url=http://127.0.0.1:4173/ --numberOfRuns=3
+          lhci assert --preset=lighthouse:recommended --assertions.categories:performance="warn" --assertions.categories:accessibility="error"
+      - name: Preserve reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-mobile-reports
+          path: .lighthouseci
+          retention-days: 30
