@@ -1,3 +1,15 @@
+## v33 — 2026-09-04
+
+### Performance architecture
+
+- Redus `index.html` de la aproximativ 527 KB la 19 KB.
+- Extras 21 blocuri CSS într-un bundle cacheabil.
+- Extras 24 blocuri JavaScript într-un bundle încărcat cu `defer`.
+- Adăugat build GitHub Actions reproductibil cu Terser și clean-css.
+- Publicate automat fișierele minificate: aproximativ 96 KB CSS și 289 KB JavaScript.
+- Lighthouse, trei rulări: Performance 77, 77, 64; Accessibility 100 în toate rulările.
+- Baseline anterior: Performance 61. Câștig median: +16 puncte.
+
 # Changelog
 
 All notable changes to Arcade World will be documented in this file.
