@@ -21,7 +21,7 @@ jobs:
       - name: Build production assets
         run: |
           terser arcade-world.bundle.js --compress --mangle --comments false --output arcade-world.bundle.min.js
-          cleancss --level 2 --output arcade-world.bundle.min.css arcade-world.bundle.css
+          cleancss -O2 -o arcade-world.bundle.min.css arcade-world.bundle.css
           sed -i 's/arcade-world\.bundle\.css?v=32/arcade-world.bundle.min.css?v=33/' index.html
           sed -i 's/arcade-world\.bundle\.js?v=32/arcade-world.bundle.min.js?v=33/' index.html
       - name: Commit optimized assets
