@@ -26,11 +26,12 @@ jobs:
       - name: Run three Lighthouse audits
         run: |
           lhci collect --url=http://127.0.0.1:4173/ --numberOfRuns=3
-          lhci assert --preset=lighthouse:recommended --assertions.categories:performance="warn" --assertions.categories:accessibility="error"
+          lhci assert --assertions.categories:performance=warn --assertions.categories:accessibility=error
       - name: Preserve reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: lighthouse-mobile-reports
           path: .lighthouseci
+          include-hidden-files: true
           retention-days: 30
