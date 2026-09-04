@@ -20,3 +20,7 @@ Acest proiect important este urmărit după același standard public de livrare.
 - **Pending** — încă nemăsurat
 
 Ultima actualizare: 2026-09-04.
+
+## Production bundle
+
+CSS și JavaScript sunt extrase, minificate automat și încărcate ca resurse cacheabile în versiunea v33.
