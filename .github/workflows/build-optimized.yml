@@ -1,0 +1,33 @@
+name: Build optimized bundles
+on:
+  push:
+    branches: [main]
+    paths:
+      - arcade-world.bundle.js
+      - arcade-world.bundle.css
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  minify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install minifiers
+        run: npm install --global terser clean-css-cli
+      - name: Build production assets
+        run: |
+          terser arcade-world.bundle.js --compress --mangle --comments false --output arcade-world.bundle.min.js
+          cleancss --level 2 --output arcade-world.bundle.min.css arcade-world.bundle.css
+          sed -i 's/arcade-world\.bundle\.css?v=32/arcade-world.bundle.min.css?v=33/' index.html
+          sed -i 's/arcade-world\.bundle\.js?v=32/arcade-world.bundle.min.js?v=33/' index.html
+      - name: Commit optimized assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html arcade-world.bundle.min.js arcade-world.bundle.min.css
+          git diff --cached --quiet || git commit -m "build: publish optimized Arcade World bundles"
+          git push
