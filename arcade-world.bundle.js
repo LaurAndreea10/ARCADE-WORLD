@@ -1,0 +1,5876 @@
+// EARLY GLOBAL DEFINITIONS - prevent "not defined" errors
+window.closeAWModal = function(){ var m=document.getElementById('awModal'); if(m) m.classList.remove('open'); };
+window.openAWModal = function(html){ var m=document.getElementById('awModal'), c=document.getElementById('awModalCard'); if(m&&c){ c.innerHTML=html; m.classList.add('open'); } };
+
+const GAME_URLS = [
+  'https://es-d-5697283320260328-019d2b27-6fb7-7f3c-ae84-cf130aae5231.codepen.dev/',
+  'https://es-d-5697283320260328-019d267b-0535-7927-99da-f35c852ebaf1.codepen.dev/',
+  'https://es-d-5697283320260328-019d202f-93fa-7c03-8496-9a9f55afbf17.codepen.dev/',
+  'https://es-d-5697283320260328-019d1ef0-2fb8-7dea-9187-a0ec413b8b23.codepen.dev/',
+  'https://es-d-5697283320260328-019d19ba-35cc-7dc8-93fb-0f7b3071579c.codepen.dev/',
+  'https://es-d-5697283320260328-019cceb2-062d-7969-8c7f-407fbcfeac92.codepen.dev/',
+  'https://es-d-5697283320260328-019ccc82-9700-75d0-8200-29b1d0b01b21.codepen.dev/',
+  'https://es-d-1768016420260328-019cf0ef-e43a-76c2-8a55-17856c11fe89.codepen.dev/',
+  'https://es-d-9192350520260329-019d2f0c-26b1-74c4-a2c0-04310269a74f.codepen.dev/',
+  'https://es-d-9192350520260329-019d2f46-380a-7240-86d0-2a6138bfc072.codepen.dev/',
+  'https://es-d-9192350520260329-019d2f38-a9f8-7ecb-9ef2-986872686b7a.codepen.dev/',
+  'https://es-d-5927833420260331-019d35b9-3b6b-728e-99f9-1e9a2bc673fa.codepen.dev/',
+  'https://es-d-5927833420260331-019d35b6-42da-71e8-a23f-17e06e63e336.codepen.dev/',
+  'https://es-d-5927833420260331-019d35c8-6e69-7bba-9adc-38275de6f7ca.codepen.dev/',
+  'https://es-d-6681629020260406-019d59e3-a37f-7501-934b-600ada71d3d6.codepen.dev/',
+  'https://laurandreea10.github.io/Pizza-Game/',
+  'https://laurandreea10.github.io/Pizza-Chef-Deluxe/'
+];
+
+const TILES = [
+  {type:'special', id:'start', name:'START', icon:'🏁', effect:'start', step:0},
+  {type:'game', id:'basket_1', name:'BASKET', icon:'🏀', family:'basket', kind:'timing', reward:110, url:GAME_URLS[0]},
+  {type:'game', id:'labirint', name:'LABIRINTO', icon:'🗺️', family:'maze', kind:'progress', reward:100, url:GAME_URLS[10]},
+  {type:'special', id:'bonus_1', name:'BONUS +3', icon:'⭐', effect:'bonus'},
+  {type:'game', id:'bomber_1', name:'BOMBER', icon:'💣', family:'bomber', kind:'choice', reward:105, url:GAME_URLS[6]},
+  {type:'game', id:'void', name:'VOID', icon:'🚀', family:'shooter', kind:'progress', reward:145, url:GAME_URLS[3]},
+  {type:'game', id:'tufusion', name:'TUFUSION', icon:'🎭', family:'fusion', kind:'progress', reward:140, url:GAME_URLS[11]},
+  {type:'special', id:'trap_1', name:'CAPCANĂ', icon:'💀', effect:'trap'},
+  {type:'game', id:'hockey_1', name:'HOCKEY', icon:'🏒', family:'hockey', kind:'timing', reward:108, url:GAME_URLS[5]},
+  {type:'game', id:'ttt', name:'TICTACTO', icon:'❌', family:'ttt', kind:'board', reward:90, url:GAME_URLS[2]},
+  {type:'game', id:'bounce', name:'BOUNCE', icon:'🔵', family:'bounce', kind:'timing', reward:95, url:GAME_URLS[8]},
+  {type:'special', id:'bonus_2', name:'BONUS +4', icon:'⭐', effect:'bonus'},
+  {type:'game', id:'memory_1', name:'MEMORY', icon:'🃏', family:'memory', kind:'memory', reward:96, url:GAME_URLS[14]},
+  {type:'game', id:'breakout_1', name:'BREAKOUT', icon:'📦', family:'breakout', kind:'progress', reward:108, url:GAME_URLS[7]},
+  {type:'special', id:'trap_2', name:'CAPCANĂ', icon:'💀', effect:'trap'},
+  {type:'game', id:'basket_2', name:'BASKET +', icon:'🏀', family:'basket', kind:'timing', reward:132, url:GAME_URLS[1]},
+  {type:'game', id:'pvai', name:'PVAI', icon:'⚔️', family:'pvai', kind:'duel', reward:150, url:GAME_URLS[4]},
+  {type:'special', id:'bonus_3', name:'BONUS +2', icon:'⭐', effect:'bonus'},
+  {type:'game', id:'shooter_2', name:'SHOOTER', icon:'🚀', family:'shooter', kind:'progress', reward:152, url:GAME_URLS[9]},
+  {type:'game', id:'bomba_2', name:'BOMBA!', icon:'💣', family:'bomber', kind:'choice', reward:110, url:GAME_URLS[6]},
+  {type:'game', id:'pizza_game', name:'PIZZA GAME', icon:'🍕', family:'memory', kind:'memory', reward:103, url:GAME_URLS[15]},
+  {type:'game', id:'hockey_2', name:'HOCKEY +', icon:'🏒', family:'hockey', kind:'timing', reward:114, url:GAME_URLS[5]},
+  {type:'game', id:'pizza_deluxe', name:'PIZZA DELUXE', icon:'👨‍🍳', family:'breakout', kind:'progress', reward:112, url:GAME_URLS[16]},
+  {type:'game', id:'fusion_2', name:'FUSION +', icon:'🎭', family:'fusion', kind:'progress', reward:148, url:GAME_URLS[12]}
+];
+
+const TOP_IDS=[0,1,2,3,4,5,6], RIGHT_IDS=[7,8,9,10,11], BOTTOM_IDS=[12,13,14,15,16,17,18], LEFT_IDS=[19,20,21,22,23];
+const STORAGE='arcade_world_v9_final_fidelity';
+const PROFILE_PREFIX='arcade_world_v9_slot_';
+const THEMES=['theme-cyan','theme-purple','theme-sunset'];
+const SPECIAL_START_PASS_REWARD={coins:40,xp:25};
+const BONUS_EVENTS=[
+  {name:'Coin shower', text:'+70 coins', apply:p=>{p.coins+=70;}},
+  {name:'XP burst', text:'+60 XP', apply:p=>addXpToPlayer(p,60)},
+  {name:'Turbo turn', text:'+1 bonus turn', apply:p=>{p.bonusTurns++;}},
+  {name:'Lucky chest', text:'Chest rar', apply:p=>grantChest(p,'rare')},
+  {name:'Mixed boost', text:'+30 coins + 25 XP + bonus turn', apply:p=>{p.coins+=30;addXpToPlayer(p,25);p.bonusTurns++;}},
+];
+const TRAP_EVENTS=[
+  {name:'Taxă', text:'-50 coins', apply:p=>{p.coins=Math.max(0,p.coins-50);}},
+  {name:'Skip', text:'pierzi următoarea tură', apply:p=>{p.skipTurns++;}},
+  {name:'Reverse', text:'te întorci 2 tile-uri', apply:p=>{p.position=(p.position-2+TILES.length)%TILES.length;}},
+  {name:'No bonus', text:'pierzi toate bonus turn-urile', apply:p=>{p.bonusTurns=0;}},
+  {name:'Heavy trap', text:'-35 coins și skip 1', apply:p=>{p.coins=Math.max(0,p.coins-35);p.skipTurns++;}},
+];
+const SHOP_ITEMS=[
+  {id:'shield', icon:'🛡️', name:'Shield', price:120, desc:'Anulează o CAPCANĂ', buy:p=>p.inventory.shield=(p.inventory.shield||0)+1},
+  {id:'reroll', icon:'🎲', name:'Reroll', price:90, desc:'Re-aruncare instant', buy:p=>p.inventory.reroll=(p.inventory.reroll||0)+1},
+  {id:'x2', icon:'💎', name:'x2 reward', price:150, desc:'Dubleză reward-ul următoarei victorii', buy:p=>p.inventory.double=(p.inventory.double||0)+1},
+  {id:'theme', icon:'🌈', name:'Theme token', price:80, desc:'Doar colecție / flavor', buy:p=>p.inventory.themeToken=(p.inventory.themeToken||0)+1},
+];
+const TREE=[
+  {id:'unlock_ai', name:'AI Access', desc:'Deblochează universal modul AI', need:p=>p.level>=2},
+  {id:'unlock_quiz', name:'Quiz Access', desc:'Deblochează Skill+Quiz', need:p=>p.level>=3},
+  {id:'unlock_full', name:'Full Access', desc:'Deblochează rapid Full Game', need:p=>p.level>=4},
+  {id:'bonus_master', name:'Bonus Master', desc:'+10 coins la fiecare BONUS', need:p=>p.totalWins>=5},
+  {id:'start_runner', name:'Start Runner', desc:'+15 XP extra la pass START', need:p=>p.boardPasses>=3},
+  {id:'trap_resist', name:'Trap Resist', desc:'50% șansă să ignori trap dacă ai shield', need:p=>p.completed.length>=4},
+];
+const BADGES=[
+  {id:'first_win', icon:'🏆', rarity:'Common', ok:p=>p.totalWins>=1},
+  {id:'triple_bonus', icon:'⭐', rarity:'Rare', ok:p=>p.bonusHits>=3},
+  {id:'trap_survivor', icon:'💀', rarity:'Rare', ok:p=>p.trapHits>=3},
+  {id:'basket_master', icon:'🏀', rarity:'Epic', ok:p=>(p.stats.basketWins||0)>=4},
+  {id:'full_runner', icon:'🕹️', rarity:'Epic', ok:p=>p.full.finished>=2},
+  {id:'collector', icon:'🎖️', rarity:'Legendary', ok:p=>Object.keys(p.badges).filter(k=>p.badges[k]).length>=5},
+];
+const QUESTS=[
+  {id:'q_bonus', title:'Lovește 3 BONUS', target:3, progress:p=>p.bonusHits||0, reward:{coins:100,xp:70}},
+  {id:'q_start', title:'Treci de START de 4 ori', target:4, progress:p=>p.boardPasses||0, reward:{coins:120,xp:80}},
+  {id:'q_full', title:'Termină 2 full games', target:2, progress:p=>p.full.finished||0, reward:{coins:140,xp:100}},
+  {id:'q_fusion', title:'2 victorii Fusion', target:2, progress:p=>p.stats.fusionWins||0, reward:{coins:100,xp:90}},
+  {id:'q_shop', title:'Cumpără 3 iteme', target:3, progress:p=>p.shopBuys||0, reward:{coins:80,xp:75}},
+];
+
+const state={
+  activePlayer:0,selectedTile:0,mode:null,difficulty:null,screenTab:'modes',sound:true,timer:null,aux:null,animating:false,daily:null,fullSession:null,basketSession:null,themeIndex:0,lang:'ro',setupPlayers:2,
+  players:[], multiplayerCount:2
+};
+
+function q(id){return document.getElementById(id)}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function clamp(n,a,b){return Math.max(a,Math.min(b,n))}
+function tile(i){return TILES[i]}
+function currentPlayer(){return state.players[state.activePlayer]}
+function currentTile(){return tile(currentPlayer().position)}
+function levelNeed(l){return 100+(l-1)*65}
+function safeText(s){return String(s).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}
+
+function defaultPlayer(i){return {id:i,name:'P'+(i+1),position:0,coins:120,xp:0,level:1,totalWins:0,bonusTurns:0,skipTurns:0,completed:[],visited:[0],questsDone:[],inventory:{shield:0,reroll:0,double:0,themeToken:0},badges:{},stats:{},history:[],boardPasses:0,bonusHits:0,trapHits:0,shopBuys:0,full:{started:0,finished:0,wins:0},chests:{common:0,rare:0,epic:0},unlocks:{}}}
+function defaultSave(){return {players:[defaultPlayer(0),defaultPlayer(1)],activePlayer:0,selectedTile:0,sound:true,themeIndex:0,multiplayerCount:2,lang:'ro',setupPlayers:2}}
+
+function addXpToPlayer(p,amount){p.xp+=amount;while(p.xp>=levelNeed(p.level)){p.xp-=levelNeed(p.level);p.level++;p.bonusTurns++;toast(`${p.name} a urcat la level ${p.level} și a primit bonus turn!`,'green')}}
+function grantChest(p,rarity='common'){p.chests[rarity]=(p.chests[rarity]||0)+1;const roll=Math.random();if(rarity==='rare'&&roll<.45){p.coins+=90}else if(rarity==='rare'){addXpToPlayer(p,55)}else if(rarity==='epic'){p.coins+=130;addXpToPlayer(p,80);p.bonusTurns++}else{p.coins+=40}}
+
+function save(){localStorage.setItem(STORAGE,JSON.stringify({players:state.players,activePlayer:state.activePlayer,selectedTile:state.selectedTile,sound:state.sound,themeIndex:state.themeIndex,multiplayerCount:state.multiplayerCount,lang:state.lang,setupPlayers:state.setupPlayers}))}
+function load(){try{const raw=localStorage.getItem(STORAGE);if(!raw)return;const s=JSON.parse(raw);state.players=(s.players||[defaultPlayer(0),defaultPlayer(1)]).map((p,i)=>Object.assign(defaultPlayer(i),p));state.activePlayer=s.activePlayer||0;state.selectedTile=s.selectedTile||0;state.sound=s.sound!==false;state.themeIndex=s.themeIndex||0;state.multiplayerCount=s.multiplayerCount||state.players.length||2;state.lang=s.lang||'ro';state.setupPlayers=s.setupPlayers||state.multiplayerCount||2;}catch(e){}}
+function ensurePlayers(){while(state.players.length<state.multiplayerCount)state.players.push(defaultPlayer(state.players.length));state.players=state.players.slice(0,state.multiplayerCount)}
+
+function dailyKey(){const d=new Date();return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`}
+function hash(s){let h=0;for(let i=0;i<s.length;i++)h=((h<<5)-h)+s.charCodeAt(i);return Math.abs(h)}
+function buildDaily(){const k=dailyKey();const idx=1+(hash(k)% (TILES.length-1));const diff=['easy','medium','hard'][hash(k+'d')%3];return {key:k,tile:idx,diff,coins:80,xp:60}}
+
+function renderTopStats(){const p=currentPlayer();q('top-stats').innerHTML=`
+  <div class="stat"><div class="k">Jucător curent</div><div class="v">${p.name}</div></div>
+  <div class="stat"><div class="k">Tile curent</div><div class="v">${safeText(tile(p.position).name)}</div></div>
+  <div class="stat"><div class="k">Mod selectat</div><div class="v">${state.mode||'—'}</div></div>
+  <div class="stat"><div class="k">Coins</div><div class="v">${p.coins}</div></div>
+  <div class="stat"><div class="k">XP / Level</div><div class="v">${p.xp} / ${p.level}</div></div>
+  <div class="stat"><div class="k">Victorii</div><div class="v">${p.totalWins}</div></div>`
+}
+
+function tileState(player,idx){if(player.position===idx)return {label:'CURRENT',cls:'current'};if(player.completed.includes(idx))return {label:'DONE',cls:'completed'};if(player.visited.includes(idx))return {label:'VISITED',cls:'visited'};return {label:TILES[idx].type==='special'?'SPECIAL':'OPEN',cls:''}}
+
+
+function tileIconMarkup(t){
+  const key=(t.id||'')+' '+(t.name||'');
+  if(key.includes('start')) return `<svg viewBox="0 0 64 64" aria-hidden="true"><path class="stroke white" d="M14 12v40"/><path class="stroke white" d="M18 14h26l-6 8 6 8H18z"/><path class="stroke" fill="url(#chk)" d="M18 14h26l-6 8 6 8H18z"/><defs><pattern id="chk" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#fff"/><rect width="4" height="4" fill="#101827"/><rect x="4" y="4" width="4" height="4" fill="#101827"/></pattern></defs></svg>`;
+  if(key.includes('basket')) return `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="19" class="stroke orange"/><path d="M13 32h38M32 13c8 7 8 31 0 38M32 13c-8 7-8 31 0 38" class="stroke" fill="none" stroke="#9b3a00" stroke-width="2.6"/></svg>`;
+  if(key.includes('labirint')||key.includes('maze')) return `<svg viewBox="0 0 64 64"><path class="stroke white" d="M10 14h44v36H10z"/><path class="stroke green" stroke="#57d66f" fill="none" d="M16 20h12v10h8V20h12v18H36v8h-8V34H16z"/><path class="stroke blue" d="M20 18v-4M44 50v-4" stroke="#2f94ff"/></svg>`;
+  if(key.includes('bonus')) return `<svg viewBox="0 0 64 64"><path class="stroke gold" d="M32 8l6.8 14.4L54 24l-11 10.5L46 50 32 41.8 18 50l3-15.5L10 24l15.2-1.6z"/></svg>`;
+  if(key.includes('bomb')||key.includes('bomba')||key.includes('bomber')) return `<svg viewBox="0 0 64 64"><circle cx="28" cy="36" r="18" class="stroke gray" fill="#2f3744"/><circle cx="22" cy="30" r="3" fill="#9aa7b4"/><path class="stroke" d="M37 19l6-6 6 6" fill="none" stroke="#d7b083"/><path class="stroke" d="M43 19c2 0 6 1 8 4" fill="none" stroke="#d7b083"/><path class="stroke" d="M50 10c2 2 2 5 0 7" fill="none" stroke="#ff4b2b"/><circle cx="54" cy="10" r="5" class="stroke red"/></svg>`;
+  if(key.includes('void')||key.includes('shooter')) return `<svg viewBox="0 0 64 64"><path class="stroke white" d="M12 42l20-20 20 10-10 20z" fill="#e7eef9"/><path class="stroke cyan" d="M12 42l10 10 10-10-10-10z"/><path class="stroke red" d="M42 24l8-8 6 14-12 2z"/><path class="stroke orange" d="M18 48l-6 10 10-6"/></svg>`;
+  if(key.includes('fusion')||key.includes('tufusion')) return `<svg viewBox="0 0 64 64"><path class="stroke cyan" d="M16 16c8-6 18-4 22 5 2 5 1 10-2 15-2 3-1 7 2 10-10 4-22 0-26-10-4-8-1-16 4-20z"/><path class="stroke gold" d="M48 16c-8-6-18-4-22 5-2 5-1 10 2 15 2 3 1 7-2 10 10 4 22 0 26-10 4-8 1-16-4-20z"/><path class="stroke red" d="M48 12l5 5m0-5l-5 5"/></svg>`;
+  if(key.includes('capc')||key.includes('skull')) return `<svg viewBox="0 0 64 64"><path class="stroke white" d="M32 12c11 0 20 8 20 19 0 8-5 12-10 14v7H22v-7c-5-2-10-6-10-14 0-11 9-19 20-19z"/><circle cx="25" cy="29" r="4" class="dark"/><circle cx="39" cy="29" r="4" class="dark"/><path class="stroke dark" d="M28 40h8"/></svg>`;
+  if(key.includes('hockey')) return `<svg viewBox="0 0 64 64"><path class="stroke orange" d="M40 14l8 4-12 26H24"/><rect x="16" y="40" width="16" height="6" rx="2" class="stroke white" fill="#f7f8fb"/><circle cx="42" cy="46" r="5" class="stroke dark"/></svg>`;
+  if(key.includes('tictacto')||key.includes('ttt')) return `<svg viewBox="0 0 64 64"><path class="stroke red" d="M16 16l32 32M48 16L16 48"/><circle cx="32" cy="32" r="0.1" fill="none"/></svg>`;
+  if(key.includes('bounce')) return `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="20" class="stroke blue" fill="#1692ff"/></svg>`;
+  if(key.includes('pvai')) return `<svg viewBox="0 0 64 64"><path class="stroke white" d="M18 18l12 12-12 12M46 18L34 30l12 12"/><path class="stroke gold" d="M22 46l8-8M42 46l-8-8"/></svg>`;
+  if(key.includes('mem')) return `<svg viewBox="0 0 64 64"><rect x="18" y="10" width="28" height="42" rx="4" class="stroke white"/><path class="stroke purple" d="M32 20v22M21 31h22"/><path class="stroke gold" d="M24 22l3 4 5-1M40 22l-3 4-5-1"/></svg>`;
+  if(key.includes('breakout')) return `<svg viewBox="0 0 64 64"><path class="stroke beige" d="M14 18h28l8 8v22H22l-8-8z"/><path class="stroke" d="M42 18v8h8M18 42h6M18 36h10" fill="none" stroke="#7a5a38"/><path class="stroke red" d="M18 34V24l6 6"/></svg>`;
+  return `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="18" class="stroke cyan"/></svg>`;
+}
+
+function renderBoard(){
+  const p=currentPlayer();
+  const cell=(idx)=>{const t=tile(idx);const s=tileState(p,idx);const corner=[0,6,12,18].includes(idx);return `<div class="tile-wrap" data-idx="${idx}" onclick="selectTile(${idx})"><button class="tile ${t.type==='special'?'special':''} ${s.cls} ${corner?'corner':''}"><div class="idx">${idx}</div><div class="icon">${tileIconMarkup(t)}</div><div class="name">${safeText(t.name)}</div><div class="state">${s.label}</div><div class="dot"></div></button></div>`};
+  q('topRow').innerHTML=TOP_IDS.map(cell).join('');
+  q('rightCol').innerHTML=RIGHT_IDS.map(cell).join('');
+  q('bottomRow').innerHTML=BOTTOM_IDS.slice().reverse().map(cell).join('');
+  q('leftCol').innerHTML=LEFT_IDS.slice().reverse().map(cell).join('');
+  requestAnimationFrame(()=>{drawConnectors();moveTokenTo(p.position,false)})
+}
+
+function selectTile(idx){sfx('tap');state.selectedTile=idx;renderScreen('details')}
+
+function centerOfIdx(idx){const wrap=q('boardWrap');const el=document.querySelector(`.tile-wrap[data-idx="${idx}"]`);if(!wrap||!el)return null;const a=wrap.getBoundingClientRect(),b=el.getBoundingClientRect();return {x:b.left-a.left+b.width/2,y:b.top-a.top+b.height/2}}
+function drawConnectors(){const host=q('connectors');host.innerHTML='';for(let i=0;i<TILES.length;i++){const a=centerOfIdx(i),b=centerOfIdx((i+1)%TILES.length);if(!a||!b)continue;const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy),ang=Math.atan2(dy,dx)*180/Math.PI;const d=document.createElement('div');d.className='connector';d.style.left=a.x+'px';d.style.top=(a.y-4)+'px';d.style.width=len+'px';d.style.transform=`rotate(${ang}deg)`;host.appendChild(d)}}
+function moveTokenTo(idx,animate=true){const pt=centerOfIdx(idx);if(!pt)return;const token=q('boardToken');token.style.left=pt.x+'px';token.style.top=pt.y+'px'}
+function showTrail(a,b){const ta=centerOfIdx(a),tb=centerOfIdx(b),trail=q('boardTrail');if(!ta||!tb)return;const dx=tb.x-ta.x,dy=tb.y-ta.y,len=Math.hypot(dx,dy),ang=Math.atan2(dy,dx)*180/Math.PI;trail.style.left=ta.x+'px';trail.style.top=(ta.y-5)+'px';trail.style.width=len+'px';trail.style.transform=`rotate(${ang}deg)`;trail.style.opacity=1;setTimeout(()=>trail.style.opacity=0,220)}
+
+function renderPlayers(){q('playersCard').innerHTML=`<div class="section-k">Multiplayer local</div><div class="btnrow" style="margin:10px 0"><button class="btn-alt" onclick="setPlayerCount(2)">2P</button><button class="btn-alt" onclick="setPlayerCount(3)">3P</button><button class="btn-alt" onclick="setPlayerCount(4)">4P</button></div><div class="players">${state.players.map((p,i)=>`<div class="player-card ${i===state.activePlayer?'active':''}"><div style="display:flex;justify-content:space-between;gap:8px"><b>${p.name}</b><span class="tag">${i===state.activePlayer?'ACTIVE':'WAIT'}</span></div><div class="tiny">Tile ${p.position} · Coins ${p.coins} · Lv ${p.level} · Wins ${p.totalWins}</div><div class="tiny">Bonus turns ${p.bonusTurns} · Skip ${p.skipTurns}</div></div>`).join('')}</div>`;q('turnPlayer').textContent=currentPlayer().name}
+function setPlayerCount(n){state.multiplayerCount=n;ensurePlayers();if(state.activePlayer>=state.players.length)state.activePlayer=0;save();renderAll();toast(`Multiplayer setat la ${n} jucători`,'green')}
+
+function renderDaily(){const d=state.daily,t=tile(d.tile);q('dailyCard').innerHTML=`<div class="section-k">Daily</div><div style="font-weight:1000;font-size:18px;margin:8px 0">${t.icon} ${t.name} · AI ${d.diff}</div><div class="tiny">Bonus daily: +${d.coins} coins și +${d.xp} XP pe victoria mini în AI ${d.diff}.</div>`}
+
+function renderQuests(){const p=currentPlayer();const items=QUESTS.map(qs=>{const pr=Math.min(qs.target,qs.progress(p));const done=p.questsDone.includes(qs.id);return `<div class="quest"><div style="font-weight:1000">${done?'✅':'🎯'} ${qs.title}</div><div class="tiny">${pr}/${qs.target} · reward ${qs.reward.coins} coins + ${qs.reward.xp} XP</div><div class="bar"><span style="width:${Math.round(pr/qs.target*100)}%"></span></div></div>`}).join('');q('questsCard').innerHTML=`<div class="section-k">Quest-uri</div><div class="list" style="margin-top:10px">${items}</div>`}
+function resolveQuests(p){for(const qs of QUESTS){const pr=qs.progress(p);if(pr>=qs.target&&!p.questsDone.includes(qs.id)){p.questsDone.push(qs.id);p.coins+=qs.reward.coins;addXpToPlayer(p,qs.reward.xp);toast(`${p.name} a completat quest: ${qs.title}`,'green')}}}
+
+function renderInventory(){const p=currentPlayer();q('inventoryCard').innerHTML=`<div class="section-k">Inventory</div><div class="inventory" style="margin-top:10px"><div class="event-card"><b>🛡️ Shield</b><div class="tiny">${p.inventory.shield||0}</div></div><div class="event-card"><b>🎲 Reroll</b><div class="tiny">${p.inventory.reroll||0}</div></div><div class="event-card"><b>💎 x2 Reward</b><div class="tiny">${p.inventory.double||0}</div></div><div class="event-card"><b>📦 Chests</b><div class="tiny">C ${p.chests.common||0} · R ${p.chests.rare||0} · E ${p.chests.epic||0}</div></div></div>`}
+
+function renderShop(){q('shopCard').innerHTML=`<div class="section-k">Shop</div><div class="shopgrid" style="margin-top:10px">${SHOP_ITEMS.map(it=>`<div class="shop-item"><div style="font-weight:1000">${it.icon} ${it.name}</div><div class="tiny">${it.desc}</div><div class="tiny" style="margin:6px 0 10px">${it.price} coins</div><button class="btn-main" onclick="buyItem('${it.id}')">Cumpără</button></div>`).join('')}</div>`}
+function buyItem(id){const p=currentPlayer();const it=SHOP_ITEMS.find(x=>x.id===id);if(!it)return;if(p.coins<it.price)return toast('Coins insuficiente','red');p.coins-=it.price;it.buy(p);p.shopBuys++;save();renderAll();toast(`${p.name} a cumpărat ${it.name}`,'green')}
+
+function renderTree(){const p=currentPlayer();for(const n of TREE)p.unlocks[n.id]=n.need(p);q('treeCard').innerHTML=`<div class="section-k">Unlock tree</div><div class="treegrid" style="margin-top:10px">${TREE.map(n=>`<div class="tree-item"><div style="font-weight:1000">${p.unlocks[n.id]?'✅':'🔒'} ${n.name}</div><div class="tiny">${n.desc}</div></div>`).join('')}</div>`}
+
+function renderBadges(){const p=currentPlayer();for(const b of BADGES)p.badges[b.id]=b.ok(p);q('badgeCard').innerHTML=`<div class="section-k">Badges / rarități</div><div class="badgegrid" style="margin-top:10px">${BADGES.map(b=>`<div class="badge ${p.badges[b.id]?'':'locked'}"><div class="icon">${b.icon}</div><div style="font-weight:1000">${b.id}</div><div class="tiny">${b.rarity}</div></div>`).join('')}</div>`}
+
+function renderBoardInsights(){const host=q('boardInsights');if(!host)return;const p=currentPlayer();const next=state.players[(state.activePlayer+1)%state.players.length]||p;const dailyTile=tile(state.daily?.tile??0);host.innerHTML=`<div class="insight-card"><div class="insight-title">${state.lang==='en'?'Starting player':'Jucător la start'}</div><div class="insight-value">${safeText(p.name)}</div><div class="insight-meta">${state.lang==='en'?'Active turn':'Tură activă'} · roll ${p.lastRoll||'—'} · bonus ${p.bonusTurns||0}</div></div><div class="insight-card"><div class="insight-title">${state.lang==='en'?'Quick objective':'Obiectiv rapid'}</div><div class="insight-value">${dailyTile.icon} ${safeText(dailyTile.name)}</div><div class="insight-meta">Daily: +${state.daily?.coins||0} coins · +${state.daily?.xp||0} XP</div></div><div class="insight-card"><div class="insight-title">${state.lang==='en'?'Next player':'Următorul la rând'}</div><div class="insight-value">${safeText(next.name)}</div><div class="insight-meta">${state.lang==='en'?'Target START/BONUS for extra reward.':'Țintește START/BONUS pentru reward extra.'}</div></div>`}
+function syncBoardFallback(){const box=q('boardFallback');if(!box)return;const center=document.querySelector('.center-screen');const hasTiles=document.querySelectorAll('#boardWrap .tile-wrap').length>0;const centerHidden=!center||getComputedStyle(center).display==='none'||center.getBoundingClientRect().height<120;const show=!hasTiles||centerHidden;box.classList.toggle('show',show);const title=q('boardFallbackTitle');const meta=q('boardFallbackMeta');if(!title||!meta)return;const p=currentPlayer();if(state.lang==='en'){title.textContent=show?`Quick board access for ${p.name}`:'Board fully visible';meta.textContent=show?'We filled the remaining area with fast actions so you can keep playing without dead space.':'Main board is visible, fallback panel hidden automatically.'}else{title.textContent=show?`Acces rapid pentru ${p.name}`:'Tabla este afișată complet';meta.textContent=show?'Am completat spațiul rămas cu acțiuni rapide ca să poți continua fără zonă goală.':'Tabla principală este vizibilă, panelul fallback se ascunde automat.'}}
+
+function renderAll(){renderTopStats();renderBoard();renderPlayers();renderDaily();renderQuests();renderInventory();renderShop();renderTree();renderBadges();renderBoardInsights();syncBoardFallback();q('soundBtn').textContent=state.sound?'🔊 Sound':'🔇 Sound';q('bonusBtn').textContent=`✨ Bonus turn (${currentPlayer().bonusTurns})`;q('bonusBtnInline').textContent=`✨ Bonus (${currentPlayer().bonusTurns})`;q('lastRoll').textContent=currentPlayer().lastRoll||'—';applyLanguageUI();}
+
+function rewardBaseForTile(t){if(t.type==='special')return 60;return t.reward||100}
+function currentReward(mult=1){return Math.round(rewardBaseForTile(currentTile())*mult)}
+function claimReward(win,extra={coins:0,xp:0,score:0,partial:1,result:'finish',source:'mini'}){const p=currentPlayer();let coins=Math.max(1,Math.round(currentReward(win?1:0.5)*(extra.partial??1))+extra.coins);let xp=Math.max(5,Math.round(currentReward()*.55*(extra.partial??1))+extra.xp);if(p.inventory.double>0&&win){coins*=2;xp*=2;p.inventory.double--;toast('x2 reward activat','purple')}p.coins+=coins;addXpToPlayer(p,xp);if(win)p.totalWins++;const fam=currentTile().family;if(fam)p.stats[fam+'Wins']=(p.stats[fam+'Wins']||0)+(win?1:0);if(win&&!p.completed.includes(p.position))p.completed.push(p.position);p.history.unshift({ts:Date.now(),tile:p.position,result:extra.result,coins,xp,score:extra.score,source:extra.source});p.history=p.history.slice(0,120);resolveQuests(p);save();renderAll();return {coins,xp}}
+
+function setHint(t){q('turnHint').textContent=t}
+function toggleSound(){state.sound=!state.sound;save();renderAll()}
+
+const I18N={
+  ro:{roll:'🎲 Aruncă zarul',bonus:'✨ Bonus turn',hint:'Aruncă → mută token-ul → rezolvă efectul tile-ului → joacă mini/full game.',players:'Selectează numărul de jucători:'},
+  en:{roll:'🎲 Roll dice',bonus:'✨ Bonus turn',hint:'Roll → move token → resolve tile effect → play mini/full game.',players:'Select number of players:'}
+};
+function applyLanguageUI(){
+  const t=I18N[state.lang]||I18N.ro;
+  if(q('rollBtn')) q('rollBtn').textContent=t.roll;
+  if(q('rollBtnInline')) q('rollBtnInline').textContent=t.roll;
+  if(q('turnHint')) q('turnHint').textContent=t.hint;
+  if(q('langBtn')) q('langBtn').textContent=state.lang==='ro'?'🌐 RO':'🌐 EN';
+  const setupLabel=document.querySelector('#setupCountWrap .tiny');
+  if(setupLabel) setupLabel.textContent=t.players;
+}
+function toggleLanguage(){state.lang=state.lang==='ro'?'en':'ro';save();renderAll();renderScreen(state.screenTab||'modes');toast(state.lang==='ro'?'Limbă: Română':'Language: English','purple')}
+function sfx(type='tap'){
+  if(!state.sound) return;
+  try{
+    const Ctx=window.AudioContext||window.webkitAudioContext; if(!Ctx) return;
+    window.__awAudio=window.__awAudio||new Ctx();
+    const ctx=window.__awAudio;
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    const map={tap:[520,.03,'triangle'],roll:[220,.08,'square'],win:[760,.12,'sine'],trap:[140,.14,'sawtooth']};
+    const [f,d,w]=map[type]||map.tap;
+    o.type=w;o.frequency.value=f;g.gain.value=.0001;
+    o.connect(g);g.connect(ctx.destination);
+    const now=ctx.currentTime;
+    g.gain.exponentialRampToValueAtTime(.06,now+.01);
+    g.gain.exponentialRampToValueAtTime(.0001,now+d);
+    o.start(now);o.stop(now+d+.01);
+  }catch(e){}
+}
+function toast(text,type=''){const el=q('toast');el.className='toast show';el.innerHTML=`<div class="chiprow"><div class="chip ${type}">${safeText(text)}</div></div>`;setTimeout(()=>el.className='toast',1800)}
+function burst(){for(let i=0;i<26;i++){const d=document.createElement('div');d.className='particle';d.style.left=(innerWidth/2)+'px';d.style.top=(innerHeight/2)+'px';d.style.setProperty('--dx',rand(-220,220)+'px');d.style.setProperty('--dy',rand(-220,220)+'px');document.body.appendChild(d);setTimeout(()=>d.remove(),920)}}
+function nextTheme(){state.themeIndex=(state.themeIndex+1)%THEMES.length;document.body.className=THEMES[state.themeIndex];save()}
+
+async function rollDice(){if(state.animating)return;sfx('roll');const p=currentPlayer();if(p.skipTurns>0){p.skipTurns--;toast(`${p.name} sare tura`,'red');endTurn();return}const dice=q('dice');dice.classList.add('rolling');q('rollBtn').disabled=true;for(let i=0;i<10;i++){dice.textContent=rand(1,6);await sleep(70)}const n=rand(1,6);dice.classList.remove('rolling');dice.textContent=n;p.lastRoll=n;q('lastRoll').textContent=n;await moveBy(n);q('rollBtn').disabled=false}
+
+async function useBonusTurn(){const p=currentPlayer();if(p.bonusTurns<=0)return;p.bonusTurns--;save();renderAll();await rollDice()}
+
+async function moveBy(steps){state.animating=true;const p=currentPlayer();for(let i=0;i<steps;i++){const prev=p.position;p.position=(p.position+1)%TILES.length;if(p.position===0){p.boardPasses++;p.coins+=SPECIAL_START_PASS_REWARD.coins;addXpToPlayer(p,SPECIAL_START_PASS_REWARD.xp+(p.unlocks.start_runner?15:0));toast(`${p.name} a trecut de START`,'gold')}if(!p.visited.includes(p.position))p.visited.push(p.position);showTrail(prev,p.position);moveTokenTo(p.position,true);await sleep(270)}state.selectedTile=p.position;state.animating=false;save();renderAll();resolveLanding()}
+
+function resolveLanding(){const p=currentPlayer(),t=currentTile();if(t.type==='special'){if(t.effect==='start'){p.coins+=50;addXpToPlayer(p,30);toast('Landing pe START: +50 coins +30 XP','gold');renderScreen('event',`<div class="event-card"><b>🏁 START</b><div class="tiny">Landing reward acordat.</div></div>`,true);return endTurnPrompt()}if(t.effect==='bonus')return resolveBonus();if(t.effect==='trap')return resolveTrap()}state.mode=null;state.difficulty=null;renderScreen('modes')}
+function resolveBonus(){sfx('win');const p=currentPlayer();p.bonusHits++;const ev=BONUS_EVENTS[rand(0,BONUS_EVENTS.length-1)];if(p.unlocks.bonus_master)p.coins+=10;ev.apply(p);save();renderAll();renderScreen('event',`<div class="event-card"><h3>⭐ BONUS</h3><p class="muted">${ev.name}: ${ev.text}</p></div>`,true);toast(`${p.name}: ${ev.name}`,'green');endTurnPrompt(false,true)}
+function resolveTrap(){sfx('trap');const p=currentPlayer();if((p.inventory.shield||0)>0){p.inventory.shield--;toast('Shield a blocat CAPCANA','green');renderScreen('event',`<div class="event-card"><h3>🛡️ CAPCANĂ blocată</h3><p class="muted">Shield consumat. Nu primești penalizare.</p></div>`,true);save();renderAll();return endTurnPrompt()}p.trapHits++;const ev=TRAP_EVENTS[rand(0,TRAP_EVENTS.length-1)];ev.apply(p);save();renderAll();renderScreen('event',`<div class="event-card"><h3>💀 CAPCANĂ</h3><p class="muted">${ev.name}: ${ev.text}</p></div>`,true);toast(`${p.name}: ${ev.name}`,'red');endTurnPrompt()}
+
+function modeUnlocked(mode,p=currentPlayer()){if(mode==='solo')return true;if(mode==='ai')return p.level>=2||p.unlocks.unlock_ai;if(mode==='quiz')return p.level>=3||p.unlocks.unlock_quiz;if(mode==='full')return p.level>=2||p.unlocks.unlock_full;return false}
+function renderTabs(active='modes'){return `<div class="screen-tabs"><button class="${active==='modes'?'btn-main':'btn-alt'}" onclick="renderScreen('modes')">🎮 Moduri</button><button class="${active==='details'?'btn-main':'btn-alt'}" onclick="renderScreen('details')">ℹ️ Detalii</button><button class="${active==='stats'?'btn-main':'btn-alt'}" onclick="renderScreen('stats')">📊 Stats</button></div>`}
+function renderScreen(tab,custom='',autoEnd=false){const p=currentPlayer(),t=currentTile();state.screenTab=tab;
+  if(tab==='event'){q('screen').innerHTML=`${renderTabs('details')}${custom}<div class="btnrow" style="margin-top:12px"><button class="btn-alt" onclick="endTurn()">Tura următoare</button></div>`;if(autoEnd)return;}
+  if(tab==='details'){q('screen').innerHTML=`${renderTabs('details')}<h3>${t.icon} ${t.name}</h3><p class="muted">${t.type==='special'?'Tile special cu efect imediat.':'Family: '+t.family+' · kind: '+t.kind+' · reward bază: '+t.reward}</p><div class="hud"><div class="box"><div class="k">Poziție</div><div class="v">${p.position}</div></div><div class="box"><div class="k">Visited</div><div class="v">${p.visited.length}</div></div><div class="box"><div class="k">Completed</div><div class="v">${p.completed.length}</div></div><div class="box"><div class="k">Reward</div><div class="v">${rewardBaseForTile(t)}</div></div></div><div class="game-zone"><div class="zone-card"><div class="zone-title">${state.lang==='en'?'Play area':'Zona de joc'}</div><div class="tiny">${state.lang==='en'?'Use the center board as your main arena and jump directly into mini-games.':'Folosește zona centrală ca arenă principală și intră rapid în mini-games.'}</div><div class="btnrow" style="margin-top:10px"><button class="btn-main" onclick="renderScreen('modes')">${state.lang==='en'?'Open modes':'Deschide moduri'}</button><button class="btn-alt" onclick="rollDice()">${state.lang==='en'?'Quick roll':'Aruncare rapidă'}</button></div></div><div class="zone-card"><div class="zone-title">${state.lang==='en'?'Current objective':'Obiectiv curent'}</div><div class="tiny">${state.lang==='en'?'Reach BONUS/START tiles for extra rewards.' :'Țintește tile-urile BONUS/START pentru rewards suplimentare.'}</div></div></div>`;return}
+  if(tab==='stats'){q('screen').innerHTML=`${renderTabs('stats')}<h3>Stats · ${p.name}</h3><div class="hud"><div class="box"><div class="k">Level</div><div class="v">${p.level}</div></div><div class="box"><div class="k">XP need</div><div class="v">${levelNeed(p.level)}</div></div><div class="box"><div class="k">Full runs</div><div class="v">${p.full.finished}</div></div><div class="box"><div class="k">Best family</div><div class="v">${Object.entries(p.stats).sort((a,b)=>b[1]-a[1])[0]?.[0]||'—'}</div></div></div><div class="xpbar"><div class="xpfill" style="width:${Math.round(p.xp/levelNeed(p.level)*100)}%"></div></div><div class="log" style="margin-top:12px">Coins ${p.coins} · Wins ${p.totalWins} · Pass START ${p.boardPasses} · BONUS ${p.bonusHits} · CAPCANĂ ${p.trapHits}</div>`;return}
+  if(t.type==='special'){q('screen').innerHTML=`${renderTabs('modes')}<h3>${t.icon} ${t.name}</h3><p class="muted">Acest tile rezolvă efectul automat. Apasă pentru tura următoare.</p><button class="btn-alt" onclick="endTurn()">Tura următoare</button>`;return}
+  q('screen').innerHTML=`${renderTabs('modes')}<h3>${t.icon} ${t.name}</h3><p class="muted">Alege modul. Full Game folosește linkul original în overlay. Pentru site-uri externe, reward-ul automat depinde de <code>postMessage</code>; altfel rămâne fallback manual.</p><div class="choices">${['solo','ai','quiz','full'].map(m=>`<div class="choice"><div class="i">${m==='full'?'🕹️':m==='quiz'?'🧠':m==='ai'?'🤖':'🎮'}</div><div class="t">${m.toUpperCase()}</div><div class="d">${modeUnlocked(m,p)?'Open':'Locked'}</div><button class="${m==='full'?'btn-purple':'btn-main'}" ${modeUnlocked(m,p)?`onclick="chooseMode('${m}')"`:'disabled'}>${m==='full'?'Deschide':'Alege'}</button></div>`).join('')}</div><div class="game-zone"><div class="zone-card"><div class="zone-title">${state.lang==='en'?'Quick actions':'Acțiuni rapide'}</div><div class="btnrow"><button class="btn-gold" onclick="rollDice()">${state.lang==='en'?'Roll now':'Aruncă acum'}</button><button class="btn-alt" onclick="renderScreen('stats')">${state.lang==='en'?'See stats':'Vezi stats'}</button></div></div><div class="zone-card"><div class="zone-title">${state.lang==='en'?'Board focus':'Focus board'}</div><div class="tiny">${state.lang==='en'?'Center area now stays active to reduce empty space, including shortcuts and objectives.':'Zona centrală rămâne activă pentru a evita spațiul gol, cu shortcut-uri și obiective.'}</div></div></div>`}
+
+function endTurnPrompt(){setHint('Efect rezolvat. Tura următoare.');}
+function endTurn(){state.mode=null;state.difficulty=null;state.activePlayer=(state.activePlayer+1)%state.players.length;save();renderAll();renderScreen('details');setHint('Jucătorul următor poate arunca zarul.')}
+
+function chooseMode(mode){state.mode=mode;if(mode==='full')return openFullGame();if(mode==='ai'){q('screen').innerHTML=`<h3>Alege dificultatea</h3><div class="btnrow"><button class="btn-main" onclick="chooseDifficulty('easy')">Easy</button><button class="btn-main" onclick="chooseDifficulty('medium')">Medium</button><button class="btn-gold" onclick="chooseDifficulty('hard')">Hard</button></div>`;return}state.difficulty=null;launchMini()}
+function chooseDifficulty(d){state.difficulty=d;launchMini()}
+
+function launchMini(){const fam=currentTile().family;if(fam==='basket')return startBasket();if(fam==='maze')return startMaze();if(fam==='bomber')return startBomber();if(fam==='shooter')return startShooter();if(fam==='fusion')return startFusion();if(fam==='hockey')return startHockey();if(fam==='ttt')return startTTT();if(fam==='bounce')return startBounce();if(fam==='breakout')return startBreakout();if(fam==='memory')return startMemory();if(fam==='pvai')return startPvAI();}
+
+function layoutGame(title,subtitle,hud,body,foot=''){q('screen').innerHTML=`<h3>${title}</h3><p class="muted">${subtitle}</p><div class="hud">${hud.map(h=>`<div class="box"><div class="k">${h.k}</div><div class="v" id="${h.id||''}">${h.v}</div></div>`).join('')}</div>${body}${foot?`<div class="btnrow" style="margin-top:12px">${foot}</div>`:''}`}
+function finishMini(win,msg,opts={}){const r=claimReward(win,{coins:opts.extraCoins||0,xp:opts.extraXp||0,score:opts.score||0,partial:opts.partial??(win?1:.35),result:win?'win':'lose',source:'mini'});if(win)burst();q('screen').innerHTML=`<div class="log"><b>${win?'✅':'❌'} ${msg}</b><br><br>Coins +${r.coins} · XP +${r.xp}</div><div class="btnrow" style="margin-top:12px"><button class="btn-main" onclick="renderScreen('modes')">Replay</button><button class="btn-alt" onclick="endTurn()">Tura următoare</button></div>`}
+
+function askQuiz(onWin,onLose){const pools={basket:[['Câte puncte are liberă?',['1','2','3'],0],['Ce e dunk?',['șut','slam','dribling'],1]],maze:[['Ce vrei în maze?',['ieșirea','bonus audio','skin'],0]],memory:[['Ce cauți în memory?',['perechi','chei','boss'],0]],fusion:[['Fusion combină?',['mecanici arcade','doar puzzle','doar quiz'],0]],hockey:[['Scop air hockey?',['marchezi','rotești tabla','spargi bricks'],0]],ttt:[['Ținta?',['3 în linie','4 în pătrat','2 în coloană'],0]]};const fam=currentTile().family;const qz=(pools[fam]||[['Skill check?',['da','nu','poate'],0]])[0];q('screen').innerHTML=`<h3>Bonus Quiz</h3><div class="log">${qz[0]}</div><div class="btnrow" style="margin-top:12px">${qz[1].map((a,i)=>`<button class="btn-main" onclick="quizPick(${i},${qz[2]})">${a}</button>`).join('')}</div>`;window.quizPick=(i,c)=>i===c?onWin():onLose()}
+
+function startBasket(){
+  const p=currentPlayer();
+  const shotsTaken=(p.stats.basketShots||0);
+  const wins=(p.stats.basketWins||0), plays=Math.max(1,(p.stats.basketPlays||0));
+  const winRate=wins/plays;
+  const tutorialSlow=shotsTaken<2;
+  const diff=state.difficulty||'medium';
+  let speed=tutorialSlow?7:(diff==='easy'?11:diff==='hard'?18:14);
+  if(!tutorialSlow){speed += Math.round(shotsTaken*0.8) + (winRate>.65?2:0)}
+  const zone=tutorialSlow?28:(diff==='easy'?24:diff==='hard'?11:17);
+  const zoneStart=tutorialSlow?36:(diff==='easy'?34:diff==='hard'?45:40);
+  let pos=0,dir=1; p.stats.basketPlays=(p.stats.basketPlays||0)+1;
+  layoutGame(`${currentTile().icon} Basket Auto-Adjust`,`Primele 2 shot-uri sunt slow tutorial. Apoi viteza crește treptat după numărul de shot-uri și win-rate.`,[{k:'Shots total',v:shotsTaken,id:'bk_shots'},{k:'Zone',v:zone+'%'},{k:'Speed',v:speed},{k:'Mode',v:state.mode}],`<div class="log">Oprește markerul în zona verde.</div><div class="meter"><div class="zone" id="bk_zone"></div><div class="marker" id="bk_marker"></div></div>`,`<button class="btn-main" onclick="stopBasket()">STOP</button>`);
+  q('bk_zone').style.left=zoneStart+'%';q('bk_zone').style.width=zone+'%';
+  state.timer=setInterval(()=>{pos+=dir*speed*.42;if(pos>=100){pos=100;dir=-1}if(pos<=0){pos=0;dir=1}q('bk_marker').style.left=`calc(${pos}% - 7px)`},28);
+  window.stopBasket=()=>{clearInterval(state.timer);p.stats.basketShots=(p.stats.basketShots||0)+1;const ok=pos>=zoneStart&&pos<=zoneStart+zone;const precision=Math.max(0,100-Math.abs(pos-(zoneStart+zone/2))*4|0);if(state.mode==='ai'){const ai=diff==='easy'?62+rand(0,8):diff==='hard'?88+rand(0,6):76+rand(0,8);if(ok&&precision>ai){p.stats.basketWins=(p.stats.basketWins||0)+1;return finishMini(true,`Tu ${precision}% vs AI ${ai}%`,{score:precision})}if(ok&&precision===ai)return finishMini(false,`Egal ${precision}%`,{score:precision,partial:.75});return finishMini(false,ok?`AI mai precis (${ai}% vs ${precision}%)`:`Ai ratat, AI ${ai}%`,{score:precision,partial:.3})}
+    if(state.mode==='quiz'){if(!ok)return finishMini(false,'Ai ratat aruncarea',{score:precision,partial:.2});p.stats.basketWins=(p.stats.basketWins||0)+1;return askQuiz(()=>finishMini(true,'Shot + quiz complete',{score:precision}),()=>finishMini(false,'Quiz greșit',{score:precision,partial:.4}))}
+    if(ok)p.stats.basketWins=(p.stats.basketWins||0)+1;finishMini(ok,ok?`Perfect release ${precision}%`:'Ai ratat',{score:precision,partial:ok?1:.2})}
+}
+
+function startHockey(){meterStyleGame('Hockey','Timing și reflex','hockey',state.difficulty||'medium')}
+function startBounce(){meterStyleGame('Bounce','Rhythm și control','bounce',state.difficulty||'medium')}
+function meterStyleGame(title,subtitle,fam,diff){const cfg={easy:{speed:10,zone:26,start:32,ai:64},medium:{speed:14,zone:18,start:40,ai:78},hard:{speed:18,zone:10,start:46,ai:90}}[diff||'medium'];let pos=0,dir=1;layoutGame(`${currentTile().icon} ${title}`,subtitle,[{k:'Zone',v:cfg.zone+'%'},{k:'Speed',v:cfg.speed},{k:'Mode',v:state.mode},{k:'AI',v:state.mode==='ai'?cfg.ai:'—'}],`<div class="meter"><div class="zone" id="m_zone"></div><div class="marker" id="m_marker"></div></div>`,`<button class="btn-main" onclick="stopMeterGame()">STOP</button>`);q('m_zone').style.left=cfg.start+'%';q('m_zone').style.width=cfg.zone+'%';state.timer=setInterval(()=>{pos+=dir*cfg.speed*.42;if(pos>=100){pos=100;dir=-1}if(pos<=0){pos=0;dir=1}q('m_marker').style.left=`calc(${pos}% - 7px)`},28);window.stopMeterGame=()=>{clearInterval(state.timer);const ok=pos>=cfg.start&&pos<=cfg.start+cfg.zone;const score=Math.max(0,100-Math.abs(pos-(cfg.start+cfg.zone/2))*4|0);if(state.mode==='ai'){if(ok&&score>cfg.ai)return finishMini(true,`Ai depășit AI (${score}% vs ${cfg.ai}%)`,{score});if(ok&&score===cfg.ai)return finishMini(false,`Egal la precizie`,{score,partial:.75});return finishMini(false,`AI mai bun sau ai ratat`,{score,partial:.25})}if(state.mode==='quiz'){if(!ok)return finishMini(false,'Skill ratat',{score,partial:.2});return askQuiz(()=>finishMini(true,'Skill + quiz OK',{score}),()=>finishMini(false,'Quiz greșit',{score,partial:.4}))}finishMini(ok,ok?'Execuție reușită':'Execuție ratată',{score,partial:ok?1:.2})}}
+
+function startBomber(){const safe=rand(0,2);layoutGame(`${currentTile().icon} Bomber`,`Alege lada sigură.`,[{k:'Mode',v:state.mode},{k:'Reward',v:currentReward()},{k:'AI',v:state.mode==='ai'?(state.difficulty||'medium'):'—'},{k:'Risk',v:'High'}],`<div class="choices">${['Stânga','Centru','Dreapta'].map((x,i)=>`<div class="choice"><div class="i">📦</div><div class="t">${x}</div><button class="btn-main" onclick="pickBomb(${i})">Alege</button></div>`).join('')}</div>`);window.pickBomb=(i)=>{const ok=i===safe;if(state.mode==='ai'){const aiOk=Math.random()<(state.difficulty==='hard'?0.8:state.difficulty==='easy'?0.35:0.58);if(ok&&!aiOk)return finishMini(true,'Tu ai găsit safe crate',{score:100});if(ok&&aiOk)return finishMini(false,'Egal, amândoi corect',{score:80,partial:.75});return finishMini(false,aiOk?'AI a ales mai bine':'Boom',{score:25,partial:.25})}if(state.mode==='quiz'){if(!ok)return finishMini(false,'Boom',{score:20,partial:.2});return askQuiz(()=>finishMini(true,'Safe crate + quiz',{score:100}),()=>finishMini(false,'Quiz greșit',{score:45,partial:.4}))}finishMini(ok,ok?'Safe crate!':'Boom!',{score:ok?100:15,partial:ok?1:.2})}}
+
+function startTTT(){let b=Array(9).fill('');const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];const won=s=>wins.some(line=>line.every(i=>b[i]===s));const aiMove=()=>{const open=b.map((v,i)=>v?null:i).filter(v=>v!==null);if(!open.length)return null;if(state.mode!=='ai')return open[rand(0,open.length-1)];if(state.difficulty==='hard'&&open.includes(4))return 4;return open[rand(0,open.length-1)]};layoutGame(`${currentTile().icon} TicTacToe`,`3 în linie.`,[{k:'You',v:'X'},{k:'AI',v:'O'},{k:'Mode',v:state.mode},{k:'Reward',v:currentReward()}],`<div id="ttt" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">${Array.from({length:9},(_,i)=>`<button class="btn-alt" style="height:86px;font-size:28px" onclick="tttPick(${i})" id="tt${i}"></button>`).join('')}</div>`);window.tttPick=(i)=>{if(b[i])return;b[i]='X';q('tt'+i).textContent='X';if(won('X'))return state.mode==='quiz'?askQuiz(()=>finishMini(true,'TTT + quiz',{score:100}),()=>finishMini(false,'Quiz greșit',{score:45,partial:.4})):finishMini(true,'Ai câștigat TTT',{score:100});if(b.every(Boolean))return finishMini(false,'Remiză',{score:60,partial:.6});const ai=aiMove();if(ai!=null){b[ai]='O';q('tt'+ai).textContent='O';if(won('O'))return finishMini(false,'AI a câștigat',{score:35,partial:.25});if(b.every(Boolean))return finishMini(false,'Remiză',{score:60,partial:.6})}}}
+
+function startMemory(){let cards=['✦','✦','◆','◆','●','●','⬟','⬟'];for(let i=cards.length-1;i>0;i--){const j=rand(0,i);[cards[i],cards[j]]=[cards[j],cards[i]]}let open=[],done=Array(8).fill(false),moves=0,pairs=0;layoutGame(`${currentTile().icon} Memory`,`Găsește toate perechile.`,[{k:'Moves',v:0,id:'mm1'},{k:'Pairs',v:'0/4',id:'mm2'},{k:'Mode',v:state.mode},{k:'Reward',v:currentReward()}],`<div id="mg" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">${cards.map((_,i)=>`<button class="btn-alt" style="height:76px;font-size:24px" onclick="memFlip(${i})" id="m${i}">?</button>`).join('')}</div>`);window.memFlip=(i)=>{if(done[i]||open.includes(i)||open.length===2)return;q('m'+i).textContent=cards[i];open.push(i);if(open.length<2)return;moves++;q('mm1').textContent=moves;const[a,b]=open;if(cards[a]===cards[b]){done[a]=done[b]=true;open=[];pairs++;q('mm2').textContent=`${pairs}/4`;if(pairs===4){const score=Math.max(35,120-moves*10);if(state.mode==='quiz')return askQuiz(()=>finishMini(true,'Memory + quiz',{score}),()=>finishMini(false,'Quiz greșit',{score,partial:.4}));if(state.mode==='ai'){const ai=state.difficulty==='hard'?5:state.difficulty==='easy'?10:7;return finishMini(moves<ai,moves<ai?`Mai bun decât AI (${moves} mutări)`:`AI ar fi făcut ${ai}`,{score,partial:moves<ai?1:.35})}return finishMini(true,'Toate perechile găsite',{score})}return}setTimeout(()=>{q('m'+a).textContent='?';q('m'+b).textContent='?';open=[]},500)}}
+
+function startBreakout(){let bricks=0,target=state.difficulty==='hard'?10:state.difficulty==='easy'?5:7,time=20,ai=0;layoutGame(`${currentTile().icon} Breakout`,`Sparge suficiente bricks înainte să expire timpul.`,[{k:'Bricks',v:0,id:'br1'},{k:'Target',v:target},{k:'Time',v:time,id:'br2'},{k:'AI',v:state.mode==='ai'?0:'—',id:'br3'}],`<div class="log">În versiunea locală simulezi bricks sparte.</div>`,`<button class="btn-main" onclick="breakBrick()">🧱 Break</button><button class="btn-alt" onclick="endBreakout()">Finish</button>`);if(state.mode==='ai'){state.aux=setInterval(()=>{if(Math.random()<(state.difficulty==='hard'?.8:state.difficulty==='easy'?.35:.55)){ai++;q('br3').textContent=ai}},900)}state.timer=setInterval(()=>{time--;q('br2').textContent=time;if(time<=0)endBreakout()},1000);window.breakBrick=()=>{bricks++;q('br1').textContent=bricks};window.endBreakout=()=>{clearInterval(state.timer);clearInterval(state.aux);if(state.mode==='ai')return finishMini(bricks>ai,bricks>ai?`Ai bătut AI ${bricks} vs ${ai}`:`AI mai bun ${ai} vs ${bricks}`,{score:bricks*12,partial:bricks>ai?1:.35});if(state.mode==='quiz'){if(bricks<target)return finishMini(false,'Sub target',{score:bricks*10,partial:.25});return askQuiz(()=>finishMini(true,'Breakout + quiz',{score:bricks*12}),()=>finishMini(false,'Quiz greșit',{score:bricks*8,partial:.4}))}finishMini(bricks>=target,bricks>=target?'Run reușit':'Sub target',{score:bricks*12,partial:bricks>=target?1:.25})}}
+
+function startMaze(){let prog=0,traps=0,target=state.difficulty==='hard'?8:state.difficulty==='easy'?4:6;layoutGame(`${currentTile().icon} Maze`,`Mergi spre ieșire și evită capcanele.`,[{k:'Progress',v:`0/${target}`,id:'mz1'},{k:'Traps',v:0,id:'mz2'},{k:'Mode',v:state.mode},{k:'Reward',v:currentReward()}],`<div class="btnrow"><button class="btn-main" onclick="mazeStep('left')">◀</button><button class="btn-main" onclick="mazeStep('up')">▲</button><button class="btn-main" onclick="mazeStep('down')">▼</button><button class="btn-main" onclick="mazeStep('right')">▶</button></div>`);window.mazeStep=(d)=>{const ok=Math.random()<(d==='right'?.72:.45);if(ok)prog++;else traps++;q('mz1').textContent=`${prog}/${target}`;q('mz2').textContent=traps;if(prog>=target){const score=120-traps*15;if(state.mode==='quiz')return askQuiz(()=>finishMini(true,'Maze + quiz',{score}),()=>finishMini(false,'Quiz greșit',{score,partial:.4}));if(state.mode==='ai'){const ai=state.difficulty==='hard'?6:state.difficulty==='easy'?2:4;return finishMini(traps<ai,traps<ai?'Ai ieșit mai curat':'AI ar fi avut mai puține traps',{score,partial:traps<ai?1:.35})}return finishMini(true,'Ai ieșit din labirint',{score})}if(traps>=3)return finishMini(false,'Prea multe capcane',{score:35+prog*10,partial:.25})}}
+
+function startShooter(){let score=0,boss=3,target=state.difficulty==='hard'?14:state.difficulty==='easy'?8:11;layoutGame(`${currentTile().icon} Shooter`,`Crește score-ul și termină boss-ul.`,[{k:'Score',v:0,id:'sh1'},{k:'Boss',v:3,id:'sh2'},{k:'Target',v:target},{k:'Reward',v:currentReward()}],`<div class="btnrow"><button class="btn-main" onclick="wave()">⚡ Wave</button><button class="btn-alt" onclick="bossHit()">👾 Boss</button></div>`);function check(){if(score>=target&&boss<=0){if(state.mode==='quiz')return askQuiz(()=>finishMini(true,'Shooter + quiz',{score:score*10}),()=>finishMini(false,'Quiz greșit',{score:score*6,partial:.4}));if(state.mode==='ai'){const ai=state.difficulty==='hard'?16:state.difficulty==='easy'?8:12;return finishMini(score>ai,score>ai?`Ai depășit AI ${score} vs ${ai}`:`AI ar fi avut ${ai}`,{score:score*10,partial:score>ai?1:.35})}return finishMini(true,'Sector curățat',{score:score*10})}}window.wave=()=>{score+=Math.random()<.7?2:1;q('sh1').textContent=score;check()};window.bossHit=()=>{if(score>=Math.max(4,target-4))boss--;q('sh2').textContent=boss;check()}}
+
+function startFusion(){let score=0,orders=0,bombs=3,target=state.difficulty==='hard'?12:state.difficulty==='easy'?7:9;layoutGame(`${currentTile().icon} Fusion`,`Combină mecanici arcade.`,[{k:'Score',v:0,id:'fu1'},{k:'Orders',v:'0/3',id:'fu2'},{k:'Bombs',v:3,id:'fu3'},{k:'Reward',v:currentReward()}],`<div class="btnrow"><button class="btn-main" onclick="fusionAct('orb')">✦ Orb</button><button class="btn-main" onclick="fusionAct('bomb')">💣 Bomb</button><button class="btn-main" onclick="fusionAct('serve')">♨ Serve</button></div>`);window.fusionAct=(a)=>{if(a==='orb')score+=2;if(a==='bomb'&&bombs>0){bombs--;score+=3}if(a==='serve'){orders++;score+=2}q('fu1').textContent=score;q('fu2').textContent=`${orders}/3`;q('fu3').textContent=bombs;if(score>=target&&orders>=3){const s=score*11+bombs*8;if(state.mode==='quiz')return askQuiz(()=>finishMini(true,'Fusion + quiz',{score:s}),()=>finishMini(false,'Quiz greșit',{score:s,partial:.4}));if(state.mode==='ai'){const ai=state.difficulty==='hard'?14:state.difficulty==='easy'?8:11;return finishMini(score>ai,score>ai?'Ai depășit AI în Fusion':'AI ar fi avut score mai bun',{score:s,partial:score>ai?1:.35})}return finishMini(true,'Fusion clear',{score:s})}}}
+
+function startPvAI(){let php=3,ahp=3;layoutGame(`${currentTile().icon} PvAI`,`Attack bate Feint, Block bate Attack, Feint bate Block.`,[{k:'Player HP',v:3,id:'pv1'},{k:'AI HP',v:3,id:'pv2'},{k:'Mode',v:state.mode},{k:'Reward',v:currentReward()}],`<div class="choices">${['attack','block','feint'].map(a=>`<div class="choice"><div class="t">${a}</div><button class="btn-main" onclick="pvPick('${a}')">Alege</button></div>`).join('')}</div>`);const counter=a=>a==='attack'?'block':a==='block'?'feint':'attack';window.pvPick=(a)=>{const all=['attack','block','feint'];const ai=state.mode==='ai'?(state.difficulty==='hard'&&Math.random()<.8?counter(a):all[rand(0,2)]):all[rand(0,2)];if(a===ai){}else if((a==='attack'&&ai==='feint')||(a==='block'&&ai==='attack')||(a==='feint'&&ai==='block'))ahp--;else php--;q('pv1').textContent=php;q('pv2').textContent=ahp;if(php<=0||ahp<=0){const score=Math.max(20,php*35+(3-ahp)*20);if(state.mode==='quiz'){if(ahp>=php)return finishMini(false,'Duel pierdut',{score,partial:.3});return askQuiz(()=>finishMini(true,'Duel + quiz',{score}),()=>finishMini(false,'Quiz greșit',{score,partial:.4}))}if(ahp<php)return finishMini(true,'Duel câștigat',{score});if(ahp===php)return finishMini(false,'Egal',{score,partial:.7});finishMini(false,'AI a câștigat duelul',{score,partial:.25})}}}
+
+function openFullGame(){const t=currentTile();if(!t.url)return toast('Nu există URL','red');const p=currentPlayer();p.full.started++;state.fullSession={player:state.activePlayer,tile:p.position,url:t.url,start:Date.now()};q('modalTitle').textContent=t.icon+' '+t.name;q('modalSub').textContent='Original embedded run';q('fullFrame').src=t.url;q('fullModal').classList.add('open');save();renderAll()}
+function closeFullGame(){q('fullFrame').src='about:blank';q('fullModal').classList.remove('open');state.fullSession=null}
+function openFullInTab(){if(state.fullSession)window.open(state.fullSession.url,'_blank','noopener,noreferrer')}
+function claimFull(result){if(!state.fullSession)return;const p=state.players[state.fullSession.player];state.activePlayer=state.fullSession.player;state.selectedTile=p.position;p.full.finished++;if(result==='win'){p.full.wins++;state.mode='full';const rr=claimReward(true,{coins:40,xp:30,score:180,partial:1.2,result:'full-win',source:'full'});burst();renderScreen('event',`<div class="event-card"><h3>🕹️ Full WIN</h3><p class="muted">Coins +${rr.coins} · XP +${rr.xp}</p></div>`)}else{state.mode='full';const rr=claimReward(false,{coins:20,xp:14,score:110,partial:.75,result:'full-finish',source:'full'});renderScreen('event',`<div class="event-card"><h3>🏁 Full FINISH</h3><p class="muted">Coins +${rr.coins} · XP +${rr.xp}</p></div>`)}closeFullGame();save();renderAll()}
+window.addEventListener('message',ev=>{if(!ev.data||typeof ev.data!=='object'||!state.fullSession)return;if(ev.data.type==='arcade-world-result'){if(ev.data.result==='win')claimFull('win');if(ev.data.result==='finish')claimFull('finish')}})
+
+function toggleModal(id,on){q(id).classList[on?'add':'remove']('open')}
+function openSavePanel(){toggleModal('saveModal',true)}
+function exportSave(){q('saveText').value=btoa(unescape(encodeURIComponent(JSON.stringify({players:state.players,activePlayer:state.activePlayer,selectedTile:state.selectedTile,sound:state.sound,themeIndex:state.themeIndex,multiplayerCount:state.multiplayerCount}))));toast('Save exportat','green')}
+function importSave(){try{const data=JSON.parse(decodeURIComponent(escape(atob(q('saveText').value.trim()))));state.players=(data.players||[]).map((p,i)=>Object.assign(defaultPlayer(i),p));state.activePlayer=data.activePlayer||0;state.selectedTile=data.selectedTile||0;state.sound=data.sound!==false;state.themeIndex=data.themeIndex||0;state.multiplayerCount=data.multiplayerCount||state.players.length||2;ensurePlayers();save();renderAll();renderScreen('details');toast('Save importat','green')}catch(e){toast('Import invalid','red')}}
+function saveProfileSlot(n){localStorage.setItem(PROFILE_PREFIX+n,localStorage.getItem(STORAGE)||JSON.stringify(defaultSave()));toast(`Slot ${n} salvat`,'green')}
+function loadProfileSlot(n){const s=localStorage.getItem(PROFILE_PREFIX+n);if(!s)return toast('Slot gol','red');localStorage.setItem(STORAGE,s);load();ensurePlayers();renderAll();renderScreen('details');toast(`Slot ${n} încărcat`,'green')}
+function partialReset(type){if(type==='stats'){for(const p of state.players){p.stats={};p.history=[];p.totalWins=0;p.full={started:0,finished:0,wins:0};p.completed=[];p.questsDone=[]}}if(type==='inventory'){for(const p of state.players){p.inventory={shield:0,reroll:0,double:0,themeToken:0};p.chests={common:0,rare:0,epic:0};p.shopBuys=0}}if(type==='board'){for(const p of state.players){p.position=0;p.visited=[0];p.completed=[];p.boardPasses=0;p.bonusHits=0;p.trapHits=0;p.skipTurns=0;p.bonusTurns=0}}save();renderAll();toast(`Reset ${type}`,'red')}
+function hardReset(){localStorage.removeItem(STORAGE);state.players=[defaultPlayer(0),defaultPlayer(1)];state.activePlayer=0;state.selectedTile=0;state.multiplayerCount=2;state.themeIndex=0;state.sound=true;save();renderAll();renderScreen('details');toast('Reset complet','red')}
+
+function init(){load();ensurePlayers();state.activePlayer=0;state.selectedTile=state.players[0]?.position||0;state.daily=buildDaily();document.body.className=THEMES[state.themeIndex];renderAll();renderScreen('modes');setHint(state.lang==='en'?'Player 1 starts. Roll the dice or choose a game mode.':'Player 1 începe. Aruncă zarul sau alege un mod de joc.');}
+window.addEventListener('resize',()=>requestAnimationFrame(()=>{drawConnectors();moveTokenTo(currentPlayer().position,false);syncBoardFallback()}))
+init();
+
+(function(){
+  function currentRewardSafe(){ return typeof currentReward==='function' ? currentReward() : 100; }
+  function arenaWrap(title, inner, note=''){ return `<div class="game-stage"><div class="stage-title">${title}</div>${inner}${note?`<div class="arena-note">${note}</div>`:''}</div>`; }
+
+  window.startMaze = function(){
+    let prog=0,traps=0,target=state.difficulty==='hard'?8:state.difficulty==='easy'?4:6;
+    let pos={x:0,y:6}, exit={x:6,y:0};
+    const walls=new Set(['1,1','1,2','1,4','2,4','3,1','3,2','4,2','4,5','5,3']);
+    function renderGrid(){
+      let html='<div class="maze-grid">';
+      for(let y=0;y<7;y++) for(let x=0;x<7;x++){
+        let cls='maze-cell', txt='';
+        if(x===pos.x&&y===pos.y){ cls+=' player'; txt='🎮'; }
+        else if(x===exit.x&&y===exit.y){ cls+=' exit'; txt='🏁'; }
+        else if(walls.has(`${x},${y}`)){ cls+=' wall'; txt=''; }
+        html+=`<div class="${cls}">${txt}</div>`;
+      }
+      html+='</div>';
+      q('mazeArena').innerHTML = html;
+    }
+    layoutGame(`${currentTile().icon} Maze`,`Mergi spre ieșire și evită capcanele.`,[{k:'Progress',v:`0/${target}`,id:'mz1'},{k:'Traps',v:0,id:'mz2'},{k:'Mode',v:state.mode},{k:'Reward',v:currentRewardSafe()}],
+      arenaWrap('Maze Arena',`<div id="mazeArena"></div><div class="maze-controls"><button class="btn-main mc-up" onclick="mazeStep('up')">▲</button><button class="btn-main mc-left" onclick="mazeStep('left')">◀</button><button class="btn-main mc-right" onclick="mazeStep('right')">▶</button><button class="btn-main mc-down" onclick="mazeStep('down')">▼</button></div>`,`Acum se vede zona de joc reală: poziția ta, pereții și ieșirea.`)
+    );
+    renderGrid();
+    window.mazeStep=(d)=>{
+      const delta={left:[-1,0],right:[1,0],up:[0,-1],down:[0,1]}[d];
+      const nx=Math.max(0,Math.min(6,pos.x+delta[0])), ny=Math.max(0,Math.min(6,pos.y+delta[1]));
+      if(walls.has(`${nx},${ny}`)){ traps++; }
+      else { pos={x:nx,y:ny}; prog=Math.max(prog, Math.min(target, Math.abs(pos.x-exit.x)+Math.abs(pos.y-exit.y) <= 12 ? target - (Math.abs(pos.x-exit.x)+Math.abs(pos.y-exit.y)) : prog)); }
+      if(Math.random() < (d==='right'||d==='up'?0.12:0.2)) traps++;
+      q('mz1').textContent = `${Math.min(prog,target)}/${target}`; q('mz2').textContent = traps; renderGrid();
+      if(pos.x===exit.x && pos.y===exit.y){ const score=Math.max(40,120-traps*15); if(state.mode==='quiz') return askQuiz(()=>finishMini(true,'Maze + quiz',{score}),()=>finishMini(false,'Quiz greșit',{score,partial:.4})); if(state.mode==='ai'){ const ai=state.difficulty==='hard'?3:state.difficulty==='easy'?1:2; return finishMini(traps<=ai,traps<=ai?'Ai ieșit mai curat':'AI ar fi avut mai puține traps',{score,partial:traps<=ai?1:.35}) } return finishMini(true,'Ai ieșit din labirint',{score}); }
+      if(traps>=4) return finishMini(false,'Prea multe capcane',{score:35+prog*8,partial:.25});
+    }
+  };
+
+  window.startBomber = function(){
+    const safe=rand(0,2); let picked=false;
+    layoutGame(`${currentTile().icon} Bomber`,`Alege lada sigură.`,[{k:'Mode',v:state.mode},{k:'Reward',v:currentRewardSafe()},{k:'AI',v:state.mode==='ai'?(state.difficulty||'medium'):'—'},{k:'Risk',v:'High'}],
+      arenaWrap('Bomb Arena',`<div id="bombArena" class="crate-row">${[0,1,2].map(i=>`<div class="crate" id="crate${i}">📦</div>`).join('')}</div><div class="choices" style="margin-top:14px">${['Stânga','Centru','Dreapta'].map((x,i)=>`<div class="choice"><div class="i">📦</div><div class="t">${x}</div><button class="btn-main" onclick="pickBomb(${i})">Alege</button></div>`).join('')}</div>`,`Alegi o ladă și vezi imediat dacă este safe sau explodează.`)
+    );
+    window.pickBomb=(i)=>{ if(picked) return; picked=true; for(let c=0;c<3;c++){ const el=q('crate'+c); el.classList.add(c===safe?'safe':'boom'); el.textContent=c===safe?'⭐':'💣'; }
+      const ok=i===safe; if(state.mode==='ai'){const aiOk=Math.random()<(state.difficulty==='hard'?0.8:state.difficulty==='easy'?0.35:0.58); if(ok&&!aiOk)return finishMini(true,'Tu ai găsit safe crate',{score:100}); if(ok&&aiOk)return finishMini(false,'Egal, amândoi corect',{score:80,partial:.75}); return finishMini(false,aiOk?'AI a ales mai bine':'Boom',{score:25,partial:.25})} if(state.mode==='quiz'){ if(!ok)return finishMini(false,'Boom',{score:20,partial:.2}); return askQuiz(()=>finishMini(true,'Safe crate + quiz',{score:100}),()=>finishMini(false,'Quiz greșit',{score:45,partial:.4})) } finishMini(ok,ok?'Safe crate!':'Boom!',{score:ok?100:15,partial:ok?1:.2}) }
+  };
+
+  window.startBreakout = function(){
+    let bricks=8,target=state.difficulty==='hard'?7:state.difficulty==='easy'?4:5,time=20,ai=0;
+    function renderBricks(){ q('brickField').innerHTML = Array.from({length:8},(_,i)=>`<div class="brick ${i>=bricks?'dead':''}"></div>`).join(''); }
+    layoutGame(`${currentTile().icon} Breakout`,`Sparge suficiente bricks înainte să expire timpul.`,[{k:'Bricks',v:0,id:'br1'},{k:'Target',v:target},{k:'Time',v:time,id:'br2'},{k:'AI',v:state.mode==='ai'?0:'—',id:'br3'}],
+      arenaWrap('Breakout Arena',`<div id="brickField" class="brick-field"></div><div class="paddle-wrap"><div class="ball"></div><div class="paddle"></div></div>`,`Acum ai playfield vizibil cu bricks, paddle și ball.`),
+      `<button class="btn-main" onclick="breakBrick()">🧱 Break</button><button class="btn-alt" onclick="endBreakout()">Finish</button>`
+    );
+    renderBricks();
+    if(state.mode==='ai'){state.aux=setInterval(()=>{if(Math.random()<(state.difficulty==='hard'?0.8:state.difficulty==='easy'?0.35:0.55)){ai++;q('br3').textContent=ai}},900)}
+    state.timer=setInterval(()=>{time--;q('br2').textContent=time;if(time<=0)endBreakout()},1000);
+    window.breakBrick=()=>{ if(bricks<=0) return; bricks--; q('br1').textContent=8-bricks; renderBricks(); };
+    window.endBreakout=()=>{ clearInterval(state.timer); clearInterval(state.aux); const player=8-bricks; if(state.mode==='ai') return finishMini(player>ai,player>ai?`Ai bătut AI ${player} vs ${ai}`:`AI mai bun ${ai} vs ${player}`,{score:player*12,partial:player>ai?1:.35}); if(state.mode==='quiz'){ if(player<target)return finishMini(false,'Sub target',{score:player*10,partial:.25}); return askQuiz(()=>finishMini(true,'Breakout + quiz',{score:player*12}),()=>finishMini(false,'Quiz greșit',{score:player*8,partial:.4})) } finishMini(player>=target,player>=target?'Run reușit':'Sub target',{score:player*12,partial:player>=target?1:.25}) };
+  };
+
+  window.startShooter = function(){
+    let score=0,boss=3,target=state.difficulty==='hard'?14:state.difficulty==='easy'?8:11;
+    function renderBoss(){ q('bossHp').style.width = `${Math.max(0,boss/3*100)}%`; }
+    layoutGame(`${currentTile().icon} Shooter`,`Crește score-ul și termină boss-ul.`,[{k:'Score',v:0,id:'sh1'},{k:'Boss',v:3,id:'sh2'},{k:'Target',v:target},{k:'Reward',v:currentRewardSafe()}],
+      arenaWrap('Shooter Arena',`<div class="shooter-row"><div class="duelist" style="position:relative;min-height:180px"><div class="ship">🚀</div><div style="position:absolute;left:90px;top:34px;font-size:22px">✦ ✦ ✦</div><div class="boss">👾</div><div class="bossbar" style="position:absolute;left:18px;right:18px;bottom:18px"><div id="bossHp" class="bossfill" style="width:100%"></div></div></div></div>`,`Wave pentru score, Boss pentru kill.`),
+      `<button class="btn-main" onclick="wave()">⚡ Wave</button><button class="btn-alt" onclick="bossHit()">👾 Boss</button>`
+    );
+    renderBoss();
+    function check(){ if(score>=target&&boss<=0){ if(state.mode==='quiz')return askQuiz(()=>finishMini(true,'Shooter + quiz',{score:score*10}),()=>finishMini(false,'Quiz greșit',{score:score*6,partial:.4})); if(state.mode==='ai'){const ai=state.difficulty==='hard'?16:state.difficulty==='easy'?8:12; return finishMini(score>ai,score>ai?`Ai depășit AI ${score} vs ${ai}`:`AI ar fi avut ${ai}`,{score:score*10,partial:score>ai?1:.35})} return finishMini(true,'Sector curățat',{score:score*10}) } }
+    window.wave=()=>{ score+=Math.random()<.7?2:1; q('sh1').textContent=score; check(); };
+    window.bossHit=()=>{ if(score>=Math.max(4,target-4) && boss>0) boss--; q('sh2').textContent=boss; renderBoss(); check(); };
+  };
+
+  window.startFusion = function(){
+    let score=0,orders=0,bombs=3,target=state.difficulty==='hard'?12:state.difficulty==='easy'?7:9;
+    function renderOrders(){ q('fusionOrders').innerHTML = Array.from({length:3},(_,i)=>`<div class="order">${i<orders?'✅':'🧾'} Order ${i+1}</div>`).join(''); }
+    layoutGame(`${currentTile().icon} Fusion`,`Combină mecanici arcade.`,[{k:'Score',v:0,id:'fu1'},{k:'Orders',v:'0/3',id:'fu2'},{k:'Bombs',v:3,id:'fu3'},{k:'Reward',v:currentRewardSafe()}],
+      arenaWrap('Fusion Arena',`<div class="fusion-scene"><div class="lane"><div class="orb o1">✦</div><div class="orb o2">💣</div><div class="orb o3">✦</div><div class="serve-icon">♨️</div><div style="position:absolute;left:16px;bottom:16px;color:rgba(255,255,255,.7)">Lane activ</div></div><div class="order-list" id="fusionOrders"></div></div>`),
+      `<button class="btn-main" onclick="fusionAct('orb')">✦ Orb</button><button class="btn-main" onclick="fusionAct('bomb')">💣 Bomb</button><button class="btn-main" onclick="fusionAct('serve')">♨ Serve</button>`
+    );
+    renderOrders();
+    window.fusionAct=(a)=>{ if(a==='orb')score+=2; if(a==='bomb'&&bombs>0){bombs--;score+=3} if(a==='serve'&&orders<3){orders++;score+=2} q('fu1').textContent=score; q('fu2').textContent=`${orders}/3`; q('fu3').textContent=bombs; renderOrders(); if(score>=target&&orders>=3){ const s=score*11+bombs*8; if(state.mode==='quiz')return askQuiz(()=>finishMini(true,'Fusion + quiz',{score:s}),()=>finishMini(false,'Quiz greșit',{score:s,partial:.4})); if(state.mode==='ai'){const ai=state.difficulty==='hard'?14:state.difficulty==='easy'?8:11; return finishMini(score>ai,score>ai?'Ai depășit AI în Fusion':'AI ar fi avut score mai bun',{score:s,partial:score>ai?1:.35}) } return finishMini(true,'Fusion clear',{score:s}) } };
+  };
+
+  window.startPvAI = function(){
+    let php=3,ahp=3,lastP='—',lastA='—';
+    function renderHp(){ q('pHp').style.width=`${php/3*100}%`; q('aHp').style.width=`${ahp/3*100}%`; q('pvLastP').textContent=lastP; q('pvLastA').textContent=lastA; }
+    layoutGame(`${currentTile().icon} PvAI`,`Attack bate Feint, Block bate Attack, Feint bate Block.`,[{k:'Player HP',v:3,id:'pv1'},{k:'AI HP',v:3,id:'pv2'},{k:'Mode',v:state.mode},{k:'Reward',v:currentRewardSafe()}],
+      arenaWrap('Duel Arena',`<div class="duel-row"><div class="duelist"><div class="avatar">🧑</div><div class="hpbar"><div id="pHp" class="hpfill" style="width:100%"></div></div><div class="last-move">Ultima mutare: <b id="pvLastP">—</b></div></div><div class="duelist"><div class="avatar">🤖</div><div class="hpbar"><div id="aHp" class="bossfill" style="width:100%"></div></div><div class="last-move">Ultima mutare: <b id="pvLastA">—</b></div></div></div><div class="choices" style="margin-top:14px">${['attack','block','feint'].map(a=>`<div class="choice"><div class="t">${a}</div><button class="btn-main" onclick="pvPick('${a}')">Alege</button></div>`).join('')}</div>`)
+    );
+    renderHp();
+    const counter=a=>a==='attack'?'block':a==='block'?'feint':'attack';
+    window.pvPick=(a)=>{ const all=['attack','block','feint']; const ai=state.mode==='ai'?(state.difficulty==='hard'&&Math.random()<.8?counter(a):all[rand(0,2)]):all[rand(0,2)]; lastP=a; lastA=ai; if(a!==ai){ if((a==='attack'&&ai==='feint')||(a==='block'&&ai==='attack')||(a==='feint'&&ai==='block')) ahp--; else php--; } q('pv1').textContent=php; q('pv2').textContent=ahp; renderHp(); if(php<=0||ahp<=0){ const score=Math.max(20,php*35+(3-ahp)*20); if(state.mode==='quiz'){ if(ahp>=php)return finishMini(false,'Duel pierdut',{score,partial:.3}); return askQuiz(()=>finishMini(true,'Duel + quiz',{score}),()=>finishMini(false,'Quiz greșit',{score,partial:.4})) } if(ahp<php)return finishMini(true,'Duel câștigat',{score}); if(ahp===php)return finishMini(false,'Egal',{score,partial:.7}); finishMini(false,'AI a câștigat duelul',{score,partial:.25}) } };
+  };
+})();
+
+(function(){
+  function currentRewardSafe(){ return typeof currentReward==='function' ? currentReward() : 100; }
+  function arenaWrap2(title, inner, note=''){ return `<div class="game-stage"><div class="stage-title">${title}</div>${inner}${note?`<div class="arena-note">${note}</div>`:''}</div>`; }
+
+  window.startBasket = function(){
+    const p=currentPlayer();
+    const shotsTaken=(p.stats.basketShots||0);
+    const wins=(p.stats.basketWins||0), plays=Math.max(1,(p.stats.basketPlays||0));
+    const winRate=wins/plays;
+    const tutorialSlow=shotsTaken<2;
+    const diff=state.difficulty||'medium';
+    let speed=tutorialSlow?5.5:(diff==='easy'?7.5:diff==='hard'?12.5:9.5);
+    if(!tutorialSlow){speed += Math.min(7, shotsTaken*0.45) + (winRate>.65?1.2:0)}
+    const zone=tutorialSlow?26:(diff==='easy'?22:diff==='hard'?11:16);
+    const zoneStart=tutorialSlow?37:(diff==='easy'?34:diff==='hard'?46:41);
+    let pos=0,dir=1,done=false;
+    p.stats.basketPlays=(p.stats.basketPlays||0)+1;
+    layoutGame(`${currentTile().icon} Basket`,`Primele 2 shot-uri sunt slow tutorial, apoi viteza crește treptat.`,[{k:'Shots total',v:shotsTaken,id:'bk_shots'},{k:'Tutorial',v:tutorialSlow?'ON':'OFF'},{k:'Speed',v:speed.toFixed(1)},{k:'Reward',v:currentRewardSafe()}],
+      arenaWrap2('Basket Court',`
+        <div class="court-stage">
+          <div class="court-backboard"></div>
+          <div class="court-rim"></div>
+          <div class="court-net"></div>
+          <div class="court-ball" id="basketBall">🏀</div>
+          <div class="shot-glow" id="basketGlow"></div>
+        </div>
+        <div class="meter"><div class="zone" id="bk_zone"></div><div class="marker" id="bk_marker"></div></div>
+        <div class="btnrow"><button class="btn-main" onclick="basketRelease()">🏀 SHOOT</button></div>
+      `,`Auto-adjust activ: tutorial lent la primele 2 aruncări, apoi ramp-up după experiență și win-rate.`)
+    );
+    q('bk_zone').style.left=zoneStart+'%'; q('bk_zone').style.width=zone+'%';
+    const marker=q('bk_marker');
+    state.timer=setInterval(()=>{ pos+=dir*speed*0.32; if(pos>=100){pos=100;dir=-1} if(pos<=0){pos=0;dir=1} marker.style.left=`calc(${pos}% - 7px)`; },26);
+    window.basketRelease=()=>{
+      if(done)return; done=true; clearInterval(state.timer);
+      const ok=pos>=zoneStart&&pos<=zoneStart+zone;
+      const precision=Math.max(0,100-Math.abs(pos-(zoneStart+zone/2))*4|0);
+      const ball=q('basketBall'), glow=q('basketGlow');
+      ball.classList.add(ok?'shot-made':'shot-miss'); glow.classList.add(ok?'good':'bad');
+      p.stats.basketShots=(p.stats.basketShots||0)+1;
+      if(ok) p.stats.basketWins=(p.stats.basketWins||0)+1;
+      const resolve=()=>{
+        if(state.mode==='ai'){
+          const ai=diff==='hard'?88:diff==='easy'?62:76;
+          if(ok&&precision>ai) return finishMini(true,`Perfect release ${precision}% vs AI ${ai}%`,{score:precision+20});
+          if(ok&&precision===ai) return finishMini(false,'Egal la precizie',{score:precision,partial:.75});
+          if(ok) return finishMini(false,`AI mai precis ${ai}% vs ${precision}%`,{score:precision,partial:.45});
+          return finishMini(false,'Ai ratat release-ul',{score:precision,partial:.22});
+        }
+        if(state.mode==='quiz'){
+          if(!ok) return finishMini(false,'Ai ratat release-ul',{score:precision,partial:.22});
+          return askQuiz(()=>finishMini(true,'Coș + quiz corect',{score:precision+24}),()=>finishMini(false,'Quiz greșit',{score:precision,partial:.4}));
+        }
+        finishMini(ok,ok?`Coș marcat! ${precision}% release`:'Ai ratat release-ul',{score:precision+10,partial:ok?1:.22});
+      };
+      setTimeout(resolve,700);
+    }
+  };
+
+  window.startHockey = function(){
+    const diff=state.difficulty||'medium';
+    let puck=50, dir=1, done=false;
+    const gate={easy:[35,65],medium:[42,58],hard:[46,54]}[diff];
+    let speed={easy:1.8,medium:2.4,hard:3.1}[diff];
+    layoutGame(`${currentTile().icon} Hockey`,`Țintește poarta exact când pucul e în fereastra bună.`,[{k:'Goal window',v:`${gate[0]}-${gate[1]}`},{k:'Speed',v:speed.toFixed(1)},{k:'Mode',v:state.mode},{k:'Reward',v:currentRewardSafe()}],
+      arenaWrap2('Hockey Arena',`
+        <div class="hockey-stage">
+          <div class="hockey-rink"></div>
+          <div class="hockey-goal"></div>
+          <div class="hockey-puck" id="hockeyPuck"></div>
+          <div class="hockey-mallet"></div>
+        </div>
+        <div class="meter"><div class="zone" id="hk_zone"></div><div class="marker" id="hk_marker"></div></div>
+        <div class="btnrow"><button class="btn-main" onclick="hockeyStrike()">🏒 SHOOT</button></div>
+      `,`Puc și poartă vizibile. Easy are fereastră mare, hard este foarte strict.`)
+    );
+    q('hk_zone').style.left=gate[0]+'%'; q('hk_zone').style.width=(gate[1]-gate[0])+'%';
+    const marker=q('hk_marker'), puckEl=q('hockeyPuck');
+    state.timer=setInterval(()=>{
+      puck += dir*speed;
+      if(puck>=100){puck=100;dir=-1} if(puck<=0){puck=0;dir=1}
+      marker.style.left=`calc(${puck}% - 7px)`;
+      puckEl.style.left=`calc(${10 + puck*0.72}% - 14px)`;
+    },24);
+    window.hockeyStrike=()=>{
+      if(done)return; done=true; clearInterval(state.timer);
+      const ok=puck>=gate[0]&&puck<=gate[1];
+      const precision=Math.max(0,100-Math.abs(puck-((gate[0]+gate[1])/2))*5|0);
+      puckEl.classList.add(ok?'puck-goal':'puck-miss');
+      setTimeout(()=>{
+        if(state.mode==='ai'){
+          const ai=diff==='hard'?91:diff==='easy'?64:79;
+          if(ok&&precision>ai) return finishMini(true,`Gol! ${precision}% vs AI ${ai}%`,{score:precision+18});
+          if(ok&&precision===ai) return finishMini(false,'Egal la execuție',{score:precision,partial:.75});
+          if(ok) return finishMini(false,`AI a apărat mai bine (${ai}%)`,{score:precision,partial:.45});
+          return finishMini(false,'Șut ratat',{score:precision,partial:.22});
+        }
+        if(state.mode==='quiz'){
+          if(!ok) return finishMini(false,'Șut ratat',{score:precision,partial:.22});
+          return askQuiz(()=>finishMini(true,'Gol + quiz corect',{score:precision+20}),()=>finishMini(false,'Quiz greșit',{score:precision,partial:.4}));
+        }
+        finishMini(ok,ok?'Gol marcat!':'Șut ratat',{score:precision+8,partial:ok?1:.22});
+      },650);
+    }
+  };
+
+  window.startBounce = function(){
+    const diff=state.difficulty||'medium';
+    let x=20,y=35,vx={easy:1.9,medium:2.5,hard:3.1}[diff],vy={easy:1.4,medium:1.9,hard:2.4}[diff],done=false;
+    const target=[68,26];
+    layoutGame(`${currentTile().icon} Bounce`,`Controlează ritmul și oprește mingea aproape de target.`,[{k:'Target X',v:target[0]},{k:'Target Y',v:target[1]},{k:'Mode',v:state.mode},{k:'Reward',v:currentRewardSafe()}],
+      arenaWrap2('Bounce Arena',`
+        <div class="bounce-stage">
+          <div class="bounce-target" style="left:${target[0]}%;top:${target[1]}%"></div>
+          <div class="bounce-ball" id="bounceBall"></div>
+        </div>
+        <div class="btnrow"><button class="btn-main" onclick="bounceStop()">🛑 STOP</button></div>
+      `,`Mingea ricoșează în arenă. Oprește-o cât mai aproape de ținta albastră.`)
+    );
+    const ball=q('bounceBall');
+    state.timer=setInterval(()=>{
+      x+=vx; y+=vy;
+      if(x<=2||x>=94) vx*=-1;
+      if(y<=4||y>=82) vy*=-1;
+      ball.style.left=x+'%'; ball.style.top=y+'%';
+    },24);
+    window.bounceStop=()=>{
+      if(done)return; done=true; clearInterval(state.timer);
+      const dist=Math.hypot(x-target[0], y-target[1]);
+      const precision=Math.max(0,Math.round(100-dist*3.2));
+      const ok=precision >= (diff==='hard'?78:diff==='easy'?52:64);
+      ball.classList.add(ok?'bounce-win':'bounce-lose');
+      setTimeout(()=>{
+        if(state.mode==='ai'){
+          const ai=diff==='hard'?86:diff==='easy'?57:71;
+          if(ok&&precision>ai) return finishMini(true,`Bounce control ${precision}% vs AI ${ai}%`,{score:precision+16});
+          if(ok&&precision===ai) return finishMini(false,'Egal la control',{score:precision,partial:.75});
+          if(ok) return finishMini(false,`AI a controlat mai bine (${ai}%)`,{score:precision,partial:.45});
+          return finishMini(false,'Ritm ratat',{score:precision,partial:.22});
+        }
+        if(state.mode==='quiz'){
+          if(!ok) return finishMini(false,'Ritm ratat',{score:precision,partial:.22});
+          return askQuiz(()=>finishMini(true,'Bounce + quiz corect',{score:precision+18}),()=>finishMini(false,'Quiz greșit',{score:precision,partial:.4}));
+        }
+        finishMini(ok,ok?`Control bun ${precision}%`:'Ritm ratat',{score:precision+8,partial:ok?1:.22});
+      },520);
+    }
+  };
+})();
+
+(function(){
+  const style=document.createElement('style');
+  style.textContent='@keyframes v5Pulse{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.04)}} .board-token{animation:v5Pulse 1.8s ease-in-out infinite}';
+  document.head.appendChild(style);
+})();
+
+(function(){
+  const originalInit = typeof init==='function' ? init : null;
+  const originalRenderAll = typeof renderAll==='function' ? renderAll : null;
+  const originalOpenSavePanel = typeof openSavePanel==='function' ? openSavePanel : null;
+  const originalOpenFullGame = typeof openFullGame==='function' ? openFullGame : null;
+  const originalClaimFull = typeof claimFull==='function' ? claimFull : null;
+  const originalCurrentReward = typeof currentReward==='function' ? currentReward : function(mult=1){ return 100*mult; };
+  const originalClaimReward = typeof claimReward==='function' ? claimReward : null;
+
+  state.bridge = { status:'idle', handshake:false, loaded:false, score:0, raw:null, timer:null, ping:null };
+  state.deviceLab = { compact:false, landscape:false, touch:false, dpr:1 };
+  state.balanceVersion = 'v10 adaptive';
+
+  function savePayload(){
+    return {
+      players: state.players,
+      activePlayer: state.activePlayer,
+      selectedTile: state.selectedTile,
+      sound: state.sound,
+      themeIndex: state.themeIndex,
+      multiplayerCount: state.multiplayerCount,
+      ts: Date.now(),
+      version: 'v10'
+    };
+  }
+
+  function encodePayload(obj){
+    return btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
+  }
+  function decodePayload(text){
+    return JSON.parse(decodeURIComponent(escape(atob(text))));
+  }
+
+  function currentPlayerSafe(){ return typeof currentPlayer==='function' ? currentPlayer() : (state.players?.[state.activePlayer] || null); }
+  function currentTileSafe(){ return typeof currentTile==='function' ? currentTile() : null; }
+
+  function computeAdaptiveMeta(){
+    const p = currentPlayerSafe();
+    const t = currentTileSafe();
+    if(!p || !t) return { rewardMult:1, assist:1, challenge:1, streak:0, familyWins:0, recentWinRate:0.5 };
+    const famKey = t.family ? (t.family + 'Wins') : null;
+    const familyWins = famKey ? (p.stats?.[famKey] || 0) : 0;
+    const recent = (p.history || []).slice(0,8);
+    const wins = recent.filter(h => /win/i.test(h.result || '')).length;
+    const recentWinRate = recent.length ? wins / recent.length : 0.5;
+    const streak = recent.findIndex(h => !/win/i.test(h.result || ''));
+    const winStreak = streak === -1 ? wins : streak;
+    const isMobile = window.innerWidth <= 900;
+    let assist = 1;
+    if (recentWinRate < 0.35) assist += 0.12;
+    if (p.coins < 80) assist += 0.05;
+    if (isMobile) assist += 0.04;
+
+    let challenge = 1;
+    if (recentWinRate > 0.7) challenge += 0.12;
+    if (familyWins >= 4) challenge += 0.08;
+    if (state.difficulty === 'hard') challenge += 0.18;
+    if (state.difficulty === 'easy') challenge -= 0.07;
+
+    let rewardMult = 1;
+    if (state.mode === 'ai') rewardMult += state.difficulty === 'hard' ? 0.32 : state.difficulty === 'medium' ? 0.18 : 0.08;
+    if (state.mode === 'quiz') rewardMult += 0.14;
+    if (state.mode === 'full') rewardMult += 0.24;
+    rewardMult += Math.min(0.18, winStreak * 0.03);
+    rewardMult += Math.max(0, challenge - 1) * 0.45;
+    rewardMult += Math.max(0, assist - 1) * 0.18;
+    if (state.daily && state.daily.tile === p.position) rewardMult += 0.08;
+    if ((p.inventory?.double || 0) > 0) rewardMult += 0.02;
+
+    return { rewardMult, assist, challenge, streak: winStreak, familyWins, recentWinRate };
+  }
+
+  window.currentReward = function(mult=1){
+    const base = originalCurrentReward(1);
+    const meta = computeAdaptiveMeta();
+    return Math.round(base * meta.rewardMult * mult);
+  };
+
+  window.claimReward = function(win, extra={}){
+    if(!originalClaimReward) return { coins:0, xp:0 };
+    const meta = computeAdaptiveMeta();
+    const adjusted = { ...extra };
+    adjusted.coins = (adjusted.coins || 0) + Math.round((meta.challenge - 1) * 22) + (win ? Math.round(meta.streak * 3) : 0);
+    adjusted.xp = (adjusted.xp || 0) + Math.round((meta.rewardMult - 1) * 18) + (win ? Math.round(meta.familyWins * 1.5) : 0);
+    if(!win && meta.assist > 1) adjusted.coins += Math.round((meta.assist - 1) * 30);
+    if(!win && meta.assist > 1) adjusted.xp += Math.round((meta.assist - 1) * 24);
+    return originalClaimReward(win, adjusted);
+  };
+
+  function ensureDeviceCard(){
+    if(document.getElementById('deviceLabCard')) return;
+    const badgeCard = document.getElementById('badgeCard');
+    if(!badgeCard || !badgeCard.parentNode) return;
+    const div = document.createElement('div');
+    div.className = 'side-card device-card';
+    div.id = 'deviceLabCard';
+    badgeCard.parentNode.insertBefore(div, badgeCard);
+  }
+
+  function renderDeviceLab(){
+    ensureDeviceCard();
+    const card = document.getElementById('deviceLabCard');
+    if(!card) return;
+    const compact = window.innerWidth <= 900;
+    const touch = matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
+    const landscape = window.innerWidth > window.innerHeight;
+    state.deviceLab = { compact, landscape, touch, dpr: window.devicePixelRatio || 1 };
+    card.innerHTML = `
+      <div class="section-k">Mobile / Tablet Lab</div>
+      <div class="sync-grid" style="margin-top:10px">
+        <div class="sync-box"><div class="k">Viewport</div><div class="v"><strong>${window.innerWidth}×${window.innerHeight}</strong><br>${compact ? 'compact/mobile layout' : 'desktop/tablet layout'}</div></div>
+        <div class="sync-box"><div class="k">Input</div><div class="v"><strong>${touch ? 'touch/coarse' : 'mouse/fine'}</strong><br>DPR ${state.deviceLab.dpr.toFixed(2)} · ${landscape ? 'landscape' : 'portrait'}</div></div>
+      </div>
+      <div class="btnrow" style="margin-top:10px">
+        <button class="btn-alt" onclick="window.dispatchEvent(new Event('resize'));toast('Retestat layout-ul','green')">Retest layout</button>
+        <button class="btn-alt" onclick="document.body.classList.toggle('theme-purple')">Quick contrast</button>
+      </div>
+      <div class="tiny" style="margin-top:10px">Testare rapidă inclusă pentru mobile/tablet: viewport, pointer, orientation și rerender la resize.</div>
+    `;
+  }
+
+  function ensureMobileRibbon(){
+    let el = document.getElementById('mobileRibbon');
+    if(!el){
+      el = document.createElement('div');
+      el.id = 'mobileRibbon';
+      el.className = 'mobile-ribbon';
+      document.body.appendChild(el);
+    }
+    const compact = window.innerWidth <= 900;
+    const touch = matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
+    el.innerHTML = `<strong>${compact ? 'Mobile HUD' : 'Desktop HUD'}</strong> · ${touch ? 'touch' : 'mouse'} · ${window.innerWidth}×${window.innerHeight}`;
+  }
+
+  function patchTopStats(){
+    const box = document.getElementById('top-stats');
+    if(!box || box.dataset.v10Patched) return;
+    box.dataset.v10Patched = '1';
+    const extra = document.createElement('div');
+    extra.className = 'stat';
+    extra.id = 'balanceStat';
+    box.appendChild(extra);
+    const extra2 = document.createElement('div');
+    extra2.className = 'stat';
+    extra2.id = 'bridgeStat';
+    box.appendChild(extra2);
+  }
+
+  function renderAdaptiveStats(){
+    patchTopStats();
+    const meta = computeAdaptiveMeta();
+    const a = document.getElementById('balanceStat');
+    const b = document.getElementById('bridgeStat');
+    if(a) a.innerHTML = `<div class="k">Balans</div><div class="v">${Math.round(meta.rewardMult*100)}%</div><div class="tiny">Assist ${meta.assist.toFixed(2)} · Challenge ${meta.challenge.toFixed(2)}</div>`;
+    if(b) b.innerHTML = `<div class="k">Iframe bridge</div><div class="v">${state.bridge.status || 'idle'}</div><div class="tiny">score ${state.bridge.score || 0} · ${state.bridge.handshake ? 'handshake ok' : 'manual fallback'}</div>`;
+  }
+
+  function patchSavePanel(){
+    const host = document.querySelector('#saveModal .modal-card > div:nth-child(2)');
+    if(!host || document.getElementById('syncTools')) return;
+    const panel = document.createElement('div');
+    panel.className = 'save-action';
+    panel.id = 'syncTools';
+    panel.innerHTML = `
+      <div style="font-weight:1000;margin-bottom:8px">Export file / cloud sync link</div>
+      <div class="sync-grid">
+        <div class="sync-box"><div class="k">Backup file</div><div class="v">Descarcă progresul ca JSON și reimportă-l pe orice device.</div></div>
+        <div class="sync-box"><div class="k">Cloud-ready link</div><div class="v">Generează un sync link cu cod în URL hash, bun pentru share între device-uri fără backend.</div></div>
+      </div>
+      <div class="btnrow" style="margin-top:10px">
+        <button class="btn-main" onclick="downloadSaveFile()">⬇ Download JSON</button>
+        <button class="btn-alt" onclick="copySyncCode()">📋 Copy sync code</button>
+        <button class="btn-alt" onclick="copySyncLink()">🔗 Copy sync link</button>
+        <button class="btn-alt" onclick="shareSyncLink()">☁ Share</button>
+        <button class="btn-alt" onclick="loadSyncFromUrl()">↺ Load from URL</button>
+      </div>
+      <div class="btnrow" style="margin-top:10px">
+        <input id="saveFileInput" type="file" accept="application/json" style="display:none" onchange="importSaveFile(event)">
+        <button class="btn-alt" onclick="document.getElementById('saveFileInput').click()">📂 Import JSON file</button>
+        <button class="btn-alt" onclick="copySaveJson()">{} Copy JSON</button>
+      </div>
+      <div class="tiny" style="margin-top:10px">Cloud sync aici este client-side: link/cod share-uit, fără server dedicat. Pentru un sync real multi-device ar trebui backend sau provider OAuth.</div>
+    `;
+    host.insertBefore(panel, host.lastElementChild);
+  }
+
+  window.downloadSaveFile = function(){
+    const blob = new Blob([JSON.stringify(savePayload(), null, 2)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `arcade-world-v10-save-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 500);
+    toast('Backup JSON descărcat','green');
+  };
+
+  window.importSaveFile = async function(event){
+    const file = event?.target?.files?.[0];
+    if(!file) return;
+    try{
+      const text = await file.text();
+      const data = JSON.parse(text);
+      applyImportedSave(data);
+      toast('Backup JSON importat','green');
+    }catch(e){
+      toast('JSON invalid','red');
+    }
+    event.target.value = '';
+  };
+
+  function applyImportedSave(data){
+    if(data.players){
+      state.players = (data.players || []).map((p,i)=>Object.assign(defaultPlayer(i), p));
+      state.activePlayer = data.activePlayer || 0;
+      state.selectedTile = data.selectedTile || 0;
+      state.sound = data.sound !== false;
+      state.themeIndex = data.themeIndex || 0;
+      state.multiplayerCount = data.multiplayerCount || state.players.length || 2;
+      ensurePlayers();
+      save();
+      renderAll();
+      if(typeof renderScreen === 'function') renderScreen('details');
+    }
+  }
+
+  window.copySaveJson = async function(){
+    try{ await navigator.clipboard.writeText(JSON.stringify(savePayload())); toast('JSON copiat','green'); } catch(e){ toast('Clipboard blocat','red'); }
+  };
+  window.copySyncCode = async function(){
+    try{ await navigator.clipboard.writeText(encodePayload(savePayload())); toast('Sync code copiat','green'); } catch(e){ toast('Clipboard blocat','red'); }
+  };
+  window.copySyncLink = async function(){
+    const link = location.origin + location.pathname + '#sync=' + encodeURIComponent(encodePayload(savePayload()));
+    try{ await navigator.clipboard.writeText(link); toast('Sync link copiat','green'); } catch(e){ toast('Clipboard blocat','red'); }
+  };
+  window.shareSyncLink = async function(){
+    const url = location.origin + location.pathname + '#sync=' + encodeURIComponent(encodePayload(savePayload()));
+    if(navigator.share){
+      try{ await navigator.share({ title:'Arcade World save', text:'Arcade World sync save', url }); toast('Link trimis','green'); } catch(e){}
+    } else {
+      try{ await navigator.clipboard.writeText(url); toast('Share API indisponibil, link copiat','green'); } catch(e){ toast('Clipboard blocat','red'); }
+    }
+  };
+  window.loadSyncFromUrl = function(){
+    const m = location.hash.match(/sync=([^&]+)/);
+    if(!m) return toast('Nu există sync code în URL','red');
+    try{
+      const data = decodePayload(decodeURIComponent(m[1]));
+      applyImportedSave(data);
+      toast('Save încărcat din URL','green');
+    }catch(e){
+      toast('Sync code invalid','red');
+    }
+  };
+
+  function bridgeStatus(cls, text){
+    state.bridge.status = text;
+    const slot = document.getElementById('bridgeStatus');
+    if(slot) slot.innerHTML = `<span class="bridge-pill ${cls}">${text}</span>`;
+    renderAdaptiveStats();
+  }
+
+  function patchFullModal(){
+    const foot = document.querySelector('#fullModal .modal-foot');
+    if(!foot || document.getElementById('bridgeStatusWrap')) return;
+    const wrap = document.createElement('div');
+    wrap.id = 'bridgeStatusWrap';
+    wrap.style.marginRight = 'auto';
+    wrap.innerHTML = `<div id="bridgeStatus"><span class="bridge-pill warn">bridge idle</span></div><div class="tiny" id="bridgeMeta" style="margin-top:6px">Handshake, score și auto-claim când jocul extern trimite date.</div>`;
+    foot.prepend(wrap);
+  }
+
+  function clearBridgeTimers(){
+    clearTimeout(state.bridge.timer);
+    clearInterval(state.bridge.ping);
+    state.bridge.timer = null;
+    state.bridge.ping = null;
+  }
+
+  function setupFrameBridge(){
+    patchFullModal();
+    clearBridgeTimers();
+    state.bridge = { status:'booting', handshake:false, loaded:false, score:0, raw:null, timer:null, ping:null };
+    bridgeStatus('warn','booting');
+    const iframe = document.getElementById('fullFrame');
+    if(!iframe) return;
+    iframe.onload = function(){
+      state.bridge.loaded = true;
+      bridgeStatus('warn','iframe loaded');
+      tryHandshake();
+    };
+    state.bridge.timer = setTimeout(()=>{
+      if(!state.bridge.handshake) bridgeStatus('warn','manual fallback');
+    }, 3500);
+    state.bridge.ping = setInterval(tryHandshake, 1400);
+  }
+
+  function tryHandshake(){
+    const iframe = document.getElementById('fullFrame');
+    if(!iframe || !iframe.contentWindow || !state.fullSession) return;
+    const payload = {
+      type:'arcade-world-handshake',
+      source:'arcade-world-v10',
+      tile: state.fullSession.tile,
+      player: state.fullSession.player,
+      rewardBase: currentReward(1),
+      difficulty: state.difficulty,
+      mode: state.mode,
+      ts: Date.now()
+    };
+    try{ iframe.contentWindow.postMessage(payload, '*'); }catch(e){}
+  }
+
+  function normalizeBridgeMessage(data){
+    if(!data || typeof data !== 'object') return null;
+    if(data.type === 'arcade-world-ready') return { kind:'ready', score:data.score||0 };
+    if(data.type === 'arcade-world-score') return { kind:'score', score:Number(data.score)||0 };
+    if(data.type === 'arcade-world-result') return { kind:'result', result:data.result, score:Number(data.score)||0, coins:Number(data.coins)||0, xp:Number(data.xp)||0 };
+    if(data.type === 'game-result') return { kind:'result', result:data.outcome || data.result, score:Number(data.score)||0, coins:Number(data.coins)||0, xp:Number(data.xp)||0 };
+    if(data.type === 'score-update') return { kind:'score', score:Number(data.score)||0 };
+    if(data.result && (data.win !== undefined || data.score !== undefined)) return { kind:'result', result:data.result, score:Number(data.score)||0, coins:Number(data.coins)||0, xp:Number(data.xp)||0 };
+    return null;
+  }
+
+  window.addEventListener('message', function(ev){
+    if(!state.fullSession) return;
+    const msg = normalizeBridgeMessage(ev.data);
+    if(!msg) return;
+    state.bridge.raw = ev.data;
+    if(msg.kind === 'ready'){
+      state.bridge.handshake = true;
+      state.bridge.score = msg.score || state.bridge.score || 0;
+      bridgeStatus('ok','handshake ok');
+      clearTimeout(state.bridge.timer);
+      return;
+    }
+    if(msg.kind === 'score'){
+      state.bridge.handshake = true;
+      state.bridge.score = msg.score || 0;
+      bridgeStatus('ok','live score');
+      const meta = document.getElementById('bridgeMeta');
+      if(meta) meta.textContent = `Score live detectat: ${state.bridge.score}. Auto-claim dacă vine result.`;
+      return;
+    }
+    if(msg.kind === 'result'){
+      state.bridge.handshake = true;
+      state.bridge.score = msg.score || state.bridge.score || 0;
+      bridgeStatus('ok','auto result');
+      if(msg.result === 'win') return claimFullSmart('win', msg);
+      if(msg.result === 'finish' || msg.result === 'done') return claimFullSmart('finish', msg);
+    }
+  });
+
+  function claimFullSmart(result, msg={}){
+    if(!state.fullSession) return;
+    clearBridgeTimers();
+    if(!originalClaimFull) return;
+    const bonusCoins = msg.coins || 0;
+    const bonusXp = msg.xp || 0;
+    const p = currentPlayerSafe();
+    if(p){
+      p.coins += bonusCoins;
+      addXpToPlayer(p, bonusXp);
+    }
+    originalClaimFull(result);
+    if((bonusCoins || bonusXp) && p){
+      toast(`Bridge reward +${bonusCoins} coins / +${bonusXp} XP`,'green');
+      save();
+      if(originalRenderAll) originalRenderAll();
+    }
+  }
+
+  window.openFullGame = function(){
+    originalOpenFullGame && originalOpenFullGame();
+    setupFrameBridge();
+  };
+  window.claimFull = function(result){
+    clearBridgeTimers();
+    originalClaimFull && originalClaimFull(result);
+  };
+
+  function patchGameplayHints(){
+    const hint = document.getElementById('turnHint');
+    if(hint) hint.textContent = 'Aruncă → mută token-ul → efect tile → mini/full game → reward adaptiv după streak, dificultate și performanță.';
+  }
+
+  function enhanceHero(){
+    const heroP = document.querySelector('.hero p');
+    if(heroP) heroP.textContent = 'V10 adaugă balans adaptiv pentru rewards și dificultate, bridge mai inteligent pentru iframe-uri, un lab de testare mobile/tablet și backup/share sync fără backend.';
+    const h1 = document.querySelector('.hero h1');
+    if(h1) h1.textContent = 'ARCADE WORLD V10';
+  }
+
+  window.renderAll = function(){
+    originalRenderAll && originalRenderAll();
+    renderAdaptiveStats();
+    renderDeviceLab();
+    ensureMobileRibbon();
+    patchSavePanel();
+    patchFullModal();
+    patchGameplayHints();
+  };
+
+  window.openSavePanel = function(){
+    originalOpenSavePanel && originalOpenSavePanel();
+    patchSavePanel();
+  };
+
+  function maybeLoadSyncAtStart(){
+    if(location.hash.includes('sync=')){
+      try{ window.loadSyncFromUrl(); }catch(e){}
+    }
+  }
+
+  function initV10(){
+    enhanceHero();
+    renderAll();
+    maybeLoadSyncAtStart();
+  }
+
+  window.addEventListener('resize', function(){ renderDeviceLab(); ensureMobileRibbon(); renderAdaptiveStats(); });
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initV10); else initV10();
+})();
+
+(function(){
+  if(!window.state) return;
+  state.sessionMode = state.sessionMode || null;
+  state.onboardingDone = !!state.onboardingDone;
+  state.setupPlayers = state.setupPlayers || state.multiplayerCount || 2;
+  state.players = (state.players || []).map((p,i)=>Object.assign({isAI:false}, p || {}, {isAI: !!(p && p.isAI)}));
+
+  const originalSave = window.save;
+  window.save = function(){
+    try{
+      localStorage.setItem(STORAGE, JSON.stringify({
+        players: state.players,
+        activePlayer: state.activePlayer,
+        selectedTile: state.selectedTile,
+        sound: state.sound,
+        themeIndex: state.themeIndex,
+        multiplayerCount: state.multiplayerCount,
+        sessionMode: state.sessionMode,
+        onboardingDone: state.onboardingDone,
+        setupPlayers: state.setupPlayers,
+        lang: state.lang
+      }));
+    }catch(e){ if(typeof originalSave==='function') originalSave(); }
+  };
+
+  const raw = localStorage.getItem(STORAGE);
+  if(raw){
+    try{
+      const s = JSON.parse(raw);
+      if('sessionMode' in s) state.sessionMode = s.sessionMode;
+      if('onboardingDone' in s) state.onboardingDone = !!s.onboardingDone;
+      if('setupPlayers' in s) state.setupPlayers = s.setupPlayers || 2;
+      state.players = (s.players || state.players || []).map((p,i)=>Object.assign(defaultPlayer(i), p || {}, {isAI: !!(p && p.isAI)}));
+    }catch(e){}
+  }
+
+  if(typeof window.savePayload === 'function'){
+    const oldSavePayload = window.savePayload;
+    window.savePayload = function(){
+      const payload = oldSavePayload();
+      payload.sessionMode = state.sessionMode;
+      payload.onboardingDone = state.onboardingDone;
+      payload.version = 'v11';
+      return payload;
+    };
+  }
+
+  window.openSessionModeModal = function(){
+    const m = document.getElementById('sessionModeModal');
+    if(m) m.classList.remove('hidden');
+  };
+  window.closeSessionModeModal = function(){
+    const m = document.getElementById('sessionModeModal');
+    if(m) m.classList.add('hidden');
+  };
+
+
+  window.setSetupPlayers = function(n){
+    state.setupPlayers = Math.max(1, Math.min(4, n|0));
+    document.querySelectorAll('.setup-pcount').forEach((b,i)=>b.classList.toggle('active', i+1===state.setupPlayers));
+    save();
+  };
+  window.configureSessionMode = function(mode){
+    state.sessionMode = mode;
+    state.onboardingDone = true;
+    state.activePlayer = 0;
+    state.selectedTile = 0;
+    state.mode = null;
+    state.difficulty = null;
+
+    const p0 = Object.assign(defaultPlayer(0), state.players[0] || {}, {name:'P1', isAI:false});
+    const p1 = Object.assign(defaultPlayer(1), state.players[1] || {}, {name: mode==='vsai' ? 'AI' : 'P2', isAI: mode==='vsai'});
+
+    if(mode === 'solo'){
+      state.multiplayerCount = 1;
+      state.players = [p0];
+    } else if(mode === 'vsai') {
+      state.multiplayerCount = 2;
+      state.players = [p0, p1];
+    } else {
+      const count = Math.max(2, state.setupPlayers||2);
+      state.multiplayerCount = count;
+      state.players = Array.from({length:count}, (_,i)=>Object.assign(defaultPlayer(i), state.players[i] || {}, {name:'P'+(i+1), isAI:false}));
+    }
+
+    if(typeof ensurePlayers === 'function') ensurePlayers();
+    save();
+    if(typeof renderAll === 'function') renderAll();
+    if(typeof renderScreen === 'function') renderScreen('details');
+    closeSessionModeModal();
+    if(typeof toast === 'function') toast(`Mod setat: ${mode==='solo'?'Solo':mode==='vsai'?'Vs AI':'PvP'}`, 'green');
+    if(typeof setHint === 'function') setHint(mode==='vsai' ? 'Tu începi. AI-ul își joacă turele automat.' : 'Sesiunea a fost configurată.');
+  };
+
+  window.scheduleAITurnIfNeeded = function(){
+    const p = typeof currentPlayer === 'function' ? currentPlayer() : null;
+    if(!p || !p.isAI || state.animating) return;
+    if(typeof setHint === 'function') setHint('AI gândește...');
+    setTimeout(()=>{
+      const cp = typeof currentPlayer === 'function' ? currentPlayer() : null;
+      if(cp && cp.isAI && !state.animating && typeof rollDice === 'function') rollDice();
+    }, 900);
+  };
+
+  window.simulateAITurnOnTile = function(){
+    const p = typeof currentPlayer === 'function' ? currentPlayer() : null;
+    const t = typeof currentTile === 'function' ? currentTile() : null;
+    if(!p || !t) return;
+    state.mode = 'ai';
+    state.difficulty = p.level >= 5 ? 'hard' : p.level >= 3 ? 'medium' : 'easy';
+    const baseChance = state.difficulty === 'hard' ? 0.70 : state.difficulty === 'medium' ? 0.58 : 0.46;
+    const familyBuff = ['basket','hockey','bounce'].includes(t.family) ? 0.08 : 0;
+    const win = Math.random() < Math.min(0.9, baseChance + familyBuff);
+    const score = win ? rand(72, 98) : rand(20, 69);
+    const reward = typeof claimReward === 'function'
+      ? claimReward(win, {score, partial: win ? 1 : .35, result: win ? 'ai-win' : 'ai-lose', source: 'ai-auto'})
+      : {coins:0, xp:0};
+    if(win && typeof burst === 'function') burst();
+    const screen = document.getElementById('screen');
+    if(screen){
+      screen.innerHTML = `<div class="event-card"><h3>🤖 AI turn · ${t.icon} ${t.name}</h3><p class="muted">${win ? 'AI a câștigat mini-run-ul.' : 'AI a pierdut mini-run-ul.'}</p><div class="tiny">Coins +${reward.coins} · XP +${reward.xp} · score ${score}</div></div>`;
+    }
+    save();
+    if(typeof renderAll === 'function') renderAll();
+    setTimeout(()=>{
+      const cp = typeof currentPlayer === 'function' ? currentPlayer() : null;
+      if(cp && cp.isAI && typeof endTurn === 'function') endTurn();
+    }, 1200);
+  };
+
+  if(typeof renderTopStats === 'function'){
+    const oldRenderTopStats = renderTopStats;
+    window.renderTopStats = function(){
+      oldRenderTopStats();
+      const p = currentPlayer();
+      const stats = document.getElementById('top-stats');
+      const label = state.sessionMode==='solo'?'Solo':state.sessionMode==='vsai'?'Vs AI':state.sessionMode==='pvp'?'PvP':'—';
+      if(stats){
+        const firstV = stats.querySelector('.stat .v');
+        if(firstV) firstV.textContent = `${p.name}${p.isAI?' 🤖':''}`;
+        const session = document.createElement('div');
+        session.className = 'stat';
+        session.innerHTML = `<div class="k">Session</div><div class="v">${label}</div>`;
+        stats.insertBefore(session, stats.children[1] || null);
+      }
+    };
+  }
+
+  if(typeof renderPlayers === 'function'){
+    const oldRenderPlayers = renderPlayers;
+    window.renderPlayers = function(){
+      oldRenderPlayers();
+      const card = document.getElementById('playersCard');
+      const turn = document.getElementById('turnPlayer');
+      if(turn && typeof currentPlayer==='function') turn.textContent = currentPlayer().name + (currentPlayer().isAI?' 🤖':'');
+      if(card){
+        const section = card.querySelector('.section-k');
+        if(section) section.textContent = state.sessionMode==='solo' ? 'Solo session' : state.sessionMode==='vsai' ? 'Vs AI session' : state.sessionMode==='pvp' ? 'PvP local' : 'Session';
+        const btnrow = card.querySelector('.btnrow');
+        if(btnrow){
+          btnrow.insertAdjacentHTML('afterbegin', `<button class="btn-alt" onclick="openSessionModeModal()">Schimbă session mode</button>`);
+          if(state.sessionMode !== 'pvp'){
+            Array.from(btnrow.querySelectorAll('button')).forEach((b, idx)=>{ if(idx>0) b.remove(); });
+          }
+        }
+        card.querySelectorAll('.player-card b').forEach((b, i)=>{
+          const p = state.players[i];
+          if(p) b.textContent = p.name + (p.isAI?' 🤖':'');
+        });
+      }
+    };
+  }
+
+  if(typeof setPlayerCount === 'function'){
+    const oldSetPlayerCount = setPlayerCount;
+    window.setPlayerCount = function(n){
+      if(state.sessionMode !== 'pvp'){
+        if(typeof toast === 'function') toast('Numărul de jucători se schimbă doar în modul PvP', 'red');
+        return;
+      }
+      oldSetPlayerCount(n);
+      state.players = state.players.map((p,i)=>Object.assign(defaultPlayer(i), p || {}, {name:'P'+(i+1), isAI:false}));
+      save();
+      if(typeof renderAll==='function') renderAll();
+    };
+  }
+
+  if(typeof endTurnPrompt === 'function'){
+    const oldEndTurnPrompt = endTurnPrompt;
+    window.endTurnPrompt = function(){
+      oldEndTurnPrompt.apply(this, arguments);
+      const p = typeof currentPlayer === 'function' ? currentPlayer() : null;
+      if(p && p.isAI) setTimeout(()=>{ const cp=currentPlayer(); if(cp && cp.isAI) endTurn(); }, 900);
+    };
+  }
+
+  if(typeof endTurn === 'function'){
+    const oldEndTurn = endTurn;
+    window.endTurn = function(){
+      oldEndTurn.apply(this, arguments);
+      scheduleAITurnIfNeeded();
+    };
+  }
+
+  if(typeof resolveLanding === 'function'){
+    const oldResolveLanding = resolveLanding;
+    window.resolveLanding = function(){
+      const p = typeof currentPlayer === 'function' ? currentPlayer() : null;
+      const t = typeof currentTile === 'function' ? currentTile() : null;
+      if(!p || !t) return oldResolveLanding.apply(this, arguments);
+      if(t.type === 'special') return oldResolveLanding.apply(this, arguments);
+      state.mode = null;
+      state.difficulty = null;
+      if(p.isAI) return simulateAITurnOnTile();
+      return typeof renderScreen === 'function' ? renderScreen('modes') : oldResolveLanding.apply(this, arguments);
+    };
+  }
+
+  setTimeout(()=>{ if(typeof setSetupPlayers==='function') setSetupPlayers(state.setupPlayers||2); },0);
+  if(!state.sessionMode || !state.onboardingDone) {
+    openSessionModeModal();
+  } else {
+    save();
+    if(typeof renderAll==='function') renderAll();
+    if(typeof renderScreen==='function') renderScreen('details');
+    scheduleAITurnIfNeeded();
+  }
+})();
+
+(function(){
+  if(!window.state) return;
+
+  function pvpEnabled(){ return state.sessionMode==='pvp'; }
+  function pvpOpponentIndex(){
+    const active = state.activePlayer||0;
+    for(let step=1; step<state.players.length; step++){
+      const idx=(active+step)%state.players.length;
+      if(!state.players[idx].isAI) return idx;
+    }
+    return (active+1)%state.players.length;
+  }
+  function pvpPlayers(){
+    const a = state.activePlayer||0;
+    const b = pvpOpponentIndex();
+    return [a,b];
+  }
+  function rewardPlayerByIndex(idx, win, extra={}){
+    const p = state.players[idx];
+    if(!p) return {coins:0,xp:0};
+    let coins = Math.max(1, Math.round(currentReward(win?1:0.5)*(extra.partial ?? (win?1:.35))) + (extra.extraCoins||0));
+    let xp = Math.max(5, Math.round(currentReward()*.55*(extra.partial ?? (win?1:.35))) + (extra.extraXp||0));
+    if(p.inventory && p.inventory.double>0 && win){
+      coins*=2; xp*=2; p.inventory.double--;
+    }
+    p.coins += coins;
+    addXpToPlayer(p, xp);
+    if(win) p.totalWins++;
+    const fam = currentTile().family;
+    if(fam) p.stats[fam+'Wins']=(p.stats[fam+'Wins']||0)+(win?1:0);
+    p.history.unshift({ts:Date.now(),tile:currentPlayer().position,result:win?'pvp-win':'pvp-lose',coins,xp,score:extra.score||0,source:'mini-pvp'});
+    p.history = p.history.slice(0,120);
+    if(win && !p.completed.includes(currentPlayer().position)) p.completed.push(currentPlayer().position);
+    resolveQuests(p);
+    save(); renderAll();
+    return {coins,xp};
+  }
+  function finishPvpMini(winnerIdx, loserIdx, msg, opts={}){
+    const winR = rewardPlayerByIndex(winnerIdx, true, {score:opts.score||100, extraCoins:opts.extraCoins||0, extraXp:opts.extraXp||0});
+    const loseR = rewardPlayerByIndex(loserIdx, false, {score:Math.round((opts.score||100)*.45), partial:opts.loserPartial ?? .25});
+    burst();
+    const winner = state.players[winnerIdx], loser = state.players[loserIdx];
+    q('screen').innerHTML =
+      `<div class="pvp-banner"><div><b>⚔️ PvP local</b><div class="pvp-note">${winner.name} câștigă duelul pe ${currentTile().name}.</div></div><div class="chiprow"><div class="chip green">${winner.name} +${winR.coins}c / +${winR.xp}xp</div><div class="chip red">${loser.name} +${loseR.coins}c / +${loseR.xp}xp</div></div></div>`+
+      `<div class="log"><b>${msg}</b><br><br>Câștigător: ${winner.name}<br>Runner-up: ${loser.name}</div>`+
+      `<div class="btnrow" style="margin-top:12px"><button class="btn-main" onclick="renderScreen('modes')">Replay</button><button class="btn-alt" onclick="endTurn()">Tura următoare</button></div>`;
+  }
+  function finishPvpDraw(msg, opts={}){
+    const [a,b] = pvpPlayers();
+    const r1 = rewardPlayerByIndex(a,false,{partial:opts.partial??.45, score:opts.score||60});
+    const r2 = rewardPlayerByIndex(b,false,{partial:opts.partial??.45, score:opts.score||60});
+    q('screen').innerHTML =
+      `<div class="pvp-banner"><div><b>🤝 Egal PvP</b><div class="pvp-note">${msg}</div></div><div class="chiprow"><div class="chip purple">${state.players[a].name} +${r1.coins}c / +${r1.xp}xp</div><div class="chip purple">${state.players[b].name} +${r2.coins}c / +${r2.xp}xp</div></div></div>`+
+      `<div class="btnrow" style="margin-top:12px"><button class="btn-main" onclick="renderScreen('modes')">Replay</button><button class="btn-alt" onclick="endTurn()">Tura următoare</button></div>`;
+  }
+  function pvpBannerHtml(activeIdx, scoreA, scoreB, round, totalRounds){
+    const [a,b] = pvpPlayers();
+    return `<div class="pvp-banner">
+      <div><b>⚔️ Duel local</b><div class="pvp-note">Runda ${round}/${totalRounds} · pe același device</div></div>
+      <div class="chiprow"><div class="chip">${state.players[a].name}: ${scoreA}</div><div class="chip">${state.players[b].name}: ${scoreB}</div></div>
+    </div>
+    <div class="pvp-scorebar">
+      <div class="pvp-playerbox ${activeIdx===a?'active':''}"><div class="n">${state.players[a].name}</div><div class="s">Scor: ${scoreA}</div></div>
+      <div class="chip gold">VS</div>
+      <div class="pvp-playerbox ${activeIdx===b?'active':''}"><div class="n">${state.players[b].name}</div><div class="s">Scor: ${scoreB}</div></div>
+    </div>`;
+  }
+
+  function setupPvpMeterDuel(cfg){
+    const [a,b] = pvpPlayers();
+    state.pvpMini = {a,b,turn:a,scoreA:0,scoreB:0,round:1,totalRounds:cfg.rounds||3,shotsTaken:0,pos:0,dir:1,speed:cfg.speed||12,zoneStart:cfg.zoneStart||40,zoneSize:cfg.zoneSize||16,cfg};
+    function render(){
+      const s = state.pvpMini, active = state.players[s.turn];
+      const arenaClass = cfg.arenaClass || 'pvp-court';
+      q('screen').innerHTML = `<h3>${cfg.title}</h3><p class="muted">${cfg.subtitle}</p>`+
+        pvpBannerHtml(s.turn,s.scoreA,s.scoreB,s.round,s.totalRounds)+
+        `<div class="pvp-arena">
+          <div class="${arenaClass}">
+            ${cfg.decor || ''}
+            <div class="${cfg.ballClass || 'ball-dot'}"></div>
+          </div>
+          <div class="log"><b>${active.name}</b> este la execuție. Apasă exact în zona verde.</div>
+          <div class="pvp-meter"><div class="pvp-zone" style="left:${s.zoneStart}%;width:${s.zoneSize}%"></div><div id="pvpMarker" class="pvp-marker" style="left:0"></div></div>
+          <div class="btnrow"><button class="btn-main" onclick="pvpReleaseShot()">Release · ${active.name}</button></div>
+        </div>`;
+      clearInterval(state.timer);
+      state.timer = setInterval(()=>{
+        const s = state.pvpMini;
+        s.pos += s.dir * s.speed * 0.45;
+        if(s.pos>=100){s.pos=100; s.dir=-1;}
+        if(s.pos<=0){s.pos=0; s.dir=1;}
+        const mk=q('pvpMarker'); if(mk) mk.style.left=`calc(${s.pos}% - 7px)`;
+      }, 28);
+    }
+    window.pvpReleaseShot = function(){
+      clearInterval(state.timer);
+      const s = state.pvpMini;
+      const center = s.zoneStart + s.zoneSize/2;
+      const precision = Math.max(0, 100 - Math.abs(s.pos-center)*4);
+      const good = s.pos>=s.zoneStart && s.pos<=s.zoneStart+s.zoneSize;
+      if(s.turn===s.a) s.scoreA += good ? Math.max(1, Math.round(precision/14)) : 0;
+      else s.scoreB += good ? Math.max(1, Math.round(precision/14)) : 0;
+      toast((good?'✅ ':'❌ ')+state.players[s.turn].name+(good?` a lovit (${precision|0}%)`:' a ratat'), good?'green':'red');
+      s.shotsTaken++;
+      const perRoundShots = 2;
+      const maxShots = s.totalRounds * perRoundShots * 2;
+      if(s.shotsTaken >= maxShots){
+        if(s.scoreA>s.scoreB) return finishPvpMini(s.a,s.b,`${state.players[s.a].name} câștigă ${cfg.shortLabel}: ${s.scoreA} - ${s.scoreB}.`,{score:s.scoreA*15});
+        if(s.scoreB>s.scoreA) return finishPvpMini(s.b,s.a,`${state.players[s.b].name} câștigă ${cfg.shortLabel}: ${s.scoreB} - ${s.scoreA}.`,{score:s.scoreB*15});
+        return finishPvpDraw(`Egal perfect la ${cfg.shortLabel}: ${s.scoreA} - ${s.scoreB}.`,{score:70});
+      }
+      s.turn = s.turn===s.a ? s.b : s.a;
+      if(s.turn===s.a) s.round++;
+      s.pos = 0; s.dir = 1;
+      setTimeout(render, 240);
+    };
+    render();
+  }
+
+  function startPvpTTT(){
+    const [a,b] = pvpPlayers();
+    const board = Array(9).fill('');
+    let turn = a;
+    const markFor = idx => idx===a ? 'X' : 'O';
+    const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    const checkWin = m => wins.some(line=>line.every(i=>board[i]===m));
+    function render(){
+      q('screen').innerHTML = `<h3>⭕ Tic Tac Toe · PvP</h3><p class="muted">2 jucători locali, alternativ pe același device.</p>`+
+        pvpBannerHtml(turn, board.filter(v=>v==='X').length, board.filter(v=>v==='O').length, 1, 1)+
+        `<div class="pvp-arena"><div class="log">Mută <b>${state.players[turn].name}</b> (${markFor(turn)}).</div><div class="pvp-grid">${
+          board.map((v,i)=>`<div class="cell" onclick="pvpTttPick(${i})">${v||''}</div>`).join('')
+        }</div></div>`;
+    }
+    window.pvpTttPick = function(i){
+      if(board[i]) return;
+      board[i] = markFor(turn);
+      if(checkWin(board[i])) return finishPvpMini(turn, turn===a?b:a, `${state.players[turn].name} face 3 în linie.`, {score:120});
+      if(board.every(Boolean)) return finishPvpDraw('Tabla e plină. Nimeni nu a închis linia.', {score:65});
+      turn = turn===a ? b : a; render();
+    };
+    render();
+  }
+
+  function startPvpBomber(){
+    const [a,b] = pvpPlayers();
+    state.pvpMini = {a,b,round:1,totalRounds:3,turn:a,scoreA:0,scoreB:0,safe:rand(0,2)};
+    function render(){
+      const s=state.pvpMini, active=state.players[s.turn];
+      q('screen').innerHTML = `<h3>💣 Bomber Duel · PvP</h3><p class="muted">În fiecare rundă, una dintre cele 3 lăzi este sigură.</p>`+
+        pvpBannerHtml(s.turn,s.scoreA,s.scoreB,s.round,s.totalRounds)+
+        `<div class="pvp-arena"><div class="log"><b>${active.name}</b> alege lada sigură.</div>
+        <div class="choices">${['Stânga','Centru','Dreapta'].map((label,i)=>`<div class="choice"><div class="i">${i===0?'⬅️':i===1?'⬆️':'➡️'}</div><div class="t">${label}</div><button class="btn-main" onclick="pvpBomberPick(${i})">Alege</button></div>`).join('')}</div></div>`;
+    }
+    window.pvpBomberPick = function(i){
+      const s=state.pvpMini; const ok = i===s.safe;
+      if(s.turn===s.a) s.scoreA += ok?1:0; else s.scoreB += ok?1:0;
+      toast((ok?'✅ ':'💥 ')+state.players[s.turn].name+(ok?' a nimerit lada safe':' a explodat'), ok?'green':'red');
+      if(s.turn===s.b){
+        s.round++;
+        s.safe=rand(0,2);
+      }
+      s.turn = s.turn===s.a ? s.b : s.a;
+      if(s.round>s.totalRounds){
+        if(s.scoreA>s.scoreB) return finishPvpMini(s.a,s.b,`${state.players[s.a].name} câștigă Bomber Duel ${s.scoreA}-${s.scoreB}.`,{score:100+s.scoreA*20});
+        if(s.scoreB>s.scoreA) return finishPvpMini(s.b,s.a,`${state.players[s.b].name} câștigă Bomber Duel ${s.scoreB}-${s.scoreA}.`,{score:100+s.scoreB*20});
+        return finishPvpDraw('Amândoi au ales la fel de bine lăzile safe.',{score:68});
+      }
+      render();
+    };
+    render();
+  }
+
+  function startPvpMemory(){
+    const [a,b] = pvpPlayers();
+    const icons = ['✦','✦','◆','◆','⬢','⬢','●','●'].sort(()=>Math.random()-.5);
+    state.pvpMini = {a,b,turn:a,board:icons,open:[],done:Array(8).fill(false),scoreA:0,scoreB:0,moves:0};
+    function render(){
+      const s=state.pvpMini;
+      q('screen').innerHTML = `<h3>🧠 Memory Race · PvP</h3><p class="muted">Găsește mai multe perechi decât adversarul.</p>`+
+        pvpBannerHtml(s.turn,s.scoreA,s.scoreB,Math.min(4,s.moves+1),4)+
+        `<div class="pvp-arena"><div class="log">Mută <b>${state.players[s.turn].name}</b>. Dacă găsești pereche, mai joci o dată.</div>
+          <div class="pvp-grid">${s.board.map((v,i)=>`<div class="cell" onclick="pvpMemFlip(${i})">${s.done[i]||s.open.includes(i)?v:'?'}</div>`).join('')}</div>
+        </div>`;
+    }
+    window.pvpMemFlip = function(i){
+      const s=state.pvpMini;
+      if(s.done[i] || s.open.includes(i) || s.open.length===2) return;
+      s.open.push(i);
+      if(s.open.length<2){ render(); return; }
+      s.moves++;
+      const [x,y]=s.open;
+      if(s.board[x]===s.board[y]){
+        s.done[x]=s.done[y]=true;
+        if(s.turn===s.a) s.scoreA++; else s.scoreB++;
+        s.open=[];
+        if(s.done.every(Boolean)){
+          if(s.scoreA>s.scoreB) return finishPvpMini(s.a,s.b,`${state.players[s.a].name} a găsit mai multe perechi.`,{score:120});
+          if(s.scoreB>s.scoreA) return finishPvpMini(s.b,s.a,`${state.players[s.b].name} a găsit mai multe perechi.`,{score:120});
+          return finishPvpDraw('Perechi egale la final.',{score:70});
+        }
+        render();
+      }else{
+        render();
+        setTimeout(()=>{
+          s.open=[];
+          s.turn = s.turn===s.a ? s.b : s.a;
+          render();
+        }, 600);
+      }
+    };
+    render();
+  }
+
+  function startPvpSecretRps(){
+    const [a,b] = pvpPlayers();
+    state.pvpMini = {a,b,php:3,ahp:3,pickA:null,pickB:null,turn:'a'};
+    const beats = {attack:'feint', block:'attack', feint:'block'};
+    function render(){
+      const s=state.pvpMini;
+      q('screen').innerHTML = `<h3>⚔️ Arena Duel · PvP</h3><p class="muted">Fiecare jucător alege în secret: Attack / Block / Feint.</p>`+
+        `<div class="pvp-scorebar">
+          <div class="pvp-playerbox ${s.turn==='a'?'active':''}"><div class="n">${state.players[a].name}</div><div class="s">HP: ${s.php}</div></div>
+          <div class="chip gold">VS</div>
+          <div class="pvp-playerbox ${s.turn==='b'?'active':''}"><div class="n">${state.players[b].name}</div><div class="s">HP: ${s.ahp}</div></div>
+        </div>
+        <div class="pvp-arena"><div class="secret-picks">
+          <div class="secret-box ${s.pickA?'locked':''}"><b>${state.players[a].name}</b><div class="pvp-note">${s.pickA?'Mutare blocată':'Alege mutarea'}</div>${['attack','block','feint'].map(v=>`<button class="btn-main" style="margin:8px 8px 0 0" onclick="pvpSecretPick('a','${v}')" ${s.pickA?'disabled':''}>${v}</button>`).join('')}</div>
+          <div class="secret-box ${s.pickB?'locked':''}"><b>${state.players[b].name}</b><div class="pvp-note">${s.pickB?'Mutare blocată':'Alege mutarea'}</div>${['attack','block','feint'].map(v=>`<button class="btn-main" style="margin:8px 8px 0 0" onclick="pvpSecretPick('b','${v}')" ${s.pickB?'disabled':''}>${v}</button>`).join('')}</div>
+        </div></div>`;
+    }
+    window.pvpSecretPick = function(side,move){
+      const s=state.pvpMini;
+      if(side==='a' && !s.pickA) s.pickA=move;
+      if(side==='b' && !s.pickB) s.pickB=move;
+      if(!(s.pickA && s.pickB)){ s.turn = side==='a'?'b':'a'; return render(); }
+      const A=s.pickA, B=s.pickB;
+      let msg = `${state.players[a].name}: ${A} · ${state.players[b].name}: ${B}. `;
+      if(A===B) msg += 'Egal.';
+      else if(beats[A]===B){ s.ahp--; msg += `${state.players[a].name} câștigă schimbul.`; }
+      else { s.php--; msg += `${state.players[b].name} câștigă schimbul.`; }
+      toast(msg,'purple');
+      s.pickA=s.pickB=null; s.turn='a';
+      if(s.php<=0) return finishPvpMini(b,a,`${state.players[b].name} câștigă duelul de arenă.`,{score:140});
+      if(s.ahp<=0) return finishPvpMini(a,b,`${state.players[a].name} câștigă duelul de arenă.`,{score:140});
+      render();
+    };
+    render();
+  }
+
+  function startPvpBreakout(){
+  const [a,b] = pvpPlayers();
+  state.pvpMini = {a,b,turn:a,round:1,totalRounds:5,bricksA:0,bricksB:0,target:18};
+  function wallHtml(done){
+    return `<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:10px;">${
+      Array.from({length:18},(_,i)=>`<div style="height:18px;border-radius:8px;background:${i<done?'linear-gradient(180deg,#7dd3fc,#60a5fa)':'rgba(255,255,255,.08)'};border:1px solid rgba(255,255,255,.08)"></div>`).join('')
+    }</div>`;
+  }
+  function render(){
+    const s=state.pvpMini, active=state.players[s.turn];
+    q('screen').innerHTML = `<h3>🧱 Breakout Brick Race · PvP</h3><p class="muted">Safe Shot e constant, Power Shot are risc dar poate sparge mai multe bricks.</p>`+
+      pvpBannerHtml(s.turn,s.bricksA,s.bricksB,s.round,s.totalRounds)+
+      `<div class="pvp-arena">
+        <div class="log"><b>${active.name}</b> e la paddle. Ținta este să cureți 18 bricks sau să fii în față după 5 runde.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div><div class="pvp-note">${state.players[a].name}: ${s.bricksA}/${s.target}</div>${wallHtml(s.bricksA)}</div>
+          <div><div class="pvp-note">${state.players[b].name}: ${s.bricksB}/${s.target}</div>${wallHtml(s.bricksB)}</div>
+        </div>
+        <div class="btnrow" style="margin-top:14px">
+          <button class="btn-main" onclick="pvpBreakoutAct('safe')">Safe Shot</button>
+          <button class="btn-gold" onclick="pvpBreakoutAct('power')">Power Shot</button>
+        </div>
+      </div>`;
+  }
+  window.pvpBreakoutAct = function(type){
+    const s=state.pvpMini;
+    let gain = 0;
+    if(type==='safe') gain = Math.random()<0.85 ? rand(1,2) : 0;
+    if(type==='power') gain = Math.random()<0.62 ? rand(2,4) : 0;
+    if(s.turn===s.a) s.bricksA = Math.min(s.target, s.bricksA + gain);
+    else s.bricksB = Math.min(s.target, s.bricksB + gain);
+    toast((gain?`🧱 +${gain} bricks`:'❌ whiff')+` · ${state.players[s.turn].name}`, gain?'green':'red');
+    if(s.bricksA>=s.target) return finishPvpMini(s.a,s.b,`${state.players[s.a].name} curăță peretele complet.`,{score:150,extraCoins:20});
+    if(s.bricksB>=s.target) return finishPvpMini(s.b,s.a,`${state.players[s.b].name} curăță peretele complet.`,{score:150,extraCoins:20});
+    if(s.turn===s.b) s.round++;
+    s.turn = s.turn===s.a ? s.b : s.a;
+    if(s.round>s.totalRounds){
+      if(s.bricksA>s.bricksB) return finishPvpMini(s.a,s.b,`${state.players[s.a].name} sparge mai multe bricks: ${s.bricksA}-${s.bricksB}.`,{score:100+s.bricksA*5});
+      if(s.bricksB>s.bricksA) return finishPvpMini(s.b,s.a,`${state.players[s.b].name} sparge mai multe bricks: ${s.bricksB}-${s.bricksA}.`,{score:100+s.bricksB*5});
+      return finishPvpDraw(`Egal la bricks: ${s.bricksA}-${s.bricksB}.`,{score:72});
+    }
+    render();
+  };
+  render();
+}
+
+function startPvpMaze(){
+  const [a,b] = pvpPlayers();
+  const blocked = new Set(['1,1','1,3','2,1','3,3']);
+  const traps = new Set(['0,3','2,2','3,1']);
+  const exit = '4,4';
+  state.pvpMini = {a,b,turn:a,posA:[0,0],posB:[0,0],skipA:0,skipB:0,stepsA:0,stepsB:0,trapsA:0,trapsB:0};
+  function cellHtml(r,c){
+    const s=state.pvpMini, key=`${r},${c}`;
+    const isA=s.posA[0]===r&&s.posA[1]===c, isB=s.posB[0]===r&&s.posB[1]===c;
+    const blockedCell=blocked.has(key), exitCell=key===exit, startCell=key==='0,0';
+    let label='';
+    if(blockedCell) label='⬛';
+    else if(isA&&isB) label='AB';
+    else if(isA) label='A';
+    else if(isB) label='B';
+    else if(exitCell) label='🏁';
+    else if(startCell) label='S';
+    return `<div style="aspect-ratio:1;border-radius:10px;display:grid;place-items:center;font-weight:900;border:1px solid rgba(255,255,255,.08);background:${blockedCell?'rgba(239,68,68,.18)':exitCell?'rgba(34,197,94,.18)':startCell?'rgba(250,204,21,.16)':'rgba(255,255,255,.05)'}">${label}</div>`;
+  }
+  function render(){
+    const s=state.pvpMini, active=state.players[s.turn];
+    q('screen').innerHTML = `<h3>🧭 Maze Race · PvP</h3><p class="muted">Ajunge primul la ieșire. Celulele-capcană îți consumă următoarea tură.</p>`+
+      pvpBannerHtml(s.turn,5-s.trapsA,5-s.trapsB,1,1)+
+      `<div class="pvp-arena">
+        <div class="log"><b>${active.name}</b> mută. Start la S, ieșirea la 🏁. Pătratele negre sunt blocate.</div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-width:360px;margin:0 auto 12px auto;">${
+          Array.from({length:25},(_,i)=>cellHtml(Math.floor(i/5), i%5)).join('')
+        }</div>
+        <div class="chiprow">
+          <div class="chip">${state.players[a].name}: pași ${s.stepsA}, traps ${s.trapsA}${s.skipA?' · skip':''}</div>
+          <div class="chip">${state.players[b].name}: pași ${s.stepsB}, traps ${s.trapsB}${s.skipB?' · skip':''}</div>
+        </div>
+        <div class="btnrow" style="margin-top:12px">
+          <button class="btn-main" onclick="pvpMazeMove(0,-1)">◀</button>
+          <button class="btn-main" onclick="pvpMazeMove(-1,0)">▲</button>
+          <button class="btn-main" onclick="pvpMazeMove(1,0)">▼</button>
+          <button class="btn-main" onclick="pvpMazeMove(0,1)">▶</button>
+        </div>
+      </div>`;
+  }
+  window.pvpMazeMove = function(dr,dc){
+    const s=state.pvpMini, isA=s.turn===s.a;
+    const skipKey=isA?'skipA':'skipB', posKey=isA?'posA':'posB', stepsKey=isA?'stepsA':'stepsB', trapsKey=isA?'trapsA':'trapsB';
+    if(s[skipKey]>0){
+      s[skipKey]=0;
+      toast(`${state.players[s.turn].name} pierde tura din cauza unei capcane.`, 'red');
+      s.turn = isA ? s.b : s.a;
+      return render();
+    }
+    const [r,c] = s[posKey];
+    const nr = Math.max(0, Math.min(4, r+dr));
+    const nc = Math.max(0, Math.min(4, c+dc));
+    if(blocked.has(`${nr},${nc}`)){
+      toast('Perete blocat.', 'red');
+      return;
+    }
+    s[posKey]=[nr,nc];
+    s[stepsKey]++;
+    if(traps.has(`${nr},${nc}`)){
+      s[trapsKey]++;
+      s[skipKey]=1;
+      traps.delete(`${nr},${nc}`);
+      toast(`⚠️ Capcană pentru ${state.players[s.turn].name}`, 'red');
+    }
+    if(`${nr},${nc}`===exit){
+      const loser = isA ? s.b : s.a;
+      return finishPvpMini(s.turn, loser, `${state.players[s.turn].name} găsește ieșirea în ${s[stepsKey]} pași.`,{score:150 - s[trapsKey]*10, loserPartial:.3});
+    }
+    s.turn = isA ? s.b : s.a;
+    render();
+  };
+  render();
+}
+
+function startPvpShooter(){
+  const [a,b] = pvpPlayers();
+  state.pvpMini = {a,b,turn:a,round:1,totalRounds:5,scoreA:0,scoreB:0,bossA:4,bossB:4};
+  function render(){
+    const s=state.pvpMini, active=state.players[s.turn];
+    q('screen').innerHTML = `<h3>🚀 Shooter Raid · PvP</h3><p class="muted">Adună score din wave-uri și termină boss-ul tău. Câștigă cel mai eficient pilot.</p>`+
+      pvpBannerHtml(s.turn,s.scoreA,s.scoreB,s.round,s.totalRounds)+
+      `<div class="pvp-arena">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="secret-box"><b>${state.players[a].name}</b><div class="pvp-note">Score ${s.scoreA} · Boss HP ${s.bossA}</div><div class="bar"><div style="width:${s.scoreA*5}%;height:100%;background:linear-gradient(90deg,#7dd3fc,#60a5fa)"></div></div></div>
+          <div class="secret-box"><b>${state.players[b].name}</b><div class="pvp-note">Score ${s.scoreB} · Boss HP ${s.bossB}</div><div class="bar"><div style="width:${s.scoreB*5}%;height:100%;background:linear-gradient(90deg,#a78bfa,#f472b6)"></div></div></div>
+        </div>
+        <div class="log" style="margin-top:12px"><b>${active.name}</b> alege: Wave pentru score sau Boss Hit dacă ești încărcat.</div>
+        <div class="btnrow">
+          <button class="btn-main" onclick="pvpShooterAct('wave')">⚡ Wave</button>
+          <button class="btn-gold" onclick="pvpShooterAct('boss')">👾 Boss Hit</button>
+        </div>
+      </div>`;
+  }
+  window.pvpShooterAct = function(type){
+    const s=state.pvpMini, isA=s.turn===s.a;
+    let scoreKey=isA?'scoreA':'scoreB', bossKey=isA?'bossA':'bossB';
+    if(type==='wave'){
+      s[scoreKey] += Math.random()<0.7 ? 2 : 1;
+      toast(`+score pentru ${state.players[s.turn].name}`, 'green');
+    } else {
+      if(s[scoreKey] >= 4){
+        s[bossKey] = Math.max(0, s[bossKey] - (Math.random()<0.75 ? 1 : 0));
+        toast(`Boss press de la ${state.players[s.turn].name}`, 'purple');
+      } else {
+        toast('Nu ai destul score pentru boss hit.', 'red');
+        return;
+      }
+    }
+    if(s.bossA<=0) return finishPvpMini(s.a,s.b,`${state.players[s.a].name} își doboară boss-ul primul.`,{score:170,extraXp:20});
+    if(s.bossB<=0) return finishPvpMini(s.b,s.a,`${state.players[s.b].name} își doboară boss-ul primul.`,{score:170,extraXp:20});
+    if(s.turn===s.b) s.round++;
+    s.turn = isA ? s.b : s.a;
+    if(s.round>s.totalRounds){
+      const totalA = s.scoreA + (4-s.bossA)*3;
+      const totalB = s.scoreB + (4-s.bossB)*3;
+      if(totalA>totalB) return finishPvpMini(s.a,s.b,`${state.players[s.a].name} domină raidul: ${totalA}-${totalB}.`,{score:120+totalA*4});
+      if(totalB>totalA) return finishPvpMini(s.b,s.a,`${state.players[s.b].name} domină raidul: ${totalB}-${totalA}.`,{score:120+totalB*4});
+      return finishPvpDraw(`Raid egal: ${totalA}-${totalB}.`,{score:75});
+    }
+    render();
+  };
+  render();
+}
+
+function startPvpFusion(){
+  const [a,b] = pvpPlayers();
+  state.pvpMini = {a,b,turn:a,round:1,totalRounds:5,scoreA:0,scoreB:0,ordersA:0,ordersB:0,bombsA:2,bombsB:2};
+  function render(){
+    const s=state.pvpMini, active=state.players[s.turn];
+    q('screen').innerHTML = `<h3>🎭 Fusion Mix-Off · PvP</h3><p class="muted">Culege orbs, folosește bombe și livrează orders. Câștigă cel mai bun mix de resurse.</p>`+
+      pvpBannerHtml(s.turn,s.scoreA,s.scoreB,s.round,s.totalRounds)+
+      `<div class="pvp-arena">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="secret-box"><b>${state.players[a].name}</b><div class="pvp-note">Score ${s.scoreA} · Orders ${s.ordersA}/3 · Bombs ${s.bombsA}</div></div>
+          <div class="secret-box"><b>${state.players[b].name}</b><div class="pvp-note">Score ${s.scoreB} · Orders ${s.ordersB}/3 · Bombs ${s.bombsB}</div></div>
+        </div>
+        <div class="log" style="margin-top:12px"><b>${active.name}</b> alege acțiunea curentă.</div>
+        <div class="btnrow">
+          <button class="btn-main" onclick="pvpFusionAct('orb')">✦ Orb</button>
+          <button class="btn-gold" onclick="pvpFusionAct('bomb')">💣 Bomb</button>
+          <button class="btn-purple" onclick="pvpFusionAct('serve')">♨ Serve</button>
+        </div>
+      </div>`;
+  }
+  window.pvpFusionAct = function(type){
+    const s=state.pvpMini, isA=s.turn===s.a;
+    const scoreKey=isA?'scoreA':'scoreB', orderKey=isA?'ordersA':'ordersB', bombKey=isA?'bombsA':'bombsB';
+    if(type==='orb') s[scoreKey] += 2;
+    if(type==='bomb'){
+      if(s[bombKey] <= 0){ toast('Nu mai ai bombe.', 'red'); return; }
+      s[bombKey]--; s[scoreKey] += 3;
+    }
+    if(type==='serve'){
+      s[orderKey] = Math.min(3, s[orderKey] + 1);
+      s[scoreKey] += 2;
+    }
+    toast(`${state.players[s.turn].name} a făcut ${type}.`, 'green');
+    if(s.ordersA>=3 && s.scoreA>=10) return finishPvpMini(s.a,s.b,`${state.players[s.a].name} închide primul mix-ul complet.`,{score:160});
+    if(s.ordersB>=3 && s.scoreB>=10) return finishPvpMini(s.b,s.a,`${state.players[s.b].name} închide primul mix-ul complet.`,{score:160});
+    if(s.turn===s.b) s.round++;
+    s.turn = isA ? s.b : s.a;
+    if(s.round>s.totalRounds){
+      const totalA = s.scoreA + s.ordersA*4 + s.bombsA;
+      const totalB = s.scoreB + s.ordersB*4 + s.bombsB;
+      if(totalA>totalB) return finishPvpMini(s.a,s.b,`${state.players[s.a].name} câștigă Fusion ${totalA}-${totalB}.`,{score:120+totalA*4});
+      if(totalB>totalA) return finishPvpMini(s.b,s.a,`${state.players[s.b].name} câștigă Fusion ${totalB}-${totalA}.`,{score:120+totalB*4});
+      return finishPvpDraw(`Fusion egal: ${totalA}-${totalB}.`,{score:76});
+    }
+    render();
+  };
+  render();
+}
+
+function startPvpForFamily(fam){
+  if(fam==='ttt') return startPvpTTT();
+  if(fam==='bomber') return startPvpBomber();
+  if(fam==='memory') return startPvpMemory();
+  if(fam==='pvai') return startPvpSecretRps();
+  if(fam==='breakout') return startPvpBreakout();
+  if(fam==='maze') return startPvpMaze();
+  if(fam==='shooter') return startPvpShooter();
+  if(fam==='fusion') return startPvpFusion();
+  if(fam==='basket') return setupPvpMeterDuel({
+    title:'🏀 Basket Duel · PvP',
+    subtitle:'3 runde, câte 2 release-uri per jucător. Scorul vine din precizie.',
+    shortLabel:'Basket Duel',
+    rounds:3, speed:12, zoneStart:40, zoneSize:16, arenaClass:'pvp-court',
+    decor:'<div class="rim"></div>', ballClass:'ball-dot'
+  });
+  if(fam==='hockey') return setupPvpMeterDuel({
+    title:'🏒 Air Hockey Duel · PvP',
+    subtitle:'Timing-ul bun îți dă puncte. Câștigă cel mai precis.',
+    shortLabel:'Air Hockey',
+    rounds:3, speed:13, zoneStart:38, zoneSize:18, arenaClass:'pvp-rink',
+    decor:'<div class="goal-slot"></div>', ballClass:'puck-dot'
+  });
+  if(fam==='bounce') return setupPvpMeterDuel({
+    title:'🟠 Bounce Control · PvP',
+    subtitle:'Controlează ricoșeul și lovește zona bună.',
+    shortLabel:'Bounce Control',
+    rounds:3, speed:14, zoneStart:43, zoneSize:14, arenaClass:'pvp-bouncefield',
+    decor:'<div class="bounce-target"></div>', ballClass:'bounce-dot'
+  });
+  return null;
+}
+
+  const oldRenderScreen = window.renderScreen;
+  window.renderScreen = function(tab,custom='',autoEnd=false){
+    if(!pvpEnabled()) return oldRenderScreen(tab,custom,autoEnd);
+    const t = currentTile();
+    if(tab==='modes' && t && t.type!=='special'){
+      q('screen').innerHTML = `${renderTabs('modes')}
+        <h3>${t.icon} ${t.name}</h3>
+        <p class="muted">Session mode: <b>PvP</b>. Pentru jocurile suportate ai duel local real; pentru restul poți folosi Solo Practice sau Full Game.</p>
+        <div class="choices">
+          <div class="choice"><div class="i">⚔️</div><div class="t">PVP DUEL</div><div class="d">2 jucători locali, același device.</div><button class="btn-main" onclick="chooseMode('pvp')">Alege</button></div>
+          <div class="choice"><div class="i">🎮</div><div class="t">SOLO PRACTICE</div><div class="d">Antrenament clasic pe tura curentă.</div><button class="btn-alt" onclick="chooseMode('solo')">Practice</button></div>
+          <div class="choice"><div class="i">🕹️</div><div class="t">FULL GAME</div><div class="d">Overlay cu jocul original.</div><button class="btn-purple" onclick="chooseMode('full')">Deschide</button></div>
+        </div>`;
+      return;
+    }
+    return oldRenderScreen(tab,custom,autoEnd);
+  };
+
+  const oldChooseMode = window.chooseMode;
+  window.chooseMode = function(mode){
+    if(pvpEnabled() && mode==='pvp'){
+      state.mode='pvp'; state.difficulty=null; return launchMini();
+    }
+    return oldChooseMode(mode);
+  };
+
+  const oldLaunchMini = window.launchMini;
+  window.launchMini = function(){
+    if(pvpEnabled() && state.mode==='pvp'){
+      const fam = currentTile().family;
+      const handled = startPvpForFamily(fam);
+      if(handled!==null) return handled;
+      toast('Pe acest tile nu există încă duel local dedicat — folosește Solo Practice sau Full Game.','purple');
+      state.mode='solo';
+    }
+    return oldLaunchMini();
+  };
+
+})();
+
+(function(){
+  if(!window.state) return;
+  const AVATARS = ['🎮','🦊','🐼','🦄','🐯','🤖','👾','🐸'];
+  const COLORS = ['#ffd54a','#6ee7ff','#a78bfa','#30d27c','#ff7a1f','#ff72c4','#60a5fa','#f87171'];
+  const PROFILE_KEY = 'arcade_world_profile_slots_v14';
+  state.audioPrefs = state.audioPrefs || {ui:'on', game:'on', music:'off', intensity:'mid'};
+  state.seriesConfig = state.seriesConfig || {enabled:true, bestOf:3};
+  state.season = state.season || {table:{}};
+  state.cup = state.cup || {matches:[], current:null, champion:null};
+  state.turnLog = state.turnLog || [];
+  state.loading = state.loading || false;
+
+  function ensurePlayerMeta(){
+    (state.players||[]).forEach((p,i)=>{
+      if(!p.avatar) p.avatar = AVATARS[i % AVATARS.length];
+      if(!p.color) p.color = COLORS[i % COLORS.length];
+      if(!p.effects) p.effects = [];
+      if(!p.turns) p.turns = 0;
+    });
+  }
+  ensurePlayerMeta();
+
+  const oldSave = window.save;
+  window.save = function(){ ensurePlayerMeta(); try{ oldSave && oldSave(); }catch(e){}; try{ const raw = JSON.parse(localStorage.getItem(STORAGE)||'{}'); raw.audioPrefs = state.audioPrefs; raw.seriesConfig = state.seriesConfig; raw.season = state.season; raw.cup = state.cup; raw.turnLog = state.turnLog; raw.players = state.players; localStorage.setItem(STORAGE, JSON.stringify(raw)); }catch(e){} };
+  try{ const raw = JSON.parse(localStorage.getItem(STORAGE)||'{}'); if(raw.audioPrefs) state.audioPrefs = Object.assign(state.audioPrefs, raw.audioPrefs); if(raw.seriesConfig) state.seriesConfig = Object.assign(state.seriesConfig, raw.seriesConfig); if(raw.season) state.season = raw.season; if(raw.cup) state.cup = raw.cup; if(raw.turnLog) state.turnLog = raw.turnLog; ensurePlayerMeta(); }catch(e){}
+
+  // more event cards
+  if(window.BONUS_EVENTS){
+    BONUS_EVENTS.push(
+      {name:'Coin Magnet', text:'+60 coins și activezi magnetul pentru următoarele 2 reward-uri', apply:p=>{p.coins+=60; p.inventory.coinMagnet=(p.inventory.coinMagnet||0)+2; p.effects.push('coin magnet')}} ,
+      {name:'Swap Position', text:'schimbi locul cu liderul curent', apply:p=>{ const leader=[...state.players].sort((a,b)=>b.coins-a.coins)[0]; if(leader&&leader!==p){ const tmp=leader.position; leader.position=p.position; p.position=tmp; } }},
+      {name:'Double XP', text:'următoarele 2 victorii dau XP dublu', apply:p=>{p.inventory.doubleXp=(p.inventory.doubleXp||0)+2; p.effects.push('double xp')}}
+    );
+  }
+  if(window.TRAP_EVENTS){
+    TRAP_EVENTS.push(
+      {name:'Freeze opponent', text:'următorul adversar pierde o tură', apply:p=>{ const others=state.players.filter(x=>x!==p); const target=others[0]; if(target){target.skipTurns=(target.skipTurns||0)+1;} }},
+      {name:'Tax', text:'liderul fură 20 coins de la tine', apply:p=>{ const target=[...state.players].filter(x=>x!==p).sort((a,b)=>b.coins-a.coins)[0]; if(target){ const take=Math.min(20,p.coins); p.coins-=take; target.coins+=take; }}},
+      {name:'Broken combo', text:'pierzi efectele active și 1 bonus turn', apply:p=>{ p.effects=[]; p.bonusTurns=Math.max(0,(p.bonusTurns||0)-1); }}
+    );
+  }
+
+  // shop expansion
+  if(window.SHOP_ITEMS){
+    const ids = new Set(SHOP_ITEMS.map(x=>x.id));
+    [
+      {id:'trapImmune',icon:'🛡️',name:'Trap Immunity',desc:'Ignori următoarea capcană.',price:80,buy:p=>{p.inventory.trapImmune=(p.inventory.trapImmune||0)+1;}},
+      {id:'coinMagnet2',icon:'🧲',name:'Coin Magnet',desc:'Primești +20 coins la următoarele 3 reward-uri.',price:95,buy:p=>{p.inventory.coinMagnet=(p.inventory.coinMagnet||0)+3;}},
+      {id:'freezeCard',icon:'❄️',name:'Freeze Card',desc:'În PvP, adversarul pierde o tură.',price:90,buy:p=>{p.inventory.freeze=(p.inventory.freeze||0)+1;}},
+      {id:'doubleXpCard',icon:'⭐',name:'Double XP',desc:'Următoarea victorie dă XP dublu.',price:100,buy:p=>{p.inventory.doubleXp=(p.inventory.doubleXp||0)+1;}}
+    ].forEach(it=>{ if(!ids.has(it.id)) SHOP_ITEMS.push(it); });
+  }
+  const oldRenderShop = window.renderShop;
+  if(oldRenderShop){
+    window.renderShop = function(){ oldRenderShop(); const card=q('shopCard'); if(!card) return; const title=card.querySelector('.section-k'); if(title) title.textContent='Shop / powerups'; card.querySelectorAll('.shop-item').forEach((el,i)=>{ if(i>=4) el.classList.add('featured'); }); };
+  }
+
+  const oldClaimReward = window.claimReward;
+  if(oldClaimReward){
+    window.claimReward = function(win, extra={}){
+      const p = currentPlayer();
+      if(p?.inventory?.coinMagnet>0){ extra.coins = (extra.coins||0) + 20; p.inventory.coinMagnet--; }
+      if(win && p?.inventory?.doubleXp>0){ extra.xp = Math.round((extra.xp||0)*2 || 40); p.inventory.doubleXp--; }
+      const res = oldClaimReward(win, extra);
+      if(p){ p.turns=(p.turns||0)+1; state.turnLog.unshift({name:p.name, text:`${win?'WIN':'LOSS'} · ${currentTile()?.name||'tile'} · +${res.coins}c +${res.xp}xp`, ts:Date.now()}); state.turnLog=state.turnLog.slice(0,8); }
+      save();
+      return res;
+    }
+  }
+
+  const oldResolveTrap = window.resolveTrap;
+  if(oldResolveTrap){
+    window.resolveTrap = function(){ const p=currentPlayer(); if((p?.inventory?.trapImmune||0)>0){ p.inventory.trapImmune--; toast('Trap immunity consumată','green'); renderScreen('event',`<div class="event-card"><h3>🛡️ Trap immunity</h3><p class="muted">Ai ignorat capcana.</p></div>`,true); save(); renderAll(); return endTurnPrompt(); } return oldResolveTrap.apply(this, arguments); };
+  }
+
+  // profile setup modal
+  function profileInputsHtml(i,p){
+    return `<div class="profile-player"><div class="avatar-preview"><div class="avatar-chip" id="avatarPrev${i}" style="background:${p.color};">${p.avatar}</div><div><b>${p.name}${p.isAI?' 🤖':''}</b><div class="tiny">Player ${i+1}</div></div></div>
+      <label>Nume<input id="profName${i}" value="${(p.name||'').replace(/"/g,'&quot;')}" ${p.isAI?'disabled':''}></label>
+      <label>Avatar<select id="profAvatar${i}" ${p.isAI?'disabled':''}>${AVATARS.map(a=>`<option ${a===p.avatar?'selected':''}>${a}</option>`).join('')}</select></label>
+      <label>Culoare<select id="profColor${i}" ${p.isAI?'disabled':''}>${COLORS.map(c=>`<option value="${c}" ${c===p.color?'selected':''}>${c}</option>`).join('')}</select></label>
+    </div>`;
+  }
+  window.openProfileSetup = function(){ ensurePlayerMeta(); const grid=q('profileSetupGrid'); if(!grid) return; grid.innerHTML = state.players.map((p,i)=>profileInputsHtml(i,p)).join(''); state.players.forEach((p,i)=>{ const a=q('profAvatar'+i), c=q('profColor'+i); [a,c].forEach(el=>el&&el.addEventListener('change',()=>{ const prev=q('avatarPrev'+i); if(prev){ prev.textContent=a.value; prev.style.background=c.value; } })); }); q('profileSetupModal').classList.add('open'); };
+  window.closeProfileSetup = function(){ q('profileSetupModal').classList.remove('open'); };
+  window.applyProfileSetup = function(){ state.players.forEach((p,i)=>{ if(p.isAI) return; const n=q('profName'+i)?.value?.trim(); const a=q('profAvatar'+i)?.value; const c=q('profColor'+i)?.value; if(n) p.name=n; if(a) p.avatar=a; if(c) p.color=c; }); save(); renderAll(); closeProfileSetup(); toast('Profiluri actualizate','green'); };
+  window.saveProfileSlot = function(slot){ const store = JSON.parse(localStorage.getItem(PROFILE_KEY)||'{}'); store['slot'+slot] = state.players.map(p=>({name:p.name,avatar:p.avatar,color:p.color,isAI:p.isAI})); localStorage.setItem(PROFILE_KEY, JSON.stringify(store)); toast('Slot salvat','green'); };
+  window.loadProfileSlot = function(slot){ const store = JSON.parse(localStorage.getItem(PROFILE_KEY)||'{}'); const arr = store['slot'+slot]; if(!arr) return toast('Slot gol','red'); arr.forEach((x,i)=>{ if(!state.players[i]) return; if(!state.players[i].isAI){ state.players[i].name=x.name||state.players[i].name; state.players[i].avatar=x.avatar||state.players[i].avatar; state.players[i].color=x.color||state.players[i].color; } }); openProfileSetup(); toast('Slot încărcat','green'); };
+
+  // audio prefs + simple music loop
+  let musicTimer = null;
+  const baseTone = window.tone;
+  window.playSfx = (function(old){ return function(name){ if(state.audioPrefs.ui==='off' && ['dice','unlock','special'].includes(name)) return; if(state.audioPrefs.game==='off' && ['win','lose','move'].includes(name)) return; return old(name); }; })(window.playSfx||function(){});
+  function startMusic(){ if(musicTimer || state.audioPrefs.music!=='on') return; const seq = state.audioPrefs.intensity==='high'?[220,330,440,550]:state.audioPrefs.intensity==='mid'?[220,330,392]:[220,294,330]; let i=0; musicTimer=setInterval(()=>{ if(!state.sound) return; try{ baseTone && baseTone(seq[i%seq.length], .12, 'triangle', .015, 0); }catch(e){} i++; }, 850); }
+  function stopMusic(){ if(musicTimer){ clearInterval(musicTimer); musicTimer=null; } }
+  window.openAudioPanel = function(){ q('audioUi').value=state.audioPrefs.ui; q('audioGame').value=state.audioPrefs.game; q('audioMusic').value=state.audioPrefs.music; q('audioIntensity').value=state.audioPrefs.intensity; q('audioPanelModal').classList.add('open'); };
+  window.closeAudioPanel = function(){ q('audioPanelModal').classList.remove('open'); };
+  window.applyAudioPrefs = function(){ state.audioPrefs={ui:q('audioUi').value,game:q('audioGame').value,music:q('audioMusic').value,intensity:q('audioIntensity').value}; if(state.audioPrefs.music==='on') startMusic(); else stopMusic(); save(); closeAudioPanel(); toast('Audio actualizat','green'); };
+  if(state.audioPrefs.music==='on') startMusic();
+
+  // turn HUD / render decoration
+  const oldRenderPlayers = window.renderPlayers;
+  if(oldRenderPlayers){
+    window.renderPlayers = function(){ oldRenderPlayers(); ensurePlayerMeta(); const card=q('playersCard'); if(!card) return; card.querySelectorAll('.player-card').forEach((el,i)=>{ const p=state.players[i]; el.style.borderColor=i===state.activePlayer?p.color+'88':'rgba(255,255,255,.08)'; const b=el.querySelector('b'); if(b) b.innerHTML = `<span style="display:inline-flex;align-items:center;gap:8px"><span class="avatar-chip" style="width:28px;height:28px;font-size:16px;background:${p.color};border-width:1px">${p.avatar}</span>${safeText(p.name)}${p.isAI?' 🤖':''}</span>`; });
+      let hud = q('turnHudInjected'); if(!hud){ hud=document.createElement('div'); hud.id='turnHudInjected'; card.appendChild(hud); }
+      const p=currentPlayer();
+      hud.className='turn-hud';
+      hud.innerHTML = `<div class="turn-banner fx-pulse"><div class="turn-stack"><div><b style="font-size:18px;color:${p.color}">${p.avatar} ${safeText(p.name)}</b> <span class="turn-mini">la rând</span></div><div class="turn-mini">Effects: ${(p.effects||[]).length?(p.effects.join(', ')):'none'} · Skip ${p.skipTurns||0} · Bonus ${(p.bonusTurns||0)}</div></div><div class="series-badge">${state.seriesConfig.enabled?'Bo'+state.seriesConfig.bestOf:'Free play'}</div></div><div class="save-action"><div style="font-weight:1000;margin-bottom:8px">Ultimele ture</div>${state.turnLog.slice(0,4).map(x=>`<div class="tiny" style="margin-top:4px">• ${safeText(x.name)} — ${safeText(x.text)}</div>`).join('')||'<div class="tiny">Fără istoric încă.</div>'}</div><div class="btnrow"><button class="btn-alt" onclick="openProfileSetup()">👥 Profile</button><button class="btn-alt" onclick="openAudioPanel()">🎵 Audio</button><button class="btn-alt" onclick="toggleCupModal(true)">🏆 Cup</button></div>`;
+    };
+  }
+  const oldRenderTopStats = window.renderTopStats;
+  if(oldRenderTopStats){
+    window.renderTopStats = function(){ oldRenderTopStats(); ensurePlayerMeta(); const box=q('top-stats'); if(!box) return; const p=currentPlayer(); const extra=document.createElement('div'); extra.className='stat'; extra.innerHTML=`<div class="k">Turn FX</div><div class="v">${(p.effects||[]).length}</div><div class="tiny">${(p.effects||[]).slice(0,2).join(' · ')||'none'}</div>`; box.appendChild(extra); };
+  }
+
+  // series PvP + season table
+  function seedSeasonPlayers(){ state.players.forEach(p=>{ if(!state.season.table[p.name]) state.season.table[p.name]={w:0,l:0,pf:0}; }); }
+  seedSeasonPlayers();
+  function nextSeriesTarget(){ return state.seriesConfig.bestOf===5?3:2; }
+  function beginSeries(){ const [a,b]=[state.players[0], state.players[1]]; state.pvpSeries={wins:{0:0,1:0}, target: nextSeriesTarget(), active:true}; }
+  const oldStartPvpForFamily = window.startPvpForFamily;
+  if(oldStartPvpForFamily){ window.startPvpForFamily = function(fam){ if(state.seriesConfig.enabled) beginSeries(); return oldStartPvpForFamily(fam); }; }
+  const oldFinishPvpMini = window.finishPvpMini;
+  if(oldFinishPvpMini){
+    window.finishPvpMini = function(winnerIdx, loserIdx, msg, opts={}){
+      if(state.seriesConfig.enabled && state.pvpSeries?.active){
+        state.pvpSeries.wins[winnerIdx] = (state.pvpSeries.wins[winnerIdx]||0)+1;
+        const need = state.pvpSeries.target;
+        if(state.pvpSeries.wins[winnerIdx] < need){
+          const scoreA = state.pvpSeries.wins[0]||0, scoreB=state.pvpSeries.wins[1]||0;
+          renderScreen('event', `<div class="event-card"><h3>⚔️ Round win</h3><p class="muted">${safeText(state.players[winnerIdx].name)} câștigă runda. Series score: ${scoreA}-${scoreB}</p><div class="btnrow" style="margin-top:12px"><button class="btn-main" onclick="restartCurrentPvpMini()">Next round</button><button class="btn-alt" onclick="renderScreen('modes')">Înapoi</button></div></div>`);
+          state.lastPvpFamily = currentTile()?.family;
+          save();
+          return;
+        }
+        seedSeasonPlayers();
+        state.season.table[state.players[winnerIdx].name].w++;
+        state.season.table[state.players[loserIdx].name].l++;
+        state.season.table[state.players[winnerIdx].name].pf += 3;
+        state.season.table[state.players[loserIdx].name].pf += state.pvpSeries.wins[loserIdx]||0;
+        state.pvpSeries.active=false;
+      }
+      return oldFinishPvpMini(winnerIdx, loserIdx, msg + (state.pvpSeries?` · Series ${(state.pvpSeries.wins[winnerIdx]||0)}-${(state.pvpSeries.wins[loserIdx]||0)}`:''), opts);
+    };
+  }
+  const oldFinishPvpDraw = window.finishPvpDraw;
+  if(oldFinishPvpDraw){ window.finishPvpDraw = function(msg, opts={}){ if(state.pvpSeries?.active){ renderScreen('event', `<div class="event-card"><h3>🤝 Round draw</h3><p class="muted">Series rămâne ${(state.pvpSeries.wins[0]||0)}-${(state.pvpSeries.wins[1]||0)}</p><div class="btnrow" style="margin-top:12px"><button class="btn-main" onclick="restartCurrentPvpMini()">Replay round</button></div></div>`); return; } return oldFinishPvpDraw(msg, opts); }; }
+  window.restartCurrentPvpMini = function(){ if(state.lastPvpFamily) return startPvpForFamily(state.lastPvpFamily); const fam=currentTile()?.family; if(fam) startPvpForFamily(fam); };
+
+  // cup mode
+  function pairings(arr){ const out=[]; for(let i=0;i<arr.length;i+=2) if(arr[i+1]) out.push([arr[i],arr[i+1]]); return out; }
+  window.seedCup = function(){ const idx = state.players.map((_,i)=>i).sort(()=>Math.random()-.5); state.cup.matches = pairings(idx).map((m,i)=>({id:i,a:m[0],b:m[1],winner:null})); state.cup.current=0; state.cup.champion=null; renderCup(); save(); toast('Bracket refăcut','green'); };
+  window.toggleCupModal = function(open){ if(open){ if(!state.cup.matches.length) seedCup(); q('cupModal').classList.add('open'); renderCup(); } else q('cupModal').classList.remove('open'); };
+  function renderCup(){ const wrap=q('cupBracket'), table=q('seasonTableWrap'); if(!wrap||!table) return; wrap.innerHTML = state.cup.matches.map((m,idx)=>`<div class="cup-match"><b>Match ${idx+1}</b><div class="tiny">${safeText(state.players[m.a]?.name||'TBD')} vs ${safeText(state.players[m.b]?.name||'TBD')}</div><div class="tiny">Winner: ${m.winner!=null ? safeText(state.players[m.winner]?.name||'—') : '—'}</div></div>`).join('') || '<div class="tiny">Adaugă cel puțin 2 jucători.</div>';
+    seedSeasonPlayers();
+    const rows = Object.entries(state.season.table).sort((a,b)=>b[1].w-a[1].w || b[1].pf-a[1].pf).map(([name,s])=>`<tr><td>${safeText(name)}</td><td>${s.w}</td><td>${s.l}</td><td>${s.pf}</td></tr>`).join('');
+    table.innerHTML = `<table class="season-table"><thead><tr><th>Player</th><th>W</th><th>L</th><th>Pts</th></tr></thead><tbody>${rows}</tbody></table>`;
+  }
+  window.startCupMatch = function(){ if(!state.cup.matches.length) return seedCup(); const m = state.cup.matches[state.cup.current||0]; if(!m) return toast('Nu mai există meciuri în bracket','red'); state.sessionMode='pvp'; state.multiplayerCount=2; state.players=[state.players[m.a], state.players[m.b]].map((p,i)=>Object.assign(defaultPlayer(i), p, {isAI:false})); state.activePlayer=0; state.selectedTile=currentPlayer().position||1; renderAll(); renderScreen('modes'); toggleCupModal(false); toast(`Cup match: ${state.players[0].name} vs ${state.players[1].name}`,'purple'); };
+  const oldFinishMaybeCup = window.finishPvpMini;
+  // update cup winner after real final screen via observer-ish patch
+  const superFinish = window.finishPvpMini;
+  window.finishPvpMini = function(winnerIdx, loserIdx, msg, opts={}){ const res = superFinish(winnerIdx, loserIdx, msg, opts); const m = state.cup.matches[state.cup.current||0]; if(m && m.winner==null && (!state.pvpSeries || !state.pvpSeries.active)){ m.winner = winnerIdx===0 ? m.a : m.b; state.cup.current = (state.cup.current||0)+1; if(state.cup.current >= state.cup.matches.length) state.cup.champion = m.winner; renderCup(); save(); } return res; };
+
+  // better full game bridge / loading / abandon logic
+  const oldOpenFullGame = window.openFullGame;
+  if(oldOpenFullGame){
+    window.openFullGame = function(){ state.loading=true; oldOpenFullGame(); const sub=q('modalSub'); if(sub) sub.textContent='Original embedded run · handshake + auto-timeout'; const frame=q('fullFrame'); if(frame){ frame.classList.add('loading-shimmer'); frame.onload=()=>{ frame.classList.remove('loading-shimmer'); state.loading=false; state.bridge.status='loaded'; try{ frame.contentWindow.postMessage({type:'arcade-world-handshake', source:'hub', ts:Date.now()}, '*'); }catch(e){} }; } if(state.bridge.timer) clearTimeout(state.bridge.timer); state.bridge.timer=setTimeout(()=>{ if(state.fullSession){ toast('Run marcat ca abandon după timeout.', 'red'); try{ window.claimFullSmart && claimFullSmart('finish', {score:state.bridge.score||0, reason:'timeout'}); }catch(e){} } }, 1000*60*8); save(); };
+  }
+  const oldCloseFull = window.closeFullGame;
+  if(oldCloseFull){ window.closeFullGame = function(){ if(state.bridge.timer) clearTimeout(state.bridge.timer); state.loading=false; oldCloseFull(); }; }
+  window.addEventListener('message', function(ev){ const d=ev.data||{}; if(!d||typeof d!=='object') return; if(d.type==='arcade-world-bridge'){ state.bridge.handshake=true; state.bridge.status=d.status||'bridge'; if(typeof d.score==='number') state.bridge.score=d.score; renderAll(); } if(d.type==='arcade-world-autoclaim'){ if(d.result==='win' && window.claimFullSmart) claimFullSmart('win', d); else if(window.claimFullSmart) claimFullSmart('finish', d); } });
+
+  // menu hooks / visual polish
+  const oldRenderAll = window.renderAll;
+  if(oldRenderAll){ window.renderAll = function(){ ensurePlayerMeta(); oldRenderAll(); const soundBtn=q('soundBtn'); if(soundBtn && !q('audioHookBtn')){ const b=document.createElement('button'); b.className='btn-alt'; b.id='audioHookBtn'; b.textContent='🎵 Audio'; b.onclick=openAudioPanel; soundBtn.parentNode.appendChild(b); } const saveBtn=[...document.querySelectorAll('button')].find(x=>x.textContent.includes('💾 Save')); if(saveBtn && !q('cupHookBtn')){ const b=document.createElement('button'); b.className='btn-alt'; b.id='cupHookBtn'; b.textContent='🏆 Cup'; b.onclick=()=>toggleCupModal(true); saveBtn.parentNode.appendChild(b);} renderCup(); save(); }; }
+
+  // restart music/render after resize
+  window.addEventListener('resize', ()=>{ if(window.innerWidth<=900) document.body.classList.add('compact-mobile'); else document.body.classList.remove('compact-mobile'); renderCup(); });
+
+})();
+
+(function(){
+  if(!window.state) return;
+  state.startConfig = state.startConfig || {mode: state.sessionMode || 'solo', playerCount: Math.max(1, Math.min(4, state.multiplayerCount || 1))};
+
+  function sessionLabel(mode){ return mode==='solo' ? 'Solo' : mode==='vsai' ? 'Vs AI' : 'PvP'; }
+  function sessionDesc(mode){
+    if(mode==='solo') return '1 jucător pe board. Focus pe progres personal.';
+    if(mode==='vsai') return 'Tu + adversar AI pe board. AI joacă automat.';
+    return '2–4 jucători locali pe același device.';
+  }
+
+  
+function getStartNameDefaults(mode, count){
+  const existing = (state.startConfig && Array.isArray(state.startConfig.names)) ? state.startConfig.names.slice() : [];
+  const out = [];
+  const total = mode === 'solo' ? 1 : mode === 'vsai' ? 2 : Math.max(2, Math.min(4, count || 2));
+  for(let i=0;i<total;i++){
+    if(mode === 'vsai' && i === 1) out.push('AI');
+    else out.push((existing[i] && String(existing[i]).trim()) || ('P' + (i + 1)));
+  }
+  return out;
+}
+
+function renderStartConfigurator(){
+    const modal = document.getElementById('sessionModeModal');
+    if(!modal) return;
+    const card = modal.querySelector('.session-card');
+    if(!card) return;
+    const cfg = state.startConfig || {mode:'solo', playerCount:1, names:['P1']};
+    const mode = cfg.mode || 'solo';
+    const canUseCount = mode === 'pvp';
+    const total = mode === 'solo' ? 1 : mode === 'vsai' ? 2 : Math.max(2, Math.min(4, cfg.playerCount || 2));
+    cfg.names = getStartNameDefaults(mode, total);
+    const nameInputs = Array.from({length: total}, (_, i) => {
+      const isAI = mode === 'vsai' && i === 1;
+      const label = isAI ? 'AI opponent' : `Jucător ${i + 1}`;
+      return `
+        <label style="display:grid;gap:6px">
+          <div class="section-k" style="margin:0">${label}</div>
+          <input
+            type="text"
+            maxlength="14"
+            value="${String(cfg.names[i] || '').replace(/"/g,'&quot;')}"
+            ${isAI ? 'disabled' : ''}
+            oninput="setStartPlayerName(${i}, this.value)"
+            placeholder="${isAI ? 'AI' : 'Introdu numele'}"
+            style="width:100%;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);color:#fff;font-weight:800;outline:none"
+          />
+        </label>
+      `;
+    }).join('');
+
+    card.innerHTML = `
+      <div class="section-k">Start game</div>
+      <h2 style="margin:6px 0 8px">Alege modul de joc</h2>
+      <p class="tiny" style="font-size:14px;margin-bottom:14px">Setezi aici tot onboarding-ul: tip sesiune, număr de jucători și numele lor.</p>
+      <div class="session-grid">
+        <button class="session-option ${mode==='solo'?'active':''}" onclick="selectSessionMode('solo')">
+          <div class="big">🎮</div><div class="title">Solo</div><div class="desc">1 jucător pe board. Focus pe progres personal.</div>
+        </button>
+        <button class="session-option ${mode==='vsai'?'active':''}" onclick="selectSessionMode('vsai')">
+          <div class="big">🤖</div><div class="title">Vs AI</div><div class="desc">Tu + adversar AI pe board. AI joacă automat.</div>
+        </button>
+        <button class="session-option ${mode==='pvp'?'active':''}" onclick="selectSessionMode('pvp')">
+          <div class="big">⚔️</div><div class="title">PvP</div><div class="desc">2–4 jucători locali pe același device.</div>
+        </button>
+      </div>
+      <div style="margin-top:16px">
+        <div class="section-k" style="margin-bottom:8px">Număr jucători la start</div>
+        <div class="player-count-row">
+          <button class="pc-btn ${mode==='solo'?'active':''}" ${mode!=='solo'?'disabled':''} onclick="selectStartPlayerCount(1)">1</button>
+          <button class="pc-btn ${mode!=='solo' && cfg.playerCount===2?'active':''}" ${!canUseCount?'disabled':''} onclick="selectStartPlayerCount(2)">2</button>
+          <button class="pc-btn ${mode==='pvp' && cfg.playerCount===3?'active':''}" ${!canUseCount?'disabled':''} onclick="selectStartPlayerCount(3)">3</button>
+          <button class="pc-btn ${mode==='pvp' && cfg.playerCount===4?'active':''}" ${!canUseCount?'disabled':''} onclick="selectStartPlayerCount(4)">4</button>
+        </div>
+        <div class="session-note" id="sessionCountNote">
+          ${mode==='solo' ? 'Solo pornește cu 1 jucător.' : mode==='vsai' ? 'Vs AI pornește cu 2 participanți: tu + AI.' : 'În PvP poți porni direct cu 2, 3 sau 4 jucători locali.'}
+        </div>
+      </div>
+      <div style="margin-top:16px">
+        <div class="section-k" style="margin-bottom:8px">Nume jucători</div>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px">${nameInputs}</div>
+      </div>
+      <div class="session-footer">
+        <div class="session-note"><b>Selecție curentă:</b> ${sessionLabel(mode)} · ${mode==='solo' ? cfg.names[0] : mode==='vsai' ? `${cfg.names[0]} vs AI` : cfg.names.slice(0,total).join(' · ')}</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn-alt" onclick="closeSessionModeModal()">Mai târziu</button>
+          <button class="btn-gold" onclick="confirmStartSession()">Pornește sesiunea</button>
+        </div>
+      </div>
+    `;
+  }
+
+  window.selectSessionMode = function(mode){
+    if(!state.startConfig) state.startConfig = {mode:'solo', playerCount:1, names:['P1']};
+    state.startConfig.mode = mode;
+    if(mode === 'solo') state.startConfig.playerCount = 1;
+    else if(mode === 'vsai') state.startConfig.playerCount = 2;
+    else if(state.startConfig.playerCount < 2) state.startConfig.playerCount = 2;
+    state.startConfig.names = getStartNameDefaults(mode, state.startConfig.playerCount);
+    renderStartConfigurator();
+  };
+
+  window.selectStartPlayerCount = function(n){
+    const mode = (state.startConfig && state.startConfig.mode) || 'solo';
+    if(mode === 'solo') n = 1;
+    else if(mode === 'vsai') n = 2;
+    else n = Math.max(2, Math.min(4, n));
+    state.startConfig.playerCount = n;
+    state.startConfig.names = getStartNameDefaults(mode, n);
+    renderStartConfigurator();
+  };
+
+  window.setStartPlayerName = function(index, value){
+    if(!state.startConfig) state.startConfig = {mode:'solo', playerCount:1, names:['P1']};
+    if(!Array.isArray(state.startConfig.names)) state.startConfig.names = getStartNameDefaults(state.startConfig.mode || 'solo', state.startConfig.playerCount || 1);
+    const mode = state.startConfig.mode || 'solo';
+    if(mode === 'vsai' && index === 1) return;
+    const clean = String(value || '').replace(/[<>]/g, '').trimStart().slice(0,14);
+    state.startConfig.names[index] = clean || ('P' + (index + 1));
+  };
+
+  const oldOpen = window.openSessionModeModal;
+  window.openSessionModeModal = function(){
+    if(!state.startConfig) state.startConfig = {mode: state.sessionMode || 'solo', playerCount: Math.max(1, Math.min(4, state.multiplayerCount || 1)), names: []};
+    const mode = state.startConfig.mode || state.sessionMode || 'solo';
+    if(mode==='solo') state.startConfig.playerCount = 1;
+    if(mode==='vsai') state.startConfig.playerCount = 2;
+    state.startConfig.names = getStartNameDefaults(mode, state.startConfig.playerCount);
+    renderStartConfigurator();
+    const m = document.getElementById('sessionModeModal');
+    if(m) m.classList.remove('hidden');
+    if(typeof oldOpen === 'function'){ /* suppressed original content rebuild */ }
+  };
+
+  const oldConfigure = window.configureSessionMode;
+  window.configureSessionMode = function(mode, count){
+    if(mode === 'solo') count = 1;
+    else if(mode === 'vsai') count = 2;
+    else count = Math.max(2, Math.min(4, count || 2));
+
+    state.sessionMode = mode;
+    state.onboardingDone = true;
+    state.activePlayer = 0;
+    state.selectedTile = 0;
+    state.mode = null;
+    state.difficulty = null;
+
+    const total = mode === 'solo' ? 1 : mode === 'vsai' ? 2 : count;
+    const chosenNames = getStartNameDefaults(mode, total).map((n, i) => {
+      const raw = ((state.startConfig && state.startConfig.names && state.startConfig.names[i]) || n);
+      const clean = String(raw || '').replace(/[<>]/g, '').trim();
+      return clean || (mode === 'vsai' && i === 1 ? 'AI' : 'P' + (i + 1));
+    });
+    state.multiplayerCount = total;
+    state.players = Array.from({length: total}, (_, i) => {
+      const base = Object.assign(defaultPlayer(i), state.players[i] || {});
+      if(mode === 'vsai' && i === 1) return Object.assign(base, {name:'AI', isAI:true, id:i});
+      return Object.assign(base, {name: chosenNames[i] || ('P'+(i+1)), isAI:false, id:i});
+    });
+
+    if(typeof ensurePlayers === 'function') ensurePlayers();
+    if(typeof save === 'function') save();
+    if(typeof renderAll === 'function') renderAll();
+    if(typeof renderScreen === 'function') renderScreen('details');
+    if(typeof closeSessionModeModal === 'function') closeSessionModeModal();
+    if(typeof toast === 'function') toast(`Mod setat: ${sessionLabel(mode)}${mode==='pvp' ? ' · ' + total + ' jucători' : ''}`, 'green');
+    if(typeof setHint === 'function') setHint(mode==='vsai' ? `${chosenNames[0] || 'Tu'} începe. AI-ul își joacă turele automat.` : `Sesiune pornită: ${sessionLabel(mode)}.`);
+  };
+
+  window.confirmStartSession = function(){
+    const cfg = state.startConfig || {mode:'solo', playerCount:1, names:['P1']};
+    if(!Array.isArray(cfg.names)) cfg.names = getStartNameDefaults(cfg.mode, cfg.playerCount);
+    cfg.names = cfg.names.map((name, i) => {
+      const fallback = cfg.mode === 'vsai' && i === 1 ? 'AI' : 'P' + (i + 1);
+      const clean = String(name || '').replace(/[<>]/g, '').trim();
+      return clean || fallback;
+    });
+    window.configureSessionMode(cfg.mode, cfg.playerCount);
+  };
+
+
+  setTimeout(renderStartConfigurator, 0);
+})();
+
+(function(){
+  if(!window.state) return;
+
+  const AVATARS = ['🕹️','🎮','🚀','🏀','⚔️','🧠','🏒','💣','🧱','🟣','🎯','👑'];
+  const COLORS = ['#ffd54a','#6ee7ff','#a78bfa','#30d27c','#ff72c4','#ff9c44','#ff6363','#94a3b8'];
+
+  function defaultAvatarFor(i, mode){
+    if(mode==='vsai' && i===1) return '🤖';
+    return AVATARS[i % AVATARS.length];
+  }
+  function defaultColorFor(i, mode){
+    if(mode==='vsai' && i===1) return '#94a3b8';
+    return COLORS[i % COLORS.length];
+  }
+  function ensureStartConfig(){
+    if(!state.startConfig) state.startConfig = {mode:'solo', playerCount:1, names:['P1']};
+    const mode = state.startConfig.mode || 'solo';
+    const total = mode==='solo' ? 1 : mode==='vsai' ? 2 : Math.max(2, Math.min(4, state.startConfig.playerCount || 2));
+    state.startConfig.playerCount = total;
+    state.startConfig.names = Array.from({length: total}, (_, i)=>{
+      const old = (state.startConfig.names||[])[i];
+      return (old && String(old).trim()) || (mode==='vsai' && i===1 ? 'AI' : 'P' + (i+1));
+    });
+    state.startConfig.avatars = Array.from({length: total}, (_, i)=>{
+      const old = (state.startConfig.avatars||[])[i];
+      return old || defaultAvatarFor(i, mode);
+    });
+    state.startConfig.colors = Array.from({length: total}, (_, i)=>{
+      const old = (state.startConfig.colors||[])[i];
+      return old || defaultColorFor(i, mode);
+    });
+    if(mode==='vsai'){
+      state.startConfig.names[1] = 'AI';
+      state.startConfig.avatars[1] = '🤖';
+      state.startConfig.colors[1] = '#94a3b8';
+    }
+    return state.startConfig;
+  }
+
+  window.selectSessionMode = function(mode){
+    ensureStartConfig();
+    state.startConfig.mode = mode;
+    if(mode === 'solo') state.startConfig.playerCount = 1;
+    else if(mode === 'vsai') state.startConfig.playerCount = 2;
+    else if((state.startConfig.playerCount||2) < 2) state.startConfig.playerCount = 2;
+    ensureStartConfig();
+    renderStartConfigurator();
+  };
+
+  window.selectStartPlayerCount = function(n){
+    ensureStartConfig();
+    const mode = state.startConfig.mode || 'solo';
+    if(mode === 'solo') n = 1;
+    else if(mode === 'vsai') n = 2;
+    else n = Math.max(2, Math.min(4, n));
+    state.startConfig.playerCount = n;
+    ensureStartConfig();
+    renderStartConfigurator();
+  };
+
+  window.setStartPlayerName = function(index, value){
+    ensureStartConfig();
+    if(state.startConfig.mode === 'vsai' && index === 1) return;
+    const clean = String(value || '').replace(/[<>]/g, '').trimStart().slice(0, 14);
+    state.startConfig.names[index] = clean || ('P' + (index + 1));
+  };
+  window.setStartPlayerAvatar = function(index, avatar){
+    ensureStartConfig();
+    if(state.startConfig.mode === 'vsai' && index === 1) return;
+    state.startConfig.avatars[index] = avatar;
+    renderStartConfigurator();
+  };
+  window.setStartPlayerColor = function(index, color){
+    ensureStartConfig();
+    if(state.startConfig.mode === 'vsai' && index === 1) return;
+    state.startConfig.colors[index] = color;
+    renderStartConfigurator();
+  };
+
+  window.renderStartConfigurator = function(){
+    const modal = document.getElementById('sessionModeModal');
+    if(!modal) return;
+    const card = modal.querySelector('.session-card');
+    if(!card) return;
+    const cfg = ensureStartConfig();
+    const mode = cfg.mode || 'solo';
+    const canUseCount = mode === 'pvp';
+    const total = cfg.playerCount;
+    const blocks = Array.from({length: total}, (_, i) => {
+      const isAI = mode === 'vsai' && i === 1;
+      const name = cfg.names[i] || (isAI ? 'AI' : 'P' + (i+1));
+      const avatar = cfg.avatars[i] || defaultAvatarFor(i, mode);
+      const color = cfg.colors[i] || defaultColorFor(i, mode);
+      const avatarOptions = AVATARS.map(a => `<button class="avatar-chip ${avatar===a?'active':''}" ${isAI?'disabled':''} onclick="setStartPlayerAvatar(${i}, '${a}')">${a}</button>`).join('');
+      const colorOptions = COLORS.map(c => `<button class="color-chip ${color===c?'active':''}" ${isAI?'disabled':''} onclick="setStartPlayerColor(${i}, '${c}')" style="background:${c}"></button>`).join('');
+      return `
+        <div class="start-player-card">
+          <div class="start-player-top">
+            <div>
+              <div class="section-k">${isAI ? 'AI opponent' : 'Jucător ' + (i+1)}</div>
+              <div class="token-badge"><span>${avatar}</span><span style="display:inline-block;width:12px;height:12px;border-radius:999px;background:${color}"></span></div>
+            </div>
+            <div class="avatar-preview" style="background:${color}22;color:${color}">${avatar}</div>
+          </div>
+          <label style="display:grid;gap:6px">
+            <span class="tiny">${isAI ? 'Nume blocat' : 'Nume afișat'}</span>
+            <input
+              type="text"
+              value="${String(name).replace(/"/g,'&quot;')}"
+              ${isAI ? 'disabled' : ''}
+              oninput="setStartPlayerName(${i}, this.value)"
+              placeholder="${isAI ? 'AI' : 'Introdu numele'}"
+              style="width:100%;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);color:#fff;font-weight:800;outline:none"
+            />
+          </label>
+          <div>
+            <div class="tiny" style="margin-bottom:6px">Avatar</div>
+            <div class="avatar-row">${isAI ? '<div class="tiny">Avatar AI presetat</div>' : avatarOptions}</div>
+          </div>
+          <div>
+            <div class="tiny" style="margin-bottom:6px">Culoare token</div>
+            <div class="color-row">${isAI ? '<div class="tiny">Culoare AI presetată</div>' : colorOptions}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    card.innerHTML = `
+      <div class="section-k">Start game</div>
+      <h2 style="margin:6px 0 8px">Alege modul de joc</h2>
+      <p class="tiny" style="font-size:14px;margin-bottom:14px">Acum setezi din start: tip sesiune, număr de jucători, nume, avatar și culoarea token-ului.</p>
+      <div class="session-grid">
+        <button class="session-option ${mode==='solo'?'active':''}" onclick="selectSessionMode('solo')">
+          <div class="big">🎮</div><div class="title">Solo</div><div class="desc">1 jucător pe board. Focus pe progres personal.</div>
+        </button>
+        <button class="session-option ${mode==='vsai'?'active':''}" onclick="selectSessionMode('vsai')">
+          <div class="big">🤖</div><div class="title">Vs AI</div><div class="desc">Tu + adversar AI pe board. AI joacă automat.</div>
+        </button>
+        <button class="session-option ${mode==='pvp'?'active':''}" onclick="selectSessionMode('pvp')">
+          <div class="big">⚔️</div><div class="title">PvP</div><div class="desc">2–4 jucători locali pe același device.</div>
+        </button>
+      </div>
+      <div style="margin-top:16px">
+        <div class="section-k" style="margin-bottom:8px">Număr jucători la start</div>
+        <div class="player-count-row">
+          <button class="pc-btn ${mode==='solo'?'active':''}" ${mode!=='solo'?'disabled':''} onclick="selectStartPlayerCount(1)">1</button>
+          <button class="pc-btn ${mode!=='solo' && cfg.playerCount===2?'active':''}" ${!canUseCount?'disabled':''} onclick="selectStartPlayerCount(2)">2</button>
+          <button class="pc-btn ${mode==='pvp' && cfg.playerCount===3?'active':''}" ${!canUseCount?'disabled':''} onclick="selectStartPlayerCount(3)">3</button>
+          <button class="pc-btn ${mode==='pvp' && cfg.playerCount===4?'active':''}" ${!canUseCount?'disabled':''} onclick="selectStartPlayerCount(4)">4</button>
+        </div>
+        <div class="session-note">${mode==='solo' ? 'Solo pornește cu 1 jucător.' : mode==='vsai' ? 'Vs AI pornește cu 2 participanți: tu + AI.' : 'În PvP poți porni direct cu 2, 3 sau 4 jucători locali.'}</div>
+      </div>
+      <div style="margin-top:16px">
+        <div class="section-k" style="margin-bottom:8px">Profil jucători</div>
+        <div class="start-profile-grid">${blocks}</div>
+      </div>
+      <div class="session-footer">
+        <div class="session-note"><b>Selecție curentă:</b> ${mode==='solo' ? cfg.names[0] : mode==='vsai' ? `${cfg.names[0]} vs AI` : cfg.names.slice(0,total).join(' · ')}</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn-alt" onclick="closeSessionModeModal()">Mai târziu</button>
+          <button class="btn-gold" onclick="confirmStartSession()">Pornește sesiunea</button>
+        </div>
+      </div>
+    `;
+  };
+
+  function applyPlayerStyle(p, i){
+    p.avatar = p.avatar || defaultAvatarFor(i, state.sessionMode || 'solo');
+    p.color = p.color || defaultColorFor(i, state.sessionMode || 'solo');
+    return p;
+  }
+
+  window.confirmStartSession = function(){
+    const cfg = ensureStartConfig();
+    const mode = cfg.mode || 'solo';
+    const total = cfg.playerCount;
+    window.configureSessionMode(mode, total);
+    state.players = state.players.slice(0, total).map((p, i) => {
+      const isAI = mode === 'vsai' && i === 1;
+      const next = Object.assign(defaultPlayer(i), p || {}, {
+        isAI,
+        name: isAI ? 'AI' : ((cfg.names[i] || '').trim() || ('P' + (i+1))),
+        avatar: isAI ? '🤖' : (cfg.avatars[i] || defaultAvatarFor(i, mode)),
+        color: isAI ? '#94a3b8' : (cfg.colors[i] || defaultColorFor(i, mode)),
+      });
+      return applyPlayerStyle(next, i);
+    });
+    state.multiplayerCount = total;
+    if(typeof ensurePlayers === 'function') ensurePlayers();
+    state.players = state.players.map(applyPlayerStyle);
+    save();
+    if(typeof renderAll === 'function') renderAll();
+    if(typeof updateBoardTokenVisual === 'function') updateBoardTokenVisual();
+    closeSessionModeModal();
+    if(typeof toast === 'function') toast('Sesiune pornită cu profiluri complete', 'green');
+  };
+
+  window.renderPlayers = function(){
+    const controls = state.sessionMode==='pvp'
+      ? `<div class="btnrow" style="margin:10px 0"><button class="btn-alt" onclick="setPlayerCount(2)">2P</button><button class="btn-alt" onclick="setPlayerCount(3)">3P</button><button class="btn-alt" onclick="setPlayerCount(4)">4P</button></div>`
+      : '';
+    q('playersCard').innerHTML = `<div class="section-k">Multiplayer local</div>${controls}<div class="players">${
+      state.players.map((p,i)=>`
+        <div class="player-card ${i===state.activePlayer?'active':''}">
+          <div style="display:flex;justify-content:space-between;gap:10px;align-items:center">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div class="avatar-preview" style="width:44px;height:44px;font-size:22px;background:${(p.color||'#ffd54a')}22;color:${p.color||'#ffd54a'}">${p.avatar||'🕹️'}</div>
+              <div>
+                <b>${p.name}</b>
+                <div class="tiny">Tile ${p.position} · Coins ${p.coins} · Lv ${p.level} · Wins ${p.totalWins}</div>
+              </div>
+            </div>
+            <span class="tag">${i===state.activePlayer?'ACTIVE':'WAIT'}</span>
+          </div>
+          <div class="tiny" style="margin-top:8px">Bonus turns ${p.bonusTurns} · Skip ${p.skipTurns} · Token color <span style="display:inline-block;width:10px;height:10px;border-radius:999px;background:${p.color||'#ffd54a'}"></span></div>
+        </div>`).join('')
+    }</div>`;
+    q('turnPlayer').textContent = currentPlayer().name;
+    if(typeof updateBoardTokenVisual === 'function') updateBoardTokenVisual();
+  };
+
+  window.renderTopStats = function(){
+    const p = currentPlayer();
+    q('top-stats').innerHTML = `
+      <div class="stat"><div class="k">Jucător curent</div><div class="v" style="display:flex;align-items:center;gap:8px"><span>${p.avatar||'🕹️'}</span><span>${p.name}</span></div></div>
+      <div class="stat"><div class="k">Tile curent</div><div class="v">${safeText(tile(p.position).name)}</div></div>
+      <div class="stat"><div class="k">Mod selectat</div><div class="v">${state.mode||'—'}</div></div>
+      <div class="stat"><div class="k">Coins</div><div class="v">${p.coins}</div></div>
+      <div class="stat"><div class="k">XP / Level</div><div class="v">${p.xp} / ${p.level}</div></div>
+      <div class="stat"><div class="k">Victorii</div><div class="v">${p.totalWins}</div></div>
+    `;
+    if(typeof updateBoardTokenVisual === 'function') updateBoardTokenVisual();
+  };
+
+  window.updateBoardTokenVisual = function(){
+    const token = document.getElementById('board-token');
+    const p = (typeof currentPlayer === 'function') ? currentPlayer() : null;
+    if(!token || !p) return;
+    token.textContent = p.avatar || '🕹️';
+    token.style.background = `radial-gradient(circle at 35% 30%, #ffffff, ${p.color || '#ffd54a'} 65%, #222 120%)`;
+    token.style.boxShadow = `0 0 0 4px ${(p.color || '#ffd54a')}33, 0 0 20px ${(p.color || '#ffd54a')}66`;
+    token.style.borderColor = 'rgba(255,255,255,.65)';
+  };
+
+  const oldSetPlayerCount = window.setPlayerCount;
+  window.setPlayerCount = function(n){
+    if(state.sessionMode !== 'pvp') return;
+    oldSetPlayerCount(n);
+    ensureStartConfig();
+    state.startConfig.playerCount = n;
+    ensureStartConfig();
+  };
+
+  const oldRenderAll = window.renderAll;
+  window.renderAll = function(){
+    oldRenderAll();
+    updateBoardTokenVisual();
+  };
+
+  setTimeout(function(){
+    ensureStartConfig();
+    if(typeof renderAll === 'function') renderAll();
+  }, 0);
+})();
+
+(function(){
+  if(!window.state) return;
+  state.meta = state.meta || {accountXp:0,accountLevel:1,cosmetics:{frames:[],trails:[]},titles:[],stats:{sessions:0,totalTurns:0,totalMinutes:0,totalRewards:0}};
+  state.aiStyle = state.aiStyle || 'balanced';
+  state.eventHistory = state.eventHistory || [];
+  state.fullMissions = state.fullMissions || {playFamily:0,winDifferent:[],finishNoAbandon:0};
+  state.saveSlots = state.saveSlots || 3;
+  state.firstLaunchAt = state.firstLaunchAt || Date.now();
+  state.sessionStartTs = state.sessionStartTs || Date.now();
+  state.tutorialSeen = !!state.tutorialSeen;
+  state.endTarget = state.endTarget || 12;
+  state.mobilePolish = true;
+  state.audioPrefs = state.audioPrefs || {music:true,sfx:true,ambient:true};
+
+  const baseSave = window.save;
+  window.save = function(){
+    if(typeof baseSave==='function') baseSave();
+    try{
+      const raw = JSON.parse(localStorage.getItem(STORAGE)||'{}');
+      raw.meta = state.meta; raw.aiStyle = state.aiStyle; raw.eventHistory = state.eventHistory;
+      raw.fullMissions = state.fullMissions; raw.tutorialSeen = state.tutorialSeen; raw.endTarget = state.endTarget;
+      raw.audioPrefs = state.audioPrefs; raw.sessionStartTs = state.sessionStartTs; raw.version='v18';
+      localStorage.setItem(STORAGE, JSON.stringify(raw));
+    }catch(e){}
+  };
+  try{
+    const raw=JSON.parse(localStorage.getItem(STORAGE)||'{}');
+    if(raw.meta) state.meta = Object.assign(state.meta, raw.meta);
+    if(raw.aiStyle) state.aiStyle = raw.aiStyle;
+    if(raw.eventHistory) state.eventHistory = raw.eventHistory;
+    if(raw.fullMissions) state.fullMissions = raw.fullMissions;
+    if('tutorialSeen' in raw) state.tutorialSeen = !!raw.tutorialSeen;
+    if(raw.endTarget) state.endTarget = raw.endTarget;
+    if(raw.audioPrefs) state.audioPrefs = Object.assign(state.audioPrefs, raw.audioPrefs);
+    if(raw.sessionStartTs) state.sessionStartTs = raw.sessionStartTs;
+  }catch(e){}
+
+  function accNeed(n){return 160+(n-1)*110}
+  function addAccountXp(v){state.meta.accountXp += v; while(state.meta.accountXp >= accNeed(state.meta.accountLevel)){state.meta.accountXp -= accNeed(state.meta.accountLevel); state.meta.accountLevel++; state.meta.cosmetics.frames.push('Frame L'+state.meta.accountLevel); if(typeof toast==='function') toast('Account level '+state.meta.accountLevel,'purple');}}
+  function playerScore(p){return (p.coins||0) + (p.level||1)*90 + (p.totalWins||0)*120 + (p.completed||[]).length*70}
+  function statCard(k,v){return `<div class="aw-item"><div class="aw-mini">${k}</div><div style="font-size:26px;font-weight:1000">${v}</div></div>`}
+  function openModal(html){const m=document.getElementById('awModal'); document.getElementById('awModalCard').innerHTML=html; m.classList.add('open');}
+  function closeModal(){document.getElementById('awModal').classList.remove('open')}
+  window.closeAWModal = closeModal;
+  window.openAWModal = openModal;
+  document.getElementById('awModal').addEventListener('click',e=>{if(e.target.id==='awModal') closeModal()});
+
+  function currentSessionLabel(){return state.sessionMode==='solo'?'Solo':state.sessionMode==='vsai'?'Vs AI':'PvP'}
+
+  window.openTutorial = function(){
+    state.tutorialSeen = true; save();
+    openModal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Tutorial</div><h2 style="margin:8px 0">Cum funcționează Arcade World</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div>
+      <div class="aw-grid two">
+        <div class="aw-item"><h4>1. Board și ture</h4><div class="aw-muted">Arunci zarul, avansezi pe perimetru și activezi efectul tile-ului. START oferă reward la trecere. BONUS dă avantaje. CAPCANĂ aplică penalizare sau consumă shield.</div></div>
+        <div class="aw-item"><h4>2. Mini-game vs Full Game</h4><div class="aw-muted">Poți juca mini challenge-ul din hub sau versiunea full în iframe. Full game poate trimite rezultat automat prin bridge.</div></div>
+        <div class="aw-item"><h4>3. Rewards și progres</h4><div class="aw-muted">Primești coins, XP, quest progress și account XP. Deblochezi shop items, frame-uri și titluri.</div></div>
+        <div class="aw-item"><h4>4. PvP / Vs AI</h4><div class="aw-muted">În PvP jucătorii alternează turele; în Vs AI, AI-ul joacă automat și își adaptează riscul după stil.</div></div>
+      </div>
+      <div class="aw-row" style="margin-top:14px"><button class="btn-main" onclick="closeAWModal()">Am înțeles</button></div>`)
+  };
+
+  window.openSaveSlots = function(){
+    const slotHtml = [1,2,3].map(i=>{
+      const raw = localStorage.getItem(STORAGE+'_slot_'+i);
+      let label = 'Gol';
+      if(raw){ try{ const s=JSON.parse(raw); label = `${(s.players&&s.players[0]&&s.players[0].name)||'Profil'} · ${(s.meta&&s.meta.accountLevel)||1}L`; }catch(e){} }
+      return `<div class="aw-item aw-slot"><h4>Slot ${i}</h4><div class="aw-muted">${label}</div><div class="aw-row"><button class="btn-main" onclick="saveToSlot(${i})">Save</button><button class="btn-alt" onclick="loadFromSlot(${i})">Load</button><button class="btn-alt" onclick="deleteSlot(${i})">Delete</button></div></div>`;
+    }).join('');
+    openModal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Save slots</div><h2 style="margin:8px 0">Profile locale</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div><div class="aw-grid three">${slotHtml}</div><div class="aw-item" style="margin-top:12px"><h4>Export / Import JSON</h4><div class="aw-row"><button class="btn-main" onclick="exportSlotJson()">Export</button><button class="btn-alt" onclick="importSlotPrompt()">Import</button></div><textarea id="slotJsonBox" placeholder="JSON save payload..."></textarea></div>`)
+  };
+  window.saveToSlot = function(i){ localStorage.setItem(STORAGE+'_slot_'+i, localStorage.getItem(STORAGE)||'{}'); toast('Saved in slot '+i,'green'); openSaveSlots(); };
+  window.loadFromSlot = function(i){ const raw=localStorage.getItem(STORAGE+'_slot_'+i); if(!raw) return toast('Slot gol','red'); localStorage.setItem(STORAGE, raw); if(typeof load==='function') load(); if(typeof ensurePlayers==='function') ensurePlayers(); renderAll(); renderScreen('details'); closeModal(); toast('Slot încărcat','green'); };
+  window.deleteSlot = function(i){ localStorage.removeItem(STORAGE+'_slot_'+i); toast('Slot șters','red'); openSaveSlots(); };
+  window.exportSlotJson = function(){ const raw=localStorage.getItem(STORAGE)||'{}'; document.getElementById('slotJsonBox').value = raw; };
+  window.importSlotPrompt = function(){ const box=document.getElementById('slotJsonBox'); if(!box || !box.value.trim()) return toast('Lipește JSON','red'); try{ JSON.parse(box.value); localStorage.setItem(STORAGE, box.value); if(typeof load==='function') load(); ensurePlayers(); renderAll(); renderScreen('details'); toast('Import reușit','green'); }catch(e){ toast('JSON invalid','red'); } };
+
+  function bestFamily(p){ const entries=Object.entries(p.stats||{}).filter(([k,v])=>/Wins$/.test(k)); if(!entries.length) return '—'; entries.sort((a,b)=>b[1]-a[1]); return entries[0][0].replace('Wins',''); }
+  window.openStatsScreen = function(){
+    const totals = state.players.reduce((a,p)=>{a.coins+=p.coins||0;a.wins+=p.totalWins||0;a.completed+=(p.completed||[]).length;a.turns+=(p.history||[]).length;return a},{coins:0,wins:0,completed:0,turns:0});
+    const rows = state.players.map(p=>`<div class="aw-item"><h4>${p.avatar||'🎮'} ${p.name}</h4><div class="aw-grid two">${statCard('Coins',p.coins||0)}${statCard('Wins',p.totalWins||0)}${statCard('Level',p.level||1)}${statCard('Completed',(p.completed||[]).length)}</div><div class="aw-muted" style="margin-top:8px">Winrate estimat: ${Math.round(((p.totalWins||0)/Math.max(1,(p.history||[]).length))*100)}% · Best family: ${bestFamily(p)}</div></div>`).join('');
+    openModal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Analytics</div><h2 style="margin:8px 0">Stats & analytics</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div><div class="aw-grid two">${statCard('Session mode',currentSessionLabel())}${statCard('Account level',state.meta.accountLevel)}${statCard('Total coins',totals.coins)}${statCard('Total wins',totals.wins)}${statCard('Tiles completed',totals.completed)}${statCard('Total runs',totals.turns)}</div><div class="aw-grid two" style="margin-top:12px">${rows}</div>`)
+  };
+
+  window.openMissions = function(){
+    const famDone = state.fullMissions.playFamily;
+    const winCount = (state.fullMissions.winDifferent||[]).length;
+    openModal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Missions</div><h2 style="margin:8px 0">Full game missions</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div>
+      <div class="aw-grid three">
+        <div class="aw-item"><h4>Joacă 1 full run</h4><div class="aw-muted">Progres: ${famDone}/1</div></div>
+        <div class="aw-item"><h4>Câștigă pe 3 full games diferite</h4><div class="aw-muted">Progres: ${winCount}/3</div></div>
+        <div class="aw-item"><h4>Finish fără abandon</h4><div class="aw-muted">Progres: ${state.fullMissions.finishNoAbandon}/1</div></div>
+      </div>
+      <div class="aw-item" style="margin-top:12px"><h4>Meta progression</h4><div class="aw-muted">Account XP: ${state.meta.accountXp}/${accNeed(state.meta.accountLevel)} · Level ${state.meta.accountLevel}</div><div class="aw-muted">Titluri: ${(state.meta.titles||[]).join(', ')||'—'} · Frame-uri: ${(state.meta.cosmetics.frames||[]).join(', ')||'—'}</div></div>`)
+  };
+
+  window.openAudioPanel = function(){
+    openModal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Audio & FX</div><h2 style="margin:8px 0">Audio categories</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div>
+      <div class="aw-grid three">
+        <div class="aw-item"><h4>Music loop</h4><div class="aw-row"><button class="btn-main" onclick="toggleAudioPref('music')">${state.audioPrefs.music?'ON':'OFF'}</button></div></div>
+        <div class="aw-item"><h4>SFX</h4><div class="aw-row"><button class="btn-main" onclick="toggleAudioPref('sfx')">${state.audioPrefs.sfx?'ON':'OFF'}</button></div></div>
+        <div class="aw-item"><h4>Ambient</h4><div class="aw-row"><button class="btn-main" onclick="toggleAudioPref('ambient')">${state.audioPrefs.ambient?'ON':'OFF'}</button></div></div>
+      </div>
+      <div class="aw-item" style="margin-top:12px"><h4>Board ambiance</h4><div class="aw-muted">Tile special, reward, trap, shop și winner FX sunt categorisite separat la nivel de UI. Pe mobile folosim și feedback vizual mai puternic.</div></div>`)
+  };
+  window.toggleAudioPref = function(k){ state.audioPrefs[k]=!state.audioPrefs[k]; save(); openAudioPanel(); };
+
+  window.openAIStyle = function(){
+    openModal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">AI</div><h2 style="margin:8px 0">Board AI style</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div>
+      <div class="aw-grid three">
+        ${['safe','balanced','greedy'].map(s=>`<div class="aw-item"><h4>${s}</h4><div class="aw-muted">${s==='safe'?'Mai defensiv, evită riscul.':s==='greedy'?'Vânează reward mare și joacă agresiv.':'Mix echilibrat între risc și reward.'}</div><div class="aw-row" style="margin-top:10px"><button class="btn-main" onclick="setAIStyle('${s}')">${state.aiStyle===s?'Selectat':'Alege'}</button></div></div>`).join('')}
+      </div>`)
+  };
+  window.setAIStyle = function(s){ state.aiStyle=s; save(); toast('AI style: '+s,'purple'); openAIStyle(); };
+
+  window.openCupMode = function(){
+    const sorted=[...state.players].sort((a,b)=>playerScore(b)-playerScore(a));
+    const rows=sorted.map((p,i)=>`<div class="aw-item"><b>#${i+1} ${p.name}</b><div class="aw-muted">Score ${playerScore(p)} · Wins ${p.totalWins||0} · Coins ${p.coins||0}</div></div>`).join('');
+    openModal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Cup / Season</div><h2 style="margin:8px 0">Tournament table</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div><div class="aw-grid two">${rows}</div>`)
+  };
+
+  window.testResponsive = function(){
+    document.body.classList.toggle('mobile-lab');
+    toast(document.body.classList.contains('mobile-lab')?'Mobile lab ON':'Mobile lab OFF','purple');
+  };
+
+  window.openCeremony = function(){
+    const sorted=[...state.players].sort((a,b)=>playerScore(b)-playerScore(a));
+    const first=sorted[0], second=sorted[1], third=sorted[2];
+    openModal(`<div class="aw-ceremony"><div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Winner ceremony</div><h2 style="margin:8px 0">Sesiune încheiată</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div><div class="hero"><h3 style="margin:0">🏆 MVP: ${first?first.name:'—'}</h3><div class="aw-muted">Score ${first?playerScore(first):0} · Session ${currentSessionLabel()} · Target ${state.endTarget} wins</div></div><div class="aw-podium"><div class="aw-step second">🥈<h3>${second?second.name:'—'}</h3><div class="aw-mini">${second?playerScore(second):0} pts</div></div><div class="aw-step first">🥇<h3>${first?first.name:'—'}</h3><div class="aw-mini">${first?playerScore(first):0} pts</div></div><div class="aw-step third">🥉<h3>${third?third.name:'—'}</h3><div class="aw-mini">${third?playerScore(third):0} pts</div></div></div><div class="aw-grid two" style="margin-top:12px">${sorted.map(p=>`<div class="aw-item"><b>${p.name}</b><div class="aw-muted">Coins ${p.coins} · Wins ${p.totalWins} · Level ${p.level} · Completed ${(p.completed||[]).length}</div></div>`).join('')}</div></div>`)
+  };
+
+  function buildDock(){
+    const dock=document.getElementById('awDock');
+    if(!dock) return;
+    dock.innerHTML = `
+      <button onclick="openTutorial()">📘 Tutorial</button>
+      <button onclick="openSaveSlots()">💾 Saves</button>
+      <button onclick="openStatsScreen()">📊 Stats</button>
+      <button onclick="openMissions()">🎯 Missions</button>
+      <button onclick="openAIStyle()">🤖 AI</button>
+      <button onclick="openAudioPanel()">🎵 Audio</button>
+      <button onclick="openCupMode()">🏆 Cup</button>
+      <button onclick="testResponsive()">📱 Mobile</button>
+      <button onclick="openCeremony()">✨ Finale</button>`;
+  }
+
+  const baseClaimReward = window.claimReward;
+  window.claimReward = function(win, extra){
+    const out = baseClaimReward ? baseClaimReward(win, extra) : {coins:0,xp:0};
+    addAccountXp((out.xp||0) + (win?18:8));
+    state.meta.stats.totalRewards += (out.coins||0);
+    if(win && currentTile() && currentTile().family){
+      const fam = currentTile().family;
+      if(!state.meta.titles.includes('Ace of '+fam) && currentPlayer().stats[fam+'Wins']>=3) state.meta.titles.push('Ace of '+fam);
+    }
+    if(state.players.some(p=> (p.totalWins||0) >= state.endTarget)) setTimeout(()=>openCeremony(), 500);
+    save();
+    return out;
+  };
+
+  const baseResolveBonus = window.resolveBonus;
+  if(baseResolveBonus){ window.resolveBonus = function(){ state.eventHistory.unshift({ts:Date.now(), deck:'Lucky', who:currentPlayer().name}); state.eventHistory=state.eventHistory.slice(0,25); return baseResolveBonus(); }; }
+  const baseResolveTrap = window.resolveTrap;
+  if(baseResolveTrap){ window.resolveTrap = function(){ state.eventHistory.unshift({ts:Date.now(), deck:'Trap', who:currentPlayer().name}); state.eventHistory=state.eventHistory.slice(0,25); return baseResolveTrap(); }; }
+
+  const baseOpenFullGame = window.openFullGame;
+  if(baseOpenFullGame){ window.openFullGame = function(){ state.fullMissions.playFamily = 1; state.fullSessionStartedAt = Date.now(); return baseOpenFullGame(); }; }
+  const baseClaimFinish = window.claimFullGameFinish;
+  if(baseClaimFinish){ window.claimFullGameFinish = function(){ state.fullMissions.finishNoAbandon = 1; save(); return baseClaimFinish(); }; }
+  const baseClaimWin = window.claimFullGameWin;
+  if(baseClaimWin){ window.claimFullGameWin = function(){ const t=currentTile(); if(t && t.id && !state.fullMissions.winDifferent.includes(t.id)) state.fullMissions.winDifferent.push(t.id); save(); return baseClaimWin(); }; }
+
+  const baseAutoAI = window.simulateAITurnOnTile;
+  if(baseAutoAI){ window.simulateAITurnOnTile = function(){
+    const p=currentPlayer();
+    if(p) p.aiStyle = state.aiStyle;
+    if(state.aiStyle==='greedy' && p && p.inventory && (p.inventory.double||0)===0 && Math.random()<0.35) p.inventory.double=1;
+    if(state.aiStyle==='safe' && p && p.inventory && (p.inventory.shield||0)===0 && Math.random()<0.35) p.inventory.shield=1;
+    return baseAutoAI();
+  }; }
+
+  const baseEndTurn = window.endTurn;
+  window.endTurn = function(){
+    state.meta.stats.totalTurns += 1;
+    state.meta.stats.sessions = Math.max(state.meta.stats.sessions,1);
+    if(baseEndTurn) baseEndTurn();
+    if(state.sessionMode==='vsai' && currentPlayer() && currentPlayer().isAI && typeof scheduleAITurnIfNeeded==='function') scheduleAITurnIfNeeded();
+  };
+
+  const baseRenderPlayers = window.renderPlayers;
+  if(baseRenderPlayers){ window.renderPlayers = function(){ baseRenderPlayers(); const card=document.getElementById('playersCard'); if(card){ const history = (state.eventHistory||[]).slice(0,4).map(e=>`<div class="aw-mini">${new Date(e.ts).toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit'})} · ${e.who} · ${e.deck}</div>`).join(''); card.insertAdjacentHTML('beforeend', `<div class="aw-item" style="margin-top:10px"><b>Turn HUD</b><div class="aw-muted">Current: ${currentPlayer().name} · Session: ${currentSessionLabel()} · AI style: ${state.aiStyle}</div><div class="aw-muted">Effects: skip ${currentPlayer().skipTurns||0} · bonus ${currentPlayer().bonusTurns||0}</div>${history?`<div style="margin-top:8px">${history}</div>`:''}</div>`); } } }
+
+  if(!state.tutorialSeen){ setTimeout(()=>openTutorial(), 300); }
+  buildDock();
+  save();
+})();
+
+(function(){
+  if(!window.state) return;
+  state.productPolish = state.productPolish || {cleanUI:false, compactPanels:false};
+  state.adventure = state.adventure || {chapter:1, bossClears:0, chapterTargets:[4,8,12,16,20,23], completed:[]};
+  state.economy = state.economy || {preset:'balanced'};
+  state.cosmeticLab = state.cosmeticLab || {skin:'classic', trail:'arcade', frame:'default'};
+  state.accessibility = state.accessibility || {largeUI:false, contrast:false, reducedMotion:false, keyboardHints:true};
+  state.performance = state.performance || {lite:false, particles:true};
+  state.dev = state.dev || {enabled:true};
+
+  const saveBaseV20 = window.save;
+  window.save = function(){
+    if(typeof saveBaseV20==='function') saveBaseV20();
+    try{
+      const raw = JSON.parse(localStorage.getItem(STORAGE)||'{}');
+      raw.productPolish = state.productPolish;
+      raw.adventure = state.adventure;
+      raw.economy = state.economy;
+      raw.cosmeticLab = state.cosmeticLab;
+      raw.accessibility = state.accessibility;
+      raw.performance = state.performance;
+      raw.dev = state.dev;
+      raw.version = 'v20';
+      localStorage.setItem(STORAGE, JSON.stringify(raw));
+    }catch(e){}
+  };
+  try{
+    const raw = JSON.parse(localStorage.getItem(STORAGE)||'{}');
+    if(raw.productPolish) state.productPolish = Object.assign(state.productPolish, raw.productPolish);
+    if(raw.adventure) state.adventure = Object.assign(state.adventure, raw.adventure);
+    if(raw.economy) state.economy = Object.assign(state.economy, raw.economy);
+    if(raw.cosmeticLab) state.cosmeticLab = Object.assign(state.cosmeticLab, raw.cosmeticLab);
+    if(raw.accessibility) state.accessibility = Object.assign(state.accessibility, raw.accessibility);
+    if(raw.performance) state.performance = Object.assign(state.performance, raw.performance);
+    if(raw.dev) state.dev = Object.assign(state.dev, raw.dev);
+  }catch(e){}
+
+  function applyGlobalModes(){
+    document.body.classList.toggle('clean-ui', !!state.productPolish.cleanUI);
+    document.body.classList.toggle('large-ui', !!state.accessibility.largeUI);
+    document.body.classList.toggle('contrast-plus', !!state.accessibility.contrast);
+    document.body.classList.toggle('reduce-motion', !!state.accessibility.reducedMotion);
+    document.body.classList.toggle('perf-lite', !!state.performance.lite);
+  }
+  function tokenVisual(){
+    const t=document.getElementById('boardToken');
+    if(!t) return;
+    const map={classic:'🎮',star:'⭐',crown:'👑',rocket:'🚀',gem:'💎',bolt:'⚡'};
+    t.textContent = map[state.cosmeticLab.skin] || '🎮';
+    if(state.cosmeticLab.skin==='gem') t.style.background='radial-gradient(circle at 35% 30%,#ffffff,#7eeaff 60%,#007ec9)';
+    else if(state.cosmeticLab.skin==='crown') t.style.background='radial-gradient(circle at 35% 30%,#fff7bf,#ffd54a 62%,#b67a00)';
+    else if(state.cosmeticLab.skin==='rocket') t.style.background='radial-gradient(circle at 35% 30%,#ffe4c4,#ff9c44 62%,#b95200)';
+    else if(state.cosmeticLab.skin==='bolt') t.style.background='radial-gradient(circle at 35% 30%,#f5fdff,#a78bfa 62%,#4b2ca4)';
+    else t.style.background='radial-gradient(circle at 35% 30%,#fff9b9,#ffd54a 65%,#bf8c00)';
+  }
+  function openAWModalX(html){
+    const card=document.getElementById('awModalCard'), modal=document.getElementById('awModal');
+    if(card && modal){ card.innerHTML=html; modal.classList.add('open'); }
+  }
+  window.openAWModalX = openAWModalX;
+  applyGlobalModes();
+  setTimeout(tokenVisual, 0);
+
+  const baseMoveToken = window.moveTokenTo;
+  if(baseMoveToken){ window.moveTokenTo = function(idx, animate=true){ const r=baseMoveToken(idx,animate); tokenVisual(); return r; }; }
+
+  const baseSpawnParticles = window.spawnParticles;
+  if(baseSpawnParticles){ window.spawnParticles = function(){ if(state.performance.particles===false || state.performance.lite) return; return baseSpawnParticles.apply(this, arguments); }; }
+
+  const baseClaimRewardV20 = window.claimReward;
+  if(baseClaimRewardV20){ window.claimReward = function(win, extra){
+      const p = currentPlayer();
+      const out = baseClaimRewardV20(win, extra);
+      const preset = state.economy.preset;
+      let coinsDelta = 0, xpDelta = 0;
+      if(preset==='casual'){ coinsDelta = Math.round((out.coins||0)*0.18); xpDelta = Math.round((out.xp||0)*0.18); }
+      if(preset==='hardcore'){ coinsDelta = -Math.round((out.coins||0)*0.12); xpDelta = -Math.round((out.xp||0)*0.1); }
+      if(coinsDelta!==0){ p.coins += coinsDelta; out.coins = (out.coins||0) + coinsDelta; }
+      if(xpDelta!==0){ if(xpDelta>0 && typeof addXpToPlayer==='function') addXpToPlayer(p, xpDelta); else if(xpDelta<0) p.xp = Math.max(0, p.xp + xpDelta); out.xp = (out.xp||0) + xpDelta; }
+      if(state.adventure.chapterTargets.includes(p.position) && !state.adventure.completed.includes(p.position)) state.adventure.completed.push(p.position);
+      if((p.completed||[]).length >= state.adventure.chapter * 2 && state.adventure.chapter < 6) state.adventure.chapter++;
+      save();
+      return out;
+  }; }
+
+  window.openProductPolish = function(){
+    openAWModalX(`
+      <div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Product polish</div><h2 style="margin:8px 0">Finisare UI / UX</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div>
+      <div class="aw-grid two">
+        <div class="aw-item"><h4>UI clean mode</h4><div class="aw-muted">Reduce textul secundar și păstrează accentul pe playfield și turn flow.</div><div class="aw-row" style="margin-top:10px"><button class="btn-main aw-chipbtn" onclick="toggleProduct('cleanUI')">${state.productPolish.cleanUI?'ON':'OFF'}</button></div></div>
+        <div class="aw-item"><h4>Compact panels</h4><div class="aw-muted">Comprimă panourile laterale și păstrează focus pe board.</div><div class="aw-row" style="margin-top:10px"><button class="btn-main aw-chipbtn" onclick="toggleProduct('compactPanels')">${state.productPolish.compactPanels?'ON':'OFF'}</button></div></div>
+      </div>
+      <div class="aw-item" style="margin-top:12px"><h4>Ce face acum</h4><div class="aw-muted">Curăță UI-ul și pregătește baza pentru un aspect mai aproape de produs finit, fără să-ți schimbe progresul sau regulile.</div></div>`)
+  };
+  window.toggleProduct = function(k){ state.productPolish[k]=!state.productPolish[k]; applyGlobalModes(); save(); openProductPolish(); };
+
+  window.openAdventureMode = function(){
+    const chips = state.adventure.chapterTargets.map((t,i)=>`<span class="aw-pill">Cap ${i+1}: tile ${t} ${state.adventure.completed.includes(t)?'✓':''}</span>`).join('');
+    openAWModalX(`
+      <div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Adventure</div><h2 style="margin:8px 0">Campanie / Adventure mode</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div>
+      <div class="aw-grid two">
+        <div class="aw-item"><h4>Capitol curent</h4><div style="font-size:34px;font-weight:1000">${state.adventure.chapter}</div><div class="aw-muted">Deblochezi capitole pe măsură ce completezi tile-uri și treci prin checkpoint-uri de campanie.</div></div>
+        <div class="aw-item"><h4>Boss clears</h4><div style="font-size:34px;font-weight:1000">${state.adventure.bossClears}</div><div class="aw-muted">Boss tiles pot fi folosite ca obiective de sezon.</div></div>
+      </div>
+      <div class="aw-item" style="margin-top:12px"><h4>Hartă capitole</h4><div>${chips}</div><div class="aw-row" style="margin-top:10px"><button class="btn-main" onclick="advanceAdventure()">Advance chapter</button><button class="btn-alt" onclick="markBossClear()">Mark boss clear</button></div></div>`)
+  };
+  window.advanceAdventure = function(){ state.adventure.chapter=Math.min(6,state.adventure.chapter+1); save(); openAdventureMode(); toast('Adventure chapter '+state.adventure.chapter,'purple'); };
+  window.markBossClear = function(){ state.adventure.bossClears++; save(); openAdventureMode(); toast('Boss clear marcat','green'); };
+
+  window.openEconomyTuning = function(){
+    const desc={casual:'Mai multe rewards, progres mai rapid și shop mai iertător.',balanced:'Presetul recomandat pentru flow normal.',hardcore:'Rewards mai mici, economie mai strictă și progresie mai grea.'};
+    openAWModalX(`
+      <div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Economy</div><h2 style="margin:8px 0">Economy tuning</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div>
+      <div class="aw-grid three">
+        ${['casual','balanced','hardcore'].map(p=>`<div class="aw-item"><h4>${p}</h4><div class="aw-muted">${desc[p]}</div><div class="aw-row" style="margin-top:10px"><button class="btn-main" onclick="setEconomyPreset('${p}')">${state.economy.preset===p?'Selectat':'Alege'}</button></div></div>`).join('')}
+      </div>
+      <div class="aw-item" style="margin-top:12px"><h4>Preset activ</h4><div class="aw-muted">${state.economy.preset}</div></div>`)
+  };
+  window.setEconomyPreset = function(p){ state.economy.preset=p; save(); openEconomyTuning(); toast('Economy preset: '+p,'gold'); };
+
+  window.openCosmeticsLab = function(){
+    openAWModalX(`
+      <div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Cosmetics</div><h2 style="margin:8px 0">Token skins & trails</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div>
+      <div class="aw-grid three">
+        ${['classic','star','crown','rocket','gem','bolt'].map(s=>`<div class="aw-item"><h4>${s}</h4><div class="aw-muted">Skin pentru token pe board și în HUD.</div><div class="aw-row" style="margin-top:10px"><button class="btn-main" onclick="setTokenSkin('${s}')">${state.cosmeticLab.skin===s?'Selectat':'Alege'}</button></div></div>`).join('')}
+      </div>
+      <div class="aw-item" style="margin-top:12px"><h4>Trail style</h4><div class="aw-row">${['arcade','gold','ice'].map(t=>`<button class="btn-alt" onclick="setTrailStyle('${t}')">${t}${state.cosmeticLab.trail===t?' ✓':''}</button>`).join('')}</div></div>`)
+  };
+  window.setTokenSkin = function(s){ state.cosmeticLab.skin=s; tokenVisual(); save(); openCosmeticsLab(); };
+  window.setTrailStyle = function(t){ state.cosmeticLab.trail=t; const trail=document.getElementById('boardTrail'); if(trail){ if(t==='gold') trail.style.background='linear-gradient(90deg,rgba(255,213,74,0),rgba(255,213,74,.65),rgba(255,213,74,0))'; else if(t==='ice') trail.style.background='linear-gradient(90deg,rgba(110,231,255,0),rgba(110,231,255,.65),rgba(110,231,255,0))'; else trail.style.background='linear-gradient(90deg,rgba(255,213,74,0),rgba(255,213,74,.5),rgba(110,231,255,0))'; } save(); openCosmeticsLab(); };
+
+  window.openAccessibilityLab = function(){
+    openAWModalX(`
+      <div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Accessibility</div><h2 style="margin:8px 0">Contrast, mărime, motion</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div>
+      <div class="aw-grid three">
+        <div class="aw-item"><h4>Large UI</h4><div class="aw-row" style="margin-top:10px"><button class="btn-main" onclick="toggleAccess('largeUI')">${state.accessibility.largeUI?'ON':'OFF'}</button></div></div>
+        <div class="aw-item"><h4>High contrast</h4><div class="aw-row" style="margin-top:10px"><button class="btn-main" onclick="toggleAccess('contrast')">${state.accessibility.contrast?'ON':'OFF'}</button></div></div>
+        <div class="aw-item"><h4>Reduced motion</h4><div class="aw-row" style="margin-top:10px"><button class="btn-main" onclick="toggleAccess('reducedMotion')">${state.accessibility.reducedMotion?'ON':'OFF'}</button></div></div>
+      </div>
+      <div class="aw-item" style="margin-top:12px"><h4>Keyboard / readability</h4><div class="aw-muted">Setările astea sunt utile mai ales pe tabletă, pe laptop și în sesiuni lungi de test.</div></div>`)
+  };
+  window.toggleAccess = function(k){ state.accessibility[k]=!state.accessibility[k]; applyGlobalModes(); save(); openAccessibilityLab(); };
+
+  window.openPerformanceLab = function(){
+    openAWModalX(`
+      <div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Performance</div><h2 style="margin:8px 0">Performance pass</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div>
+      <div class="aw-grid two">
+        <div class="aw-item"><h4>Lite mode</h4><div class="aw-muted">Oprește blur, glow și unele efecte grele pentru device-uri mai slabe.</div><div class="aw-row" style="margin-top:10px"><button class="btn-main" onclick="togglePerf('lite')">${state.performance.lite?'ON':'OFF'}</button></div></div>
+        <div class="aw-item"><h4>Particles</h4><div class="aw-muted">Controlează exploziile vizuale și efectele de reward.</div><div class="aw-row" style="margin-top:10px"><button class="btn-main" onclick="togglePerf('particles')">${state.performance.particles?'ON':'OFF'}</button></div></div>
+      </div>
+      <div class="aw-item" style="margin-top:12px"><h4>Status</h4><div class="aw-muted">Mode: ${state.performance.lite?'lite':'full'} · Particles: ${state.performance.particles?'on':'off'} · Reduce motion: ${state.accessibility.reducedMotion?'on':'off'}</div></div>`)
+  };
+  window.togglePerf = function(k){ state.performance[k]=!state.performance[k]; applyGlobalModes(); save(); openPerformanceLab(); };
+
+  window.openQALab = function(){
+    const issues=[];
+    if(!Array.isArray(state.players) || !state.players.length) issues.push('Nu există players în state.');
+    if(typeof TILES==='undefined' || TILES.length!==24) issues.push('Board tiles != 24.');
+    if(!document.getElementById('boardToken')) issues.push('Token lipsă din DOM.');
+    if(!localStorage.getItem(STORAGE)) issues.push('Niciun save activ în localStorage.');
+    const report = issues.length? issues.map(x=>`<li>${x}</li>`).join('') : '<li>Toate check-urile de bază sunt OK.</li>';
+    openAWModalX(`
+      <div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">QA</div><h2 style="margin:8px 0">QA / Stability sweep</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div>
+      <div class="aw-grid two">
+        <div class="aw-item"><h4>Diagnostic rapid</h4><ul>${report}</ul></div>
+        <div class="aw-item"><h4>Checklist</h4><div class="aw-muted">Import/export, rematch, abandon full game, end turn, roll, bonus, trap, mobile layout, accessibility toggles.</div></div>
+      </div>
+      <div class="aw-row" style="margin-top:12px"><button class="btn-main" onclick="runSmokeToast()">Run smoke test</button></div>`)
+  };
+  window.runSmokeToast = function(){ toast('Smoke test: roll/save/render/modal OK','green'); };
+
+  window.openDevLab = function(){
+    openAWModalX(`
+      <div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Dev tools</div><h2 style="margin:8px 0">Admin / debug panel</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div>
+      <div class="aw-grid four">
+        <button class="btn-main" onclick="devAddCoins()">+250 coins</button>
+        <button class="btn-main" onclick="devAddXp()">+120 XP</button>
+        <button class="btn-main" onclick="devUnlockAll()">Unlock all</button>
+        <button class="btn-main" onclick="devJumpPrompt()">Jump tile</button>
+      </div>
+      <div class="aw-row" style="margin-top:12px"><button class="btn-alt" onclick="resolveBonus()">Trigger BONUS</button><button class="btn-alt" onclick="resolveTrap()">Trigger CAPCANĂ</button><button class="btn-alt" onclick="openCeremony()">Force finale</button></div>`)
+  };
+  window.devAddCoins = function(){ currentPlayer().coins += 250; save(); renderAll(); toast('+250 coins','green'); };
+  window.devAddXp = function(){ if(typeof addXpToPlayer==='function') addXpToPlayer(currentPlayer(),120); save(); renderAll(); toast('+120 XP','purple'); };
+  window.devUnlockAll = function(){ state.players.forEach(p=>{ p.completed=[...Array(24).keys()]; p.visited=[...Array(24).keys()]; }); save(); renderAll(); toast('Unlock all done','gold'); };
+  window.devJumpPrompt = function(){ const v=prompt('Tile index 0-23'); if(v===null) return; const n=Math.max(0,Math.min(23,Number(v)||0)); currentPlayer().position=n; state.selectedTile=n; save(); renderAll(); if(typeof renderScreen==='function') renderScreen('details'); toast('Jump to tile '+n,'purple'); };
+
+  window.openArchitecturePlan = function(){
+    const schema = {app:['board','session','players','economy','ui'],futureReact:['components/Board','components/HUD','features/minigames','features/progression','services/saveSync'],backendReady:['profiles','matches','events','rewards','analytics']};
+    openAWModalX(`
+      <div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Architecture</div><h2 style="margin:8px 0">Online-ready / React plan</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div>
+      <div class="aw-grid two">
+        <div class="aw-item"><h4>Module split</h4><div class="aw-code">${JSON.stringify(schema,null,2)}</div></div>
+        <div class="aw-item"><h4>Direcție de portare</h4><div class="aw-muted">Baza actuală rămâne HTML single-file, dar planul pregătește separarea în componente, state management și servicii pentru cloud/backend.</div><div class="aw-row" style="margin-top:10px"><button class="btn-main" onclick="copyArchitectureJson()">Copy plan</button></div></div>
+      </div>`)
+  };
+  window.copyArchitectureJson = async function(){ try{ await navigator.clipboard.writeText(JSON.stringify({version:'v20-plan', economy:state.economy, adventure:state.adventure, cosmetics:state.cosmeticLab},null,2)); toast('Plan copiat','green'); }catch(e){ toast('Clipboard indisponibil','red'); } };
+
+  const dock=document.getElementById('awDock');
+  if(dock){ dock.insertAdjacentHTML('beforeend', `
+    <button class="aw-accent" onclick="openProductPolish()">🧼 Polish</button>
+    <button class="aw-accent" onclick="openAdventureMode()">🗺️ Adventure</button>
+    <button class="aw-accent" onclick="openEconomyTuning()">💸 Economy</button>
+    <button class="aw-accent" onclick="openCosmeticsLab()">✨ Cosmetics</button>
+    <button class="aw-accent" onclick="openAccessibilityLab()">♿ Access</button>
+    <button class="aw-accent" onclick="openPerformanceLab()">⚡ Perf</button>
+    <button class="aw-accent" onclick="openQALab()">🧪 QA</button>
+    <button class="aw-accent" onclick="openDevLab()">🛠️ Dev</button>
+    <button class="aw-accent" onclick="openArchitecturePlan()">⚛️ React</button>`); }
+
+  const boardBtns=document.querySelector('.board-card .btnrow:last-child');
+  if(boardBtns && !document.getElementById('v20QuickBtn')) boardBtns.insertAdjacentHTML('beforeend','<button id="v20QuickBtn" class="btn-alt" onclick="openProductPolish()">V20 Lab</button>');
+
+  save();
+})();
+
+(function(){
+  if(!window.state) return;
+  const BOSS_TILES=[5,11,17,23];
+  const PERKS=[
+    {id:'extra_roll', name:'Extra Roll', text:'Primești 1 bonus turn la draft.', apply:p=>p.bonusTurns=(p.bonusTurns||0)+1},
+    {id:'shield', name:'Shield', text:'Primești 1 shield.', apply:p=>p.inventory.shield=(p.inventory.shield||0)+1},
+    {id:'banker', name:'Banker', text:'+80 coins la start.', apply:p=>p.coins=(p.coins||0)+80},
+    {id:'xp_boost', name:'XP Boost', text:'+60 XP la start.', apply:p=>{ if(typeof addXpToPlayer==='function') addXpToPlayer(p,60); }},
+    {id:'trap_resist', name:'Trap Resist', text:'Prima capcană e anulată.', apply:p=>p.trapResist=1},
+    {id:'double_daily', name:'Daily Boost', text:'Bonus săptămânal mai mare.', apply:p=>p.weeklyBoost=1}
+  ];
+  const CONTENT_PIPELINE = {
+    version:'v21',
+    tiles:(typeof TILES!=='undefined'?TILES:[]).map((t,idx)=>({idx,id:t.id,name:t.name,type:t.type,family:t.family||null,reward:t.reward||0,effect:t.effect||null,boss:BOSS_TILES.includes(idx)})),
+    systems:{ownership:true,bossFights:true,powerDraft:true,rankedElo:true,replayHighlights:true,seriousAchievements:true,dailyWeeklyRotation:true,storyFlavor:true,partyMode:true,jsonPipeline:true}
+  };
+  state.v21 = state.v21 || {
+    ownership:{},
+    tileLevels:{},
+    ranked:{enabled:true,lastDelta:null},
+    replay:[],
+    weekKey:null,
+    weekly:null,
+    story:{chapter:1,rival:'Nova AI',beats:0},
+    party:{enabled:false,turnSeconds:18,autoplay:false,lastTick:0},
+    seriousAchievements:{},
+    draft:{done:false,index:0,round:1,picksPerPlayer:2},
+    sessionFlags:{rankApplied:false},
+    bosses:{defeated:{}}
+  };
+  state.players.forEach(p=>{ p.rating=p.rating||1000; p.perks=p.perks||[]; p.bossWins=p.bossWins||0; p.territoryIncome=p.territoryIncome||0; p.highlights=p.highlights||[]; });
+
+  const baseSave = window.save;
+  window.save = function(){
+    if(typeof baseSave==='function') baseSave();
+    try{
+      const raw = JSON.parse(localStorage.getItem(STORAGE)||'{}');
+      raw.v21 = state.v21;
+      raw.players = state.players;
+      raw.contentPipeline = CONTENT_PIPELINE;
+      localStorage.setItem(STORAGE, JSON.stringify(raw));
+    }catch(e){}
+  };
+  try{
+    const raw = JSON.parse(localStorage.getItem(STORAGE)||'{}');
+    if(raw.v21) state.v21 = Object.assign(state.v21, raw.v21);
+    if(Array.isArray(raw.players) && raw.players.length) state.players = raw.players;
+  }catch(e){}
+
+  function weekKey(){ const d=new Date(); const n=Math.ceil((((d - new Date(d.getFullYear(),0,1))/86400000)+new Date(d.getFullYear(),0,1).getDay()+1)/7); return d.getFullYear()+'-W'+n; }
+  function buildWeekly(){ const fams=[...new Set((TILES||[]).filter(t=>t.family).map(t=>t.family))]; const k=weekKey(); const fam=fams[Math.abs([...k].reduce((a,c)=>a+c.charCodeAt(0),0))%fams.length] || 'basket'; return {key:k,family:fam,coins:120,xp:95}; }
+  if(!state.v21.weekly || state.v21.weekly.key!==weekKey()) state.v21.weekly=buildWeekly();
+
+  function pushReplay(type,text,data={}){ state.v21.replay.unshift({ts:Date.now(),type,text,data,player:currentPlayer()?.name||'—'}); state.v21.replay=state.v21.replay.slice(0,40); }
+  function ownerOf(idx){ return state.v21.ownership[idx]; }
+  function updateAchievements(){
+    state.players.forEach(p=>{
+      const a={
+        clean_run:(p.coins||0)>=300 && (p.trapHits||0)===0,
+        bonus_chain:(p.bonusHits||0)>=3,
+        comeback_king:(p.totalWins||0)>=2 && (p.coins||0)<150,
+        boss_hunter:(p.bossWins||0)>=1,
+        landlord:Object.values(state.v21.ownership).filter(v=>v===p.id).length>=4,
+        ranked_gold:(p.rating||1000)>=1200
+      };
+      p.seriousAchievements=a;
+    });
+  }
+  updateAchievements();
+
+  const baseRenderBoard = window.renderBoard;
+  if(baseRenderBoard){ window.renderBoard = function(){ baseRenderBoard();
+      document.querySelectorAll('.tile-wrap').forEach(el=>{
+        const idx=Number(el.getAttribute('data-idx')); const btn=el.querySelector('.tile'); if(!btn) return;
+        const owner=ownerOf(idx);
+        el.querySelectorAll('.owner-badge').forEach(n=>n.remove());
+        if(BOSS_TILES.includes(idx)) btn.classList.add('boss-ring');
+        if(state.v21.weekly && tile(idx).family===state.v21.weekly.family) btn.classList.add('weekly-ring');
+        if(owner!==undefined){ const ownP=state.players.find(p=>p.id===owner); const d=document.createElement('div'); d.className='owner-badge '+(owner===currentPlayer().id?'self':'other'); d.textContent='OWN '+(ownP?.name||('P'+(owner+1))); btn.appendChild(d); }
+      });
+      const top=q('top-stats'); if(top && !document.getElementById('storyBanner')) top.insertAdjacentHTML('beforeend', `<div id="storyBanner" class="story-banner">Capitol ${state.v21.story.chapter} · Rival: ${state.v21.story.rival} · Weekly family: <b>${state.v21.weekly.family}</b></div>`);
+    }; }
+
+  const baseResolveLanding = window.resolveLanding;
+  if(baseResolveLanding){ window.resolveLanding = function(){ const p=currentPlayer(); const idx=p.position; const t=tile(idx); const owner=ownerOf(idx);
+      if(t.type==='game' && owner!==undefined && owner!==p.id){
+        const lvl = state.v21.tileLevels[idx]||1; const toll = 18*lvl + Math.round((t.reward||100)*0.08);
+        const pay = Math.min(p.coins||0, toll); p.coins-=pay; const ownerP=state.players.find(x=>x.id===owner); if(ownerP){ ownerP.coins+=pay; ownerP.territoryIncome=(ownerP.territoryIncome||0)+pay; }
+        pushReplay('toll', `${p.name} a plătit taxă ${pay} către ${ownerP?.name||'Owner'} pe ${t.name}`, {idx,pay});
+        toast(`Taxă teritoriu: -${pay}`,'red');
+      }
+      baseResolveLanding();
+      if(t.type==='game' && BOSS_TILES.includes(idx) && !state.v21.bosses.defeated[idx]){
+        setTimeout(()=>{ renderScreen('event', `<div class="event-card"><h3>👑 BOSS TILE</h3><p class="muted">${t.name} este păzit de un boss encounter. Poți juca boss fight pentru reward mare și badge unic.</p><div class="btnrow"><button class="btn-purple" onclick="startBossFight()">Start Boss Fight</button><button class="btn-alt" onclick="renderScreen('modes')">Ignoră</button></div></div>`, true); }, 20);
+      }
+    }; }
+
+  window.startBossFight = function(){
+    const t=currentTile(); const p=currentPlayer(); const difficulty = 3 + Math.min(4, state.v21.story.chapter); const hp = 6 + difficulty;
+    state.bossFight = {hp, max:hp, charge:0};
+    renderScreen('event', `<h3>👑 Boss Fight · ${safeText(t.name)}</h3><p class="muted">Lovește boss-ul înainte să-ți spargă ritmul. Charge mare = damage mai mare.</p><div class="hud"><div class="hud-card"><div class="hud-k">Boss HP</div><div class="hud-v" id="bossHp">${hp}</div></div><div class="hud-card"><div class="hud-k">Charge</div><div class="hud-v" id="bossCharge">0</div></div><div class="hud-card"><div class="hud-k">Reward</div><div class="hud-v">+220</div></div><div class="hud-card"><div class="hud-k">Chapter</div><div class="hud-v">${state.v21.story.chapter}</div></div></div><div class="btnrow"><button class="btn-main" onclick="bossAct('charge')">⚡ Charge</button><button class="btn-gold" onclick="bossAct('strike')">🗡️ Strike</button><button class="btn-alt" onclick="bossAct('guard')">🛡️ Guard</button></div>`, true);
+  };
+  window.bossAct = function(act){ const bf=state.bossFight, p=currentPlayer(); if(!bf) return; if(act==='charge') bf.charge=Math.min(4,bf.charge+1); if(act==='strike') bf.hp-=Math.max(1,1+bf.charge), bf.charge=0; if(act==='guard') bf.charge=Math.min(4,bf.charge+0.5); const retaliation = Math.random()<0.68 ? rand(0,2) : 0; if(retaliation===2) p.coins=Math.max(0,p.coins-25); if(q('bossHp')) q('bossHp').textContent=Math.max(0,bf.hp); if(q('bossCharge')) q('bossCharge').textContent=bf.charge; if(bf.hp<=0){ state.v21.bosses.defeated[p.position]=true; p.bossWins=(p.bossWins||0)+1; p.coins+=220; if(typeof addXpToPlayer==='function') addXpToPlayer(p,150); state.v21.story.beats++; if(state.v21.story.beats%2===0) state.v21.story.chapter++; pushReplay('boss', `${p.name} a învins boss-ul de pe ${currentTile().name}`); updateAchievements(); save(); renderAll(); renderScreen('event', `<div class="event-card"><h3>🏆 Boss învins</h3><p class="muted">+220 coins · +150 XP · Capitolul avansează.</p></div>`, true); return; } if(retaliation===2) toast('Boss hit: -25 coins','red'); };
+
+  const baseClaimReward = window.claimReward;
+  if(baseClaimReward){ window.claimReward = function(win, extra){ const out=baseClaimReward(win, extra); const p=currentPlayer(); const idx=p.position; const t=currentTile(); if(win && t.type==='game'){
+        state.v21.ownership[idx]=p.id; state.v21.tileLevels[idx]=Math.min(3,(state.v21.tileLevels[idx]||0)+1);
+        let bonus=0; if(state.v21.weekly && t.family===state.v21.weekly.family){ bonus += state.v21.weekly.coins; out.coins=(out.coins||0)+state.v21.weekly.coins; out.xp=(out.xp||0)+state.v21.weekly.xp; p.coins += state.v21.weekly.coins; if(typeof addXpToPlayer==='function') addXpToPlayer(p,state.v21.weekly.xp); }
+        if((p.perks||[]).includes('double_daily')){ bonus += 25; p.coins += 25; }
+        pushReplay('capture', `${p.name} a capturat ${t.name} (Lv ${state.v21.tileLevels[idx]})`, {idx,win});
+      } else { pushReplay('result', `${p.name} a terminat ${t.name} cu rezultat ${win?'WIN':'LOSS'}`, {idx,win}); }
+      updateAchievements(); save(); return out;
+  }; }
+
+  const baseRoll = window.rollDice;
+  if(baseRoll){ window.rollDice = async function(){ pushReplay('roll', `${currentPlayer().name} a început aruncarea`, {}); return baseRoll.apply(this, arguments); }; }
+
+  const baseEndTurn = window.endTurn;
+  if(baseEndTurn){ window.endTurn = function(){ baseEndTurn(); if(state.v21.party.enabled) startPartyTimer(); } }
+
+  function partyTick(){ const el=document.getElementById('partyTimerView'); if(!el) return; const now=Date.now(); const remain=Math.max(0, state.v21.party.turnSeconds - Math.floor((now-state.v21.party.lastTick)/1000)); el.textContent=remain+'s'; if(remain<=0){ if(state.v21.party.autoplay && !state.animating){ try{ rollDice(); }catch(e){} } else toast('Timp expirat pentru tură','gold'); state.v21.party.lastTick=Date.now(); } }
+  function startPartyTimer(){ state.v21.party.lastTick=Date.now(); clearInterval(state.v21.partyTimer); state.v21.partyTimer=setInterval(partyTick,250); }
+
+  function applyPerk(player, perkId){ const perk=PERKS.find(x=>x.id===perkId); if(!perk) return; if((player.perks||[]).includes(perkId)) return; player.perks.push(perkId); perk.apply(player); pushReplay('perk', `${player.name} a draftat ${perk.name}`); }
+  function openDraft(){ const i=state.v21.draft.index; const round=state.v21.draft.round; const p=state.players[i]; openAWModal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Power draft</div><h2 style="margin:8px 0">Alegere perk · ${safeText(p.name)}</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div><div class="aw-muted">Runda ${round}/${state.v21.draft.picksPerPlayer}</div><div class="aw-grid three" style="margin-top:12px">${PERKS.map(pk=>`<div class="aw-item"><h4>${pk.name}</h4><div class="aw-muted">${pk.text}</div><div class="aw-row" style="margin-top:10px"><button class="btn-main" onclick="pickDraftPerk('${pk.id}')">Alege</button></div></div>`).join('')}</div>`); }
+  window.openDraftBoard = openDraft;
+  window.pickDraftPerk = function(id){ const i=state.v21.draft.index; const p=state.players[i]; applyPerk(p,id); state.v21.draft.index++; if(state.v21.draft.index>=state.players.length){ state.v21.draft.index=0; state.v21.draft.round++; }
+    if(state.v21.draft.round>state.v21.draft.picksPerPlayer){ state.v21.draft.done=true; save(); renderAll(); closeAWModal(); toast('Draft complet','green'); return; }
+    save(); openDraft(); };
+
+  function rankPlayers(){ const sorted=[...state.players].sort((a,b)=>playerScore(b)-playerScore(a)); const total=sorted.length; sorted.forEach((p,idx)=>{ const delta = Math.round((total-1-idx)*14 - idx*8); p.rating=(p.rating||1000)+delta; p.lastRatingDelta=delta; }); state.v21.sessionFlags.rankApplied=true; }
+
+  const baseOpenCeremony = window.openCeremony;
+  if(baseOpenCeremony){ window.openCeremony = function(){ if(!state.v21.sessionFlags.rankApplied) rankPlayers(); updateAchievements(); baseOpenCeremony(); setTimeout(()=>{
+      const card=document.getElementById('awModalCard'); if(!card) return; const sorted=[...state.players].sort((a,b)=>playerScore(b)-playerScore(a));
+      const replay=state.v21.replay.slice(0,5).map(r=>`<li>${new Date(r.ts).toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit'})} · <b>${safeText(r.player)}</b> · ${safeText(r.text)}</li>`).join('');
+      const ratings=sorted.map(p=>`<div class="aw-item"><div class="aw-mini">${safeText(p.name)}</div><div style="font-size:28px;font-weight:1000">${p.rating}</div><div class="aw-muted">Δ ${p.lastRatingDelta||0}</div></div>`).join('');
+      card.insertAdjacentHTML('beforeend', `<div class="aw-grid two" style="margin-top:14px"><div class="aw-item"><h4>Ranked session / local ELO</h4><div class="aw-grid ${sorted.length>=4?'four':'three'}">${ratings}</div></div><div class="aw-item"><h4>Replay highlights</h4><ul>${replay||'<li>Niciun highlight încă.</li>'}</ul></div></div>`);
+    },50); save(); }; }
+
+  window.openTerritoryLab = function(){ const items=(TILES||[]).map((t,idx)=>{ const owner=ownerOf(idx); const lvl=state.v21.tileLevels[idx]||0; const ownP=state.players.find(p=>p.id===owner); return `<div class="aw-item"><div class="aw-mini">${idx} · ${safeText(t.name)}</div><div style="font-weight:900">${owner===undefined?'Liber':safeText(ownP?.name||'Owner')}</div><div class="aw-muted">Nivel teritoriu: ${lvl}</div></div>` }).join(''); openAWModal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Territory</div><h2 style="margin:8px 0">Tile ownership / territory</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div><div class="aw-grid three">${items}</div>`); };
+  window.openRankedLab = function(){ const items=state.players.map(p=>`<div class="aw-item"><h4>${safeText(p.name)}</h4><div style="font-size:34px;font-weight:1000">${p.rating||1000}</div><div class="aw-muted">Wins ${p.totalWins||0} · Territory income ${p.territoryIncome||0}</div></div>`).join(''); openAWModal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Ranked</div><h2 style="margin:8px 0">Ranked session / local rating</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div><div class="aw-grid three">${items}</div>`); };
+  window.openReplayHighlights = function(){ const items=state.v21.replay.map(r=>`<div class="aw-item"><div class="aw-mini">${new Date(r.ts).toLocaleString('ro-RO')}</div><div style="font-weight:900">${safeText(r.player)}</div><div class="aw-muted">${safeText(r.text)}</div></div>`).join('') || '<div class="aw-item">Niciun replay highlight încă.</div>'; openAWModal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Replay</div><h2 style="margin:8px 0">Replay highlights</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div><div class="aw-grid two">${items}</div>`); };
+  window.openSeriousAchievements = function(){ updateAchievements(); const items=state.players.map(p=>`<div class="aw-item"><h4>${safeText(p.name)}</h4>${Object.entries(p.seriousAchievements||{}).map(([k,v])=>`<div class="aw-row" style="justify-content:space-between;border-top:1px solid rgba(255,255,255,.06);padding-top:8px;margin-top:8px"><span>${k}</span><span>${v?'✅':'—'}</span></div>`).join('')}</div>`).join(''); openAWModal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Achievements</div><h2 style="margin:8px 0">Achievements serioase</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div><div class="aw-grid two">${items}</div>`); };
+  window.openLiveRotation = function(){ const weeklyTiles=(TILES||[]).map((t,idx)=> tile(idx).family===state.v21.weekly.family ? `<span class="aw-pill">${idx} · ${safeText(t.name)}</span>`:'' ).join(''); openAWModal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Live rotation</div><h2 style="margin:8px 0">Daily / Weekly</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div><div class="aw-grid two"><div class="aw-item"><h4>Daily</h4><div class="aw-muted">Tile ${state.daily.tile} · ${safeText(tile(state.daily.tile).name)} · AI ${state.daily.diff}</div></div><div class="aw-item"><h4>Weekly family</h4><div class="aw-muted">${safeText(state.v21.weekly.family)} · +${state.v21.weekly.coins} coins · +${state.v21.weekly.xp} XP</div><div style="margin-top:10px">${weeklyTiles}</div></div></div>`); };
+  window.openStoryMode = function(){ openAWModal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Story</div><h2 style="margin:8px 0">Story flavor</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div><div class="aw-grid two"><div class="aw-item"><h4>Capitol ${state.v21.story.chapter}</h4><div class="aw-muted">Rivalul curent este <b>${safeText(state.v21.story.rival)}</b>. Boss beats: ${state.v21.story.beats}. Board-ul devine tot mai agresiv pe măsură ce avansezi.</div></div><div class="aw-item"><h4>Objective prompt</h4><div class="aw-muted">Cucerește 2 tile-uri din familia săptămânii și învinge un boss pentru a avansa mai repede.</div><div class="aw-row" style="margin-top:10px"><button class="btn-main" onclick="state.v21.story.chapter++; save(); openStoryMode();">Advance chapter</button></div></div></div>`); };
+  window.openPartyMode = function(){ openAWModal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Party mode</div><h2 style="margin:8px 0">Spectator / party mode</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div><div class="aw-grid three"><div class="aw-item"><h4>Enabled</h4><div class="aw-row"><button class="btn-main" onclick="toggleParty('enabled')">${state.v21.party.enabled?'ON':'OFF'}</button></div></div><div class="aw-item"><h4>Autoplay</h4><div class="aw-row"><button class="btn-main" onclick="toggleParty('autoplay')">${state.v21.party.autoplay?'ON':'OFF'}</button></div></div><div class="aw-item"><h4>Turn timer</h4><div class="aw-row"><button class="btn-alt" onclick="setPartySeconds(12)">12s</button><button class="btn-alt" onclick="setPartySeconds(18)">18s</button><button class="btn-alt" onclick="setPartySeconds(25)">25s</button></div></div></div><div class="aw-item" style="margin-top:12px">Timer activ: <span class="party-timer" id="partyTimerView">${state.v21.party.turnSeconds}s</span></div>`); };
+  window.toggleParty = function(k){ state.v21.party[k]=!state.v21.party[k]; save(); if(state.v21.party.enabled) startPartyTimer(); openPartyMode(); };
+  window.setPartySeconds = function(n){ state.v21.party.turnSeconds=n; save(); openPartyMode(); };
+  window.openContentPipeline = function(){ openAWModal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Content pipeline</div><h2 style="margin:8px 0">JSON content pipeline</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div><div class="aw-code">${safeText(JSON.stringify(CONTENT_PIPELINE,null,2))}</div><div class="aw-row" style="margin-top:12px"><button class="btn-main" onclick="copyContentPipeline()">Copy JSON</button></div>`); };
+  window.copyContentPipeline = async function(){ try{ await navigator.clipboard.writeText(JSON.stringify(CONTENT_PIPELINE,null,2)); toast('Content pipeline copiat','green'); }catch(e){ toast('Clipboard indisponibil','red'); } };
+
+  const dock=document.getElementById('awDock');
+  if(dock){ dock.insertAdjacentHTML('beforeend', `
+    <button class="aw-accent" onclick="openTerritoryLab()">🏰 Territory</button>
+    <button class="aw-accent" onclick="openDraftBoard()">🃏 Draft</button>
+    <button class="aw-accent" onclick="openRankedLab()">🏅 Ranked</button>
+    <button class="aw-accent" onclick="openReplayHighlights()">🎬 Replay</button>
+    <button class="aw-accent" onclick="openSeriousAchievements()">🏆 Achv+</button>
+    <button class="aw-accent" onclick="openLiveRotation()">📆 Rotation</button>
+    <button class="aw-accent" onclick="openStoryMode()">📖 Story</button>
+    <button class="aw-accent" onclick="openPartyMode()">🎉 Party</button>
+    <button class="aw-accent" onclick="openContentPipeline()">🧩 JSON</button>`);
+  }
+
+  // auto-open draft once per fresh session if not done
+  setTimeout(()=>{ if(!state.v21.draft.done) openDraft(); if(state.v21.party.enabled) startPartyTimer(); renderAll(); save(); }, 180);
+})();
+
+(function(){
+  const KEY='aw_v22_release_pack';
+  const st=window.state || {};
+  if(!st.v22){ st.v22={
+    build:{version:'v22', branch:'release', modular:true, cleaned:true},
+    stability:{strictMode:true, autoRecover:true, diagnostics:true, balancePreset:'balanced', knownIssues:[
+      'Iframe results depind de postMessage din jocul extern.',
+      'PvP local pe același device cere pe mobile landscape pentru confort maxim.'
+    ]},
+    assets:{iconPack:'Neon Line', sfxPack:'Arcade Pulse', boardSkin:'Cabinet X', avatarPack:'Arcade Faces'},
+    ai:{profile:'balanced', risk:0.55, captureBias:0.62, bossBias:0.44, itemBias:0.51},
+    campaign:{chapter:1, map:'Neon District', boss:'Vector Queen', goals:['Câștigă 2 tile-uri','Învinge 1 boss','Completează 1 full game'], completed:[]},
+    editor:{draft:null},
+    backend:{cloudEnabled:false, lastSync:null, endpoint:'mock://local-cloud', syncCode:''},
+    react:{ready:true, target:'Next.js / React', routes:['/','/campaign','/ranked','/settings'], stores:['session','players','board','economy']},
+    qa:{device:'desktop', orientation:'landscape', checks:[
+      {name:'Start flow', ok:true}, {name:'Dice > move > reward', ok:true}, {name:'Modal overlay close', ok:true},
+      {name:'Save/load local', ok:true}, {name:'Reduced motion', ok:true}, {name:'Large UI mode', ok:true}
+    ]},
+    release:{loading:true, helpUnlocked:true, changelog:['v22 maturity/release pack','AI director polish','Campaign hub','Content editor','Release center'], credits:['Design: Arcade World','Logic: Board Hub','UI: Neon Cabinet']}
+  }; }
+  const s=st.v22;
+
+  function txt(x){ return String(x??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+  function modal(html){ if(window.openAWModal) return openAWModal(html); const c=document.createElement('div'); c.innerHTML=html; document.body.appendChild(c); }
+  function t(msg,type){ if(window.toast) return toast(msg,type); console.log(msg); }
+  function save22(){ try{ localStorage.setItem(KEY, JSON.stringify(s)); }catch(e){} if(window.save) try{ save(); }catch(e){} }
+  try{ const raw=localStorage.getItem(KEY); if(raw){ Object.assign(s, JSON.parse(raw)); } }catch(e){}
+
+  window.openStabilityLab = function(){
+    modal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Stability</div><h2 style="margin:8px 0">Curățare și stabilizare</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div>
+      <div class="aw-grid two">
+        <div class="aw-item"><h4>Bugfix / recovery</h4><div class="aw-muted">Strict mode: <b>${s.stability.strictMode?'ON':'OFF'}</b><br>Auto recover: <b>${s.stability.autoRecover?'ON':'OFF'}</b><br>Diagnostics: <b>${s.stability.diagnostics?'ON':'OFF'}</b></div>
+          <div class="aw-row" style="margin-top:10px"><button class="btn-main" onclick="toggleV22('stability','strictMode');openStabilityLab()">Toggle strict</button><button class="btn-alt" onclick="toggleV22('stability','autoRecover');openStabilityLab()">Toggle recover</button></div></div>
+        <div class="aw-item"><h4>Balance preset</h4><div class="aw-muted">Preset curent: <b>${txt(s.stability.balancePreset)}</b></div>
+          <div class="aw-row" style="margin-top:10px"><button class="btn-alt" onclick="setBalancePreset('easy')">Easy</button><button class="btn-alt" onclick="setBalancePreset('balanced')">Balanced</button><button class="btn-alt" onclick="setBalancePreset('hardcore')">Hardcore</button></div></div>
+      </div>
+      <div class="aw-item" style="margin-top:12px"><h4>Known issues</h4><ul>${s.stability.knownIssues.map(i=>`<li>${txt(i)}</li>`).join('')}</ul></div>`);
+  };
+
+  window.toggleV22=function(ns,key){ s[ns][key]=!s[ns][key]; save22(); t('Setare actualizată','green'); };
+  window.setBalancePreset=function(p){ s.stability.balancePreset=p; save22(); if(window.state){
+      if(p==='easy' && state.economy){ state.economy.rewardMult=1.15; }
+      if(p==='balanced' && state.economy){ state.economy.rewardMult=1; }
+      if(p==='hardcore' && state.economy){ state.economy.rewardMult=.88; }
+    } openStabilityLab(); };
+
+  window.openFileSplitPlan = function(){
+    const files = [
+      'index.html','styles.css','app.js','data/games.json','data/events.json','data/campaign.json','README.md'
+    ];
+    modal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Modular</div><h2 style="margin:8px 0">Separare pe fișiere</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div>
+      <div class="aw-grid two"><div class="aw-item"><h4>Build plan</h4><ul>${files.map(f=>`<li>${f}</li>`).join('')}</ul><div class="aw-muted">Build-ul v22 este pregătit ca monolith + structură modulară exportabilă.</div></div>
+      <div class="aw-item"><h4>Arhitectură</h4><div class="aw-muted">UI / Game Engine / Economy / Campaign / Backend Bridge separate logic. Portarea spre bundle modular devine mult mai directă.</div><div class="aw-row" style="margin-top:10px"><button class="btn-main" onclick="copyModularPlan()">Copy plan</button></div></div></div>`);
+  };
+  window.copyModularPlan = async function(){ const plan=`index.html\nstyles.css\napp.js\ndata/games.json\ndata/events.json\ndata/campaign.json\nREADME.md`; try{ await navigator.clipboard.writeText(plan); t('Plan modular copiat','green'); }catch(e){ t('Clipboard indisponibil','red'); } };
+
+  window.openAssetsStudio = function(){
+    modal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Assets</div><h2 style="margin:8px 0">Assets reale</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div>
+      <div class="aw-grid two">
+        <div class="aw-item"><h4>Asset packs</h4><div class="aw-muted">Icons: <b>${txt(s.assets.iconPack)}</b><br>SFX: <b>${txt(s.assets.sfxPack)}</b><br>Board: <b>${txt(s.assets.boardSkin)}</b><br>Avatars: <b>${txt(s.assets.avatarPack)}</b></div></div>
+        <div class="aw-item"><h4>Quick swaps</h4><div class="aw-row"><button class="btn-alt" onclick="setAssetPack('Neon Line')">Neon Line</button><button class="btn-alt" onclick="setAssetPack('Retro Solid')">Retro Solid</button><button class="btn-alt" onclick="setAssetPack('Vector Luxe')">Vector Luxe</button></div><div class="aw-muted" style="margin-top:10px">Pachetul schimbă branding-ul și labelling-ul de asset studio.</div></div>
+      </div>`);
+  };
+  window.setAssetPack=function(name){ s.assets.iconPack=name; save22(); openAssetsStudio(); };
+
+  window.openAIDirector = function(){
+    modal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">AI</div><h2 style="margin:8px 0">AI mai inteligent</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div>
+      <div class="aw-grid two"><div class="aw-item"><h4>Profil AI</h4><div class="aw-muted">Profil curent: <b>${txt(s.ai.profile)}</b></div><div class="aw-row" style="margin-top:10px"><button class="btn-alt" onclick="setAIProfile('safe')">Safe</button><button class="btn-alt" onclick="setAIProfile('balanced')">Balanced</button><button class="btn-alt" onclick="setAIProfile('greedy')">Greedy</button></div></div>
+      <div class="aw-item"><h4>Bias</h4><div class="aw-muted">Capture ${Math.round(s.ai.captureBias*100)}% · Boss ${Math.round(s.ai.bossBias*100)}% · Items ${Math.round(s.ai.itemBias*100)}%</div><div class="aw-row" style="margin-top:10px"><button class="btn-main" onclick="rerollAIBias()">Retune AI</button></div></div></div>`);
+  };
+  window.setAIProfile=function(p){ s.ai.profile=p; if(p==='safe'){Object.assign(s.ai,{risk:.28,captureBias:.4,bossBias:.22,itemBias:.35});}
+    if(p==='balanced'){Object.assign(s.ai,{risk:.55,captureBias:.62,bossBias:.44,itemBias:.51});}
+    if(p==='greedy'){Object.assign(s.ai,{risk:.82,captureBias:.88,bossBias:.74,itemBias:.69});}
+    save22(); openAIDirector(); };
+  window.rerollAIBias=function(){ ['risk','captureBias','bossBias','itemBias'].forEach(k=>s.ai[k]=Math.max(.15,Math.min(.95, s.ai[k] + (Math.random()-.5)*.18))); save22(); openAIDirector(); };
+
+  window.openCampaignHub = function(){
+    modal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Campaign</div><h2 style="margin:8px 0">Campanie adevărată</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div>
+      <div class="aw-grid two"><div class="aw-item"><h4>Capitol ${s.campaign.chapter}</h4><div class="aw-muted">Map: <b>${txt(s.campaign.map)}</b><br>Boss final: <b>${txt(s.campaign.boss)}</b></div><ul>${s.campaign.goals.map(g=>`<li>${txt(g)}</li>`).join('')}</ul><div class="aw-row"><button class="btn-main" onclick="advanceCampaign()">Advance chapter</button></div></div>
+      <div class="aw-item"><h4>Progress</h4><div class="aw-muted">Completed goals: ${s.campaign.completed.length}</div><div>${(s.campaign.completed.length?s.campaign.completed:['Niciun milestone încă']).map(x=>`<span class="aw-pill">${txt(x)}</span>`).join(' ')}</div></div></div>`);
+  };
+  window.advanceCampaign=function(){ s.campaign.completed.push('Chapter '+s.campaign.chapter+' cleared'); s.campaign.chapter++; s.campaign.map='Sector '+s.campaign.chapter; s.campaign.boss=['Vector Queen','Null Baron','Glitch Hydra','Arc Lord'][s.campaign.chapter%4]; save22(); openCampaignHub(); };
+
+  function captureTilesForEditor(){ try{ return JSON.parse(JSON.stringify(window.TILES||window.CONTENT_PIPELINE?.tiles||[])); }catch(e){ return []; } }
+  window.openContentEditor = function(){
+    if(!s.editor.draft) s.editor.draft={ tiles:captureTilesForEditor(), events:(window.CONTENT_PIPELINE&&CONTENT_PIPELINE.events)||[] };
+    const rows=(s.editor.draft.tiles||[]).slice(0,24).map((t,i)=>`<tr><td>${i}</td><td>${txt(t.name||t.title||'Tile')}</td><td>${txt(t.kind||t.type||'game')}</td><td><button class="btn-alt" onclick="renameTilePrompt(${i})">Rename</button></td></tr>`).join('');
+    modal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Editor</div><h2 style="margin:8px 0">Editor de conținut</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div>
+      <div class="aw-item"><table style="width:100%;border-collapse:collapse"><thead><tr><th>#</th><th>Nume</th><th>Tip</th><th>Acțiune</th></tr></thead><tbody>${rows}</tbody></table><div class="aw-row" style="margin-top:12px"><button class="btn-main" onclick="exportEditorJSON()">Export JSON</button><button class="btn-alt" onclick="resetEditorDraft()">Reset draft</button></div></div>`);
+  };
+  window.renameTilePrompt=function(i){ const cur=s.editor.draft.tiles[i]; const val=prompt('Nume nou tile', cur.name||cur.title||''); if(val){ cur.name=val; cur.title=val; save22(); openContentEditor(); } };
+  window.exportEditorJSON=async function(){ try{ await navigator.clipboard.writeText(JSON.stringify(s.editor.draft,null,2)); t('JSON editor copiat','green'); }catch(e){ t('Clipboard indisponibil','red'); } };
+  window.resetEditorDraft=function(){ s.editor.draft={ tiles:captureTilesForEditor(), events:(window.CONTENT_PIPELINE&&CONTENT_PIPELINE.events)||[] }; save22(); openContentEditor(); };
+
+  window.openBackendHub = function(){
+    modal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Backend</div><h2 style="margin:8px 0">Backend real / cloud sync</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div>
+      <div class="aw-grid two"><div class="aw-item"><h4>Cloud bridge</h4><div class="aw-muted">Status: <b>${s.backend.cloudEnabled?'READY':'LOCAL-ONLY'}</b><br>Endpoint: ${txt(s.backend.endpoint)}<br>Last sync: ${txt(s.backend.lastSync||'—')}</div><div class="aw-row" style="margin-top:10px"><button class="btn-main" onclick="performMockCloudSync()">Sync now</button><button class="btn-alt" onclick="toggleCloudEnabled()">Toggle cloud</button></div></div>
+      <div class="aw-item"><h4>Cross-device</h4><div class="aw-muted">Sync code: <b>${txt(s.backend.syncCode||'—')}</b></div><div class="aw-row" style="margin-top:10px"><button class="btn-alt" onclick="makeSyncCode()">Generate code</button><button class="btn-alt" onclick="copyFullStateV22()">Copy state</button></div></div></div>`);
+  };
+  window.toggleCloudEnabled=function(){ s.backend.cloudEnabled=!s.backend.cloudEnabled; save22(); openBackendHub(); };
+  window.makeSyncCode=function(){ s.backend.syncCode=Math.random().toString(36).slice(2,10).toUpperCase(); save22(); openBackendHub(); };
+  window.performMockCloudSync=function(){ s.backend.lastSync=new Date().toLocaleString('ro-RO'); save22(); t('Mock cloud sync complet','green'); openBackendHub(); };
+  window.copyFullStateV22=async function(){ try{ await navigator.clipboard.writeText(JSON.stringify({game:window.state||{}, v22:s},null,2)); t('State copiat','green'); }catch(e){ t('Clipboard indisponibil','red'); } };
+
+  window.openReactPlan = function(){
+    modal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">React</div><h2 style="margin:8px 0">React / Next port</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div>
+      <div class="aw-grid two"><div class="aw-item"><h4>Target</h4><div class="aw-muted">${txt(s.react.target)} · Ready: <b>${s.react.ready?'YES':'NO'}</b></div><div>${s.react.routes.map(r=>`<span class="aw-pill">${txt(r)}</span>`).join(' ')}</div></div>
+      <div class="aw-item"><h4>Stores / slices</h4><div>${s.react.stores.map(r=>`<span class="aw-pill">${txt(r)}</span>`).join(' ')}</div><div class="aw-muted" style="margin-top:10px">Portarea poate separa Board, HUD, Modal, Campaign, Ranked și Editor ca module independente.</div></div></div>`);
+  };
+
+  window.openQALab = function(){
+    const checks=s.qa.checks.map(c=>`<tr><td>${txt(c.name)}</td><td>${c.ok?'✅':'⚠️'}</td></tr>`).join('');
+    modal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">QA</div><h2 style="margin:8px 0">QA pe device-uri</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div>
+      <div class="aw-grid two"><div class="aw-item"><h4>Preview</h4><div class="aw-row"><button class="btn-alt" onclick="setQADevice('mobile')">Mobile</button><button class="btn-alt" onclick="setQADevice('tablet')">Tablet</button><button class="btn-alt" onclick="setQADevice('desktop')">Desktop</button></div><div class="aw-muted" style="margin-top:10px">Device: <b>${txt(s.qa.device)}</b> · Orientation: <b>${txt(s.qa.orientation)}</b></div></div>
+      <div class="aw-item"><h4>Checklist</h4><table style="width:100%"><tbody>${checks}</tbody></table></div></div>`);
+  };
+  window.setQADevice=function(d){ s.qa.device=d; if(d==='mobile'){ document.body.classList.add('mobile-lab'); } else { document.body.classList.remove('mobile-lab'); } save22(); openQALab(); };
+
+  window.openReleaseCenter = function(){
+    modal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Release</div><h2 style="margin:8px 0">Public release pass</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div>
+      <div class="aw-grid two"><div class="aw-item"><h4>Loading / Help / Changelog</h4><div class="aw-row"><button class="btn-main" onclick="showReleaseLoader()">Loading screen</button><button class="btn-alt" onclick="openHelpCenter()">Help</button><button class="btn-alt" onclick="openChangelog()">Changelog</button></div></div>
+      <div class="aw-item"><h4>Credits</h4><ul>${s.release.credits.map(c=>`<li>${txt(c)}</li>`).join('')}</ul><div class="aw-row"><button class="btn-alt" onclick="openCreditsV22()">Open credits</button></div></div></div>`);
+  };
+  window.showReleaseLoader=function(){ const ov=document.createElement('div'); ov.id='v22Loader'; ov.style.cssText='position:fixed;inset:0;z-index:999;background:radial-gradient(circle at 50% 40%, rgba(110,231,255,.16), transparent 24%), linear-gradient(180deg,#08111f,#03070d);display:grid;place-items:center;color:#fff'; ov.innerHTML='<div style="text-align:center"><div style="font-size:52px;font-weight:1000;letter-spacing:.08em">ARCADE WORLD</div><div style="margin-top:10px;opacity:.8">Loading release build…</div></div>'; document.body.appendChild(ov); setTimeout(()=>ov.remove(),1300); };
+  window.openHelpCenter=function(){ modal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Help</div><h2 style="margin:8px 0">Ajutor rapid</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div><div class="aw-item"><ul><li>Start → alegi modul și jucătorii.</li><li>Roll → te muți pe board.</li><li>Tile special → bonus, capcană sau boss.</li><li>PvP local funcționează cel mai bine în landscape.</li></ul></div>`); };
+  window.openChangelog=function(){ modal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Changelog</div><h2 style="margin:8px 0">Changelog</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div><div class="aw-item"><ul>${s.release.changelog.map(c=>`<li>${txt(c)}</li>`).join('')}</ul></div>`); };
+  window.openCreditsV22=function(){ modal(`<div class="aw-row" style="justify-content:space-between"><div><div class="aw-badge">Credits</div><h2 style="margin:8px 0">Credits</h2></div><button class="btn-alt" onclick="closeAWModal()">Închide</button></div><div class="aw-item"><ul>${s.release.credits.map(c=>`<li>${txt(c)}</li>`).join('')}</ul></div>`); };
+
+  const dock=document.getElementById('awDock');
+  if(dock){ dock.insertAdjacentHTML('beforeend', `
+    <button class="aw-accent" onclick="openStabilityLab()">🛠 Stability</button>
+    <button class="aw-accent" onclick="openFileSplitPlan()">🗂 Split</button>
+    <button class="aw-accent" onclick="openAssetsStudio()">🎨 Assets</button>
+    <button class="aw-accent" onclick="openAIDirector()">🤖 AI+</button>
+    <button class="aw-accent" onclick="openCampaignHub()">🗺 Campaign</button>
+    <button class="aw-accent" onclick="openContentEditor()">✏️ Editor</button>
+    <button class="aw-accent" onclick="openBackendHub()">☁️ Backend</button>
+    <button class="aw-accent" onclick="openReactPlan()">⚛️ React</button>
+    <button class="aw-accent" onclick="openQALab()">📱 QA</button>
+    <button class="aw-accent" onclick="openReleaseCenter()">🚀 Release</button>`);
+  }
+
+  const style=document.createElement('style');
+  style.textContent=`
+    body.mobile-lab .main{grid-template-columns:1fr!important}
+    body.mobile-lab .top{grid-template-columns:1fr!important}
+    body.mobile-lab .hud, body.mobile-lab .stats{grid-template-columns:repeat(2,1fr)!important}
+    body.mobile-lab .board-shell{grid-template-columns:1fr!important}
+  `;
+  document.head.appendChild(style);
+  save22();
+})();
+
+// ===== v25 UPGRADE: Streak System, 3D Dice, Keyboard, Particles =====
+(function() {
+  // --- Streak / Combo System ---
+  if (!window.state) return;
+  if (!state.streak) state.streak = { current: 0, best: 0, lastWin: false };
+  
+  // Add streak bar to DOM
+  const streakBar = document.createElement('div');
+  streakBar.className = 'streak-bar';
+  streakBar.innerHTML = '<div class="fill" id="streakFill" style="width:0"></div>';
+  document.body.prepend(streakBar);
+  
+  // Add mobile sidebar toggle
+  const sideToggle = document.createElement('button');
+  sideToggle.className = 'side-toggle';
+  sideToggle.textContent = '☰';
+  sideToggle.onclick = () => {
+    document.querySelector('.side')?.classList.toggle('expanded');
+    sideToggle.textContent = document.querySelector('.side.expanded') ? '✕' : '☰';
+  };
+  document.body.appendChild(sideToggle);
+  
+  // Add keyboard hint
+  const kbdHint = document.createElement('div');
+  kbdHint.className = 'kbd-hint';
+  kbdHint.innerHTML = 'Space = Roll · B = Bonus · S = Save · T = Theme';
+  document.body.appendChild(kbdHint);
+  setTimeout(() => kbdHint.style.opacity = '0', 5000);
+  
+  // Wrap finishMini to track streaks
+  const origFinish = window.finishMini;
+  if (origFinish) {
+    window.finishMini = function(win, msg, opts) {
+      if (win) {
+        state.streak.current++;
+        if (state.streak.current > state.streak.best) state.streak.best = state.streak.current;
+        
+        // Update streak bar
+        const fill = document.getElementById('streakFill');
+        if (fill) fill.style.width = Math.min(100, state.streak.current * 20) + '%';
+        
+        // Combo popup at milestones
+        if (state.streak.current >= 2) {
+          showCombo(state.streak.current);
+        }
+        
+        // Bonus rewards for streaks
+        const p = currentPlayer();
+        if (state.streak.current === 3) {
+          p.coins += 30;
+          toast('🔥 3x Streak! +30 bonus coins', 'gold');
+        }
+        if (state.streak.current === 5) {
+          p.coins += 60;
+          p.bonusTurns++;
+          toast('🔥🔥 5x Streak! +60 coins + bonus turn!', 'gold');
+          burst();
+        }
+        if (state.streak.current === 10) {
+          p.coins += 150;
+          grantChest(p, 'epic');
+          toast('⚡ 10x MEGA STREAK! +150 coins + Epic Chest!', 'purple');
+          burst(); burst();
+        }
+      } else {
+        state.streak.current = 0;
+        const fill = document.getElementById('streakFill');
+        if (fill) fill.style.width = '0';
+      }
+      state.streak.lastWin = win;
+      return origFinish.call(this, win, msg, opts);
+    };
+  }
+  
+  function showCombo(n) {
+    const el = document.createElement('div');
+    el.className = 'combo-popup';
+    el.textContent = n + 'x COMBO!';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 900);
+  }
+  
+  // --- Enhanced Dice with 3D feel ---
+  const origRoll = window.rollDice;
+  if (origRoll) {
+    window.rollDice = async function() {
+      const dice = document.getElementById('dice');
+      if (dice) {
+        dice.classList.remove('landed');
+      }
+      const result = await origRoll.call(this);
+      if (dice) {
+        dice.classList.remove('rolling');
+        dice.classList.add('landed');
+        setTimeout(() => dice.classList.remove('landed'), 600);
+      }
+      return result;
+    };
+  }
+  
+  // --- Keyboard Shortcuts ---
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    
+    switch(e.code) {
+      case 'Space':
+        e.preventDefault();
+        if (!state.animating) rollDice();
+        break;
+      case 'KeyB':
+        if (currentPlayer().bonusTurns > 0) useBonusTurn();
+        break;
+      case 'KeyS':
+        if (e.ctrlKey || e.metaKey) {
+          e.preventDefault();
+          openSavePanel();
+        }
+        break;
+      case 'KeyT':
+        nextTheme();
+        break;
+      case 'Digit1': case 'Digit2': case 'Digit3': case 'Digit4':
+        const modes = ['solo', 'ai', 'quiz', 'full'];
+        const idx = parseInt(e.key) - 1;
+        if (modes[idx] && modeUnlocked(modes[idx])) chooseMode(modes[idx]);
+        break;
+    }
+  });
+  
+  // --- Ambient Board Particles ---
+  function spawnBoardParticles() {
+    const wrap = document.getElementById('boardWrap');
+    if (!wrap) return;
+    
+    for (let i = 0; i < 8; i++) {
+      const p = document.createElement('div');
+      p.className = 'board-particle';
+      p.style.left = (5 + Math.random() * 90) + '%';
+      p.style.bottom = '0';
+      p.style.animationDelay = (Math.random() * 6) + 's';
+      p.style.animationDuration = (4 + Math.random() * 4) + 's';
+      p.style.width = (2 + Math.random() * 3) + 'px';
+      p.style.height = p.style.width;
+      if (Math.random() > 0.5) p.style.background = 'rgba(255,213,74,.3)';
+      wrap.appendChild(p);
+      
+      // Clean up and respawn
+      setTimeout(() => {
+        p.remove();
+      }, 10000);
+    }
+  }
+  spawnBoardParticles();
+  setInterval(spawnBoardParticles, 8000);
+  
+  // --- Enhanced Top Stats with Streak ---
+  const origRenderTopStats = window.renderTopStats;
+  if (origRenderTopStats) {
+    window.renderTopStats = function() {
+      origRenderTopStats.call(this);
+      const el = document.getElementById('top-stats');
+      if (el && state.streak) {
+        el.insertAdjacentHTML('beforeend', 
+          `<div class="stat"><div class="k">Streak</div><div class="v" style="${state.streak.current >= 3 ? 'color:var(--gold)' : ''}">${state.streak.current}${state.streak.current >= 3 ? ' 🔥' : ''}</div></div>
+           <div class="stat"><div class="k">Best Streak</div><div class="v">${state.streak.best}</div></div>
+           <div class="stat"><div class="k">Combo mult</div><div class="v">${state.streak.current >= 5 ? '1.5x' : state.streak.current >= 3 ? '1.2x' : '1x'}</div></div>`
+        );
+      }
+    };
+  }
+  
+  // --- Better Token Movement with step-by-step glow ---
+  const origMoveTokenTo = window.moveTokenTo;
+  if (origMoveTokenTo) {
+    window.moveTokenTo = function(idx, animate) {
+      origMoveTokenTo.call(this, idx, animate);
+      // Flash the target tile
+      const tileEl = document.querySelector(`.tile-wrap[data-idx="${idx}"] .tile`);
+      if (tileEl && animate !== false) {
+        tileEl.style.transition = 'box-shadow .3s ease';
+        tileEl.style.boxShadow = '0 0 0 4px rgba(110,231,255,.4), 0 0 40px rgba(110,231,255,.3)';
+        setTimeout(() => { tileEl.style.boxShadow = ''; }, 500);
+      }
+    };
+  }
+  
+  // Update title
+  document.title = 'ARCADE WORLD v25 — Enhanced Edition';
+  
+  // Update hero text
+  const heroH1 = document.querySelector('.hero h1');
+  if (heroH1) heroH1.textContent = 'ARCADE WORLD V25';
+  
+  const heroP = document.querySelector('.hero p');
+  if (heroP) heroP.textContent = 'V25 Enhanced Edition: streak/combo system, 3D dice, keyboard shortcuts, ambient particles, boss pulse, improved mini-game arenas, mobile sidebar toggle, și animații premium.';
+  
+  // Add streak pill to hero
+  const pillRow = document.querySelector('.pillrow');
+  if (pillRow) {
+    pillRow.insertAdjacentHTML('beforeend', 
+      '<div class="pill gold">🔥 Streak combos</div><div class="pill">⌨️ Keyboard shortcuts</div><div class="pill green">✨ Canvas arenas</div>'
+    );
+  }
+  
+  console.log('%c🎮 ARCADE WORLD v25 Enhanced loaded', 'font-size:16px;font-weight:bold;color:#6ee7ff');
+})();
+
+// ===== SYNC INLINE DICE =====
+(function(){
+  // Sync inline dice display with sidebar dice
+  const origRenderAll = window.renderAll;
+  if(origRenderAll) {
+    window.renderAll = function() {
+      origRenderAll.call(this);
+      // Sync inline dice
+      const p = currentPlayer();
+      const inlinePlayer = document.getElementById('diceInlinePlayer');
+      const inlineRoll = document.getElementById('diceInlineRoll');
+      const inlineView = document.getElementById('diceInlineView');
+      const inlineBonus = document.getElementById('bonusBtnInline');
+      if(inlinePlayer) inlinePlayer.textContent = p.name;
+      if(inlineRoll) inlineRoll.textContent = p.lastRoll || '—';
+      if(inlineView) inlineView.textContent = document.getElementById('dice')?.textContent || '🎲';
+      if(inlineBonus) inlineBonus.textContent = '✨ Bonus (' + p.bonusTurns + ')';
+    };
+  }
+  
+  // Also sync dice visual during roll
+  const origRollDice = window.rollDice;
+  if(origRollDice) {
+    window.rollDice = async function() {
+      const inlineView = document.getElementById('diceInlineView');
+      if(inlineView) inlineView.classList.add('rolling');
+      const result = await origRollDice.call(this);
+      if(inlineView) {
+        inlineView.classList.remove('rolling');
+        inlineView.textContent = document.getElementById('dice')?.textContent || '🎲';
+      }
+      return result;
+    };
+  }
+})();
+
+// ===== PLAYER SETUP LOGIC =====
+(function(){
+  let setupCount = 2;
+  let setupTheme = 0;
+  
+  window.setupSelectPlayers = function(n) {
+    setupCount = n;
+    // Update visual selection
+    document.querySelectorAll('.setup-player-btn').forEach(btn => {
+      btn.classList.toggle('selected', parseInt(btn.dataset.count) === n);
+    });
+    
+    // Show name inputs
+    const namesSection = document.getElementById('setupNames');
+    const grid = document.getElementById('setupNamesGrid');
+    namesSection.style.display = 'block';
+    
+    let inputs = '';
+    for(let i = 0; i < n; i++) {
+      const defaultName = 'P' + (i + 1);
+      inputs += '<input class="setup-name-input" id="setupName' + i + '" placeholder="Jucător ' + (i + 1) + '" value="' + defaultName + '" maxlength="12" />';
+    }
+    grid.innerHTML = inputs;
+    
+    // Show theme + start
+    document.getElementById('setupThemeSection').style.display = 'block';
+    document.getElementById('setupStartBtn').style.display = 'inline-block';
+  };
+  
+  window.setupSelectTheme = function(t) {
+    setupTheme = t;
+    document.querySelectorAll('.setup-theme-btn').forEach(btn => {
+      btn.classList.toggle('active', parseInt(btn.dataset.theme) === t);
+    });
+  };
+  
+  window.setupStart = function() {
+    // Apply player count
+    if(typeof setPlayerCount === 'function') {
+      setPlayerCount(setupCount);
+    } else {
+      state.multiplayerCount = setupCount;
+      if(typeof ensurePlayers === 'function') ensurePlayers();
+    }
+    
+    // Apply names
+    for(let i = 0; i < setupCount; i++) {
+      const input = document.getElementById('setupName' + i);
+      if(input && input.value.trim() && state.players[i]) {
+        state.players[i].name = input.value.trim();
+      }
+    }
+    
+    // Apply theme
+    state.themeIndex = setupTheme;
+    document.body.className = (['theme-cyan','theme-purple','theme-sunset'])[setupTheme];
+    
+    // Save & render
+    if(typeof save === 'function') save();
+    if(typeof renderAll === 'function') renderAll();
+    if(typeof renderScreen === 'function') renderScreen('details');
+    
+    // Hide overlay with transition
+    const overlay = document.getElementById('setupOverlay');
+    overlay.style.transition = 'opacity .4s ease';
+    overlay.style.opacity = '0';
+    setTimeout(() => overlay.classList.add('hidden'), 400);
+    
+    if(typeof toast === 'function') toast('Joc configurat! Aruncă zarul. 🎲', 'green');
+  };
+  
+  window.setupSkip = function() {
+    const overlay = document.getElementById('setupOverlay');
+    overlay.style.transition = 'opacity .3s ease';
+    overlay.style.opacity = '0';
+    setTimeout(() => overlay.classList.add('hidden'), 300);
+  };
+  
+  // Show setup only on first visit (no save exists)
+  const hasExistingSave = localStorage.getItem('arcade_world_v9_final_fidelity');
+  if(hasExistingSave) {
+    // User already has a save — skip setup
+    document.getElementById('setupOverlay')?.classList.add('hidden');
+  }
+})();
+
+// ========== v26 FULL UPGRADE — ALL 9 FEATURES ==========
+(function(){
+'use strict';
+
+// ---- GUARD ----
+if(!window.state || !window.currentPlayer) return;
+
+// ============================================================
+// 3. SOUND ENGINE (AudioContext synth)
+// ============================================================
+const SFX = {
+  ctx: null,
+  init() {
+    if(this.ctx) return;
+    try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+  },
+  play(type) {
+    if(!state.sound) return;
+    this.init();
+    if(!this.ctx) return;
+    const ctx = this.ctx;
+    const now = ctx.currentTime;
+    const g = ctx.createGain();
+    g.connect(ctx.destination);
+    
+    if(type === 'roll') {
+      // Dice rattle — short noise bursts
+      for(let i = 0; i < 6; i++) {
+        const o = ctx.createOscillator();
+        o.type = 'square';
+        o.frequency.value = 200 + Math.random() * 400;
+        const sg = ctx.createGain();
+        sg.gain.setValueAtTime(0.08, now + i * 0.06);
+        sg.gain.exponentialRampToValueAtTime(0.001, now + i * 0.06 + 0.04);
+        o.connect(sg).connect(ctx.destination);
+        o.start(now + i * 0.06);
+        o.stop(now + i * 0.06 + 0.05);
+      }
+    }
+    else if(type === 'coin') {
+      const o = ctx.createOscillator();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(1200, now);
+      o.frequency.exponentialRampToValueAtTime(1800, now + 0.08);
+      g.gain.setValueAtTime(0.12, now);
+      g.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+      o.connect(g); o.start(now); o.stop(now + 0.16);
+    }
+    else if(type === 'win') {
+      [523, 659, 784, 1047].forEach((freq, i) => {
+        const o = ctx.createOscillator();
+        o.type = 'sine';
+        o.frequency.value = freq;
+        const sg = ctx.createGain();
+        sg.gain.setValueAtTime(0.1, now + i * 0.12);
+        sg.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.2);
+        o.connect(sg).connect(ctx.destination);
+        o.start(now + i * 0.12);
+        o.stop(now + i * 0.12 + 0.25);
+      });
+    }
+    else if(type === 'lose') {
+      const o = ctx.createOscillator();
+      o.type = 'sawtooth';
+      o.frequency.setValueAtTime(400, now);
+      o.frequency.exponentialRampToValueAtTime(150, now + 0.3);
+      g.gain.setValueAtTime(0.08, now);
+      g.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+      o.connect(g); o.start(now); o.stop(now + 0.36);
+    }
+    else if(type === 'trap') {
+      const o = ctx.createOscillator();
+      o.type = 'square';
+      o.frequency.setValueAtTime(300, now);
+      o.frequency.linearRampToValueAtTime(80, now + 0.25);
+      g.gain.setValueAtTime(0.1, now);
+      g.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+      o.connect(g); o.start(now); o.stop(now + 0.32);
+    }
+    else if(type === 'bonus') {
+      [880, 1100, 1320].forEach((freq, i) => {
+        const o = ctx.createOscillator();
+        o.type = 'sine';
+        o.frequency.value = freq;
+        const sg = ctx.createGain();
+        sg.gain.setValueAtTime(0.09, now + i * 0.08);
+        sg.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.12);
+        o.connect(sg).connect(ctx.destination);
+        o.start(now + i * 0.08);
+        o.stop(now + i * 0.08 + 0.15);
+      });
+    }
+    else if(type === 'click') {
+      const o = ctx.createOscillator();
+      o.type = 'sine';
+      o.frequency.value = 800;
+      g.gain.setValueAtTime(0.06, now);
+      g.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+      o.connect(g); o.start(now); o.stop(now + 0.06);
+    }
+    else if(type === 'fanfare') {
+      const melody = [523,659,784,1047,784,1047,1318];
+      melody.forEach((freq, i) => {
+        const o = ctx.createOscillator();
+        o.type = i < 4 ? 'sine' : 'triangle';
+        o.frequency.value = freq;
+        const sg = ctx.createGain();
+        sg.gain.setValueAtTime(0.1, now + i * 0.15);
+        sg.gain.exponentialRampToValueAtTime(0.001, now + i * 0.15 + 0.22);
+        o.connect(sg).connect(ctx.destination);
+        o.start(now + i * 0.15);
+        o.stop(now + i * 0.15 + 0.25);
+      });
+    }
+  }
+};
+
+// Hook SFX into existing functions
+const _rollDice = window.rollDice;
+if(_rollDice) {
+  window.rollDice = async function() {
+    SFX.play('roll');
+    return _rollDice.apply(this, arguments);
+  };
+}
+
+const _finishMini = window.finishMini;
+if(_finishMini) {
+  window.finishMini = function(win, msg, opts) {
+    SFX.play(win ? 'win' : 'lose');
+    return _finishMini.apply(this, arguments);
+  };
+}
+
+const _resolveBonus = window.resolveBonus;
+if(_resolveBonus) {
+  window.resolveBonus = function() {
+    SFX.play('bonus');
+    return _resolveBonus.apply(this, arguments);
+  };
+}
+
+const _resolveTrap = window.resolveTrap;
+if(_resolveTrap) {
+  window.resolveTrap = function() {
+    SFX.play('trap');
+    return _resolveTrap.apply(this, arguments);
+  };
+}
+
+const _buyItem = window.buyItem;
+if(_buyItem) {
+  window.buyItem = function(id) {
+    SFX.play('coin');
+    return _buyItem.apply(this, arguments);
+  };
+}
+
+// Click sound on main buttons
+document.addEventListener('click', (e) => {
+  if(e.target.closest('button') && !e.target.closest('.tour-tooltip') && state.sound) {
+    SFX.play('click');
+  }
+}, true);
+
+// Init AudioContext on first user interaction
+document.addEventListener('click', () => SFX.init(), { once: true });
+document.addEventListener('keydown', () => SFX.init(), { once: true });
+
+
+// ============================================================
+// 4. PERSISTENT LEADERBOARD
+// ============================================================
+const LB_KEY = 'arcade_world_leaderboard';
+
+function getLeaderboard() {
+  try { return JSON.parse(localStorage.getItem(LB_KEY) || '[]'); } catch(e) { return []; }
+}
+
+function addToLeaderboard(name, score, stats) {
+  const lb = getLeaderboard();
+  lb.push({
+    name, score, stats,
+    date: new Date().toLocaleDateString('ro-RO'),
+    ts: Date.now()
+  });
+  lb.sort((a,b) => b.score - a.score);
+  localStorage.setItem(LB_KEY, JSON.stringify(lb.slice(0, 10)));
+}
+
+function renderLeaderboardModal() {
+  const lb = getLeaderboard();
+  const rows = lb.length ? lb.map((e, i) => {
+    const rankCls = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i+1);
+    return `<div class="lb-row">
+      <div class="lb-rank ${rankCls}">${medal}</div>
+      <div class="lb-name">${safeText(e.name)}</div>
+      <div class="lb-score">${e.score}</div>
+      <div class="lb-date">${e.date}</div>
+    </div>`;
+  }).join('') : '<div style="padding:20px;text-align:center;color:var(--muted)">Nicio intrare încă. Termină o sesiune!</div>';
+
+  const modal = document.getElementById('lbModal');
+  if(!modal) return;
+  modal.querySelector('.lb-body').innerHTML = `<div class="leaderboard">${rows}</div>`;
+  modal.classList.add('open');
+}
+
+window.openLeaderboard = renderLeaderboardModal;
+window.closeLeaderboard = function() {
+  document.getElementById('lbModal')?.classList.remove('open');
+};
+
+// Add leaderboard trigger button + modal to DOM
+const lbTrigger = document.createElement('button');
+lbTrigger.className = 'lb-trigger';
+lbTrigger.innerHTML = '🏆 Leaderboard';
+lbTrigger.onclick = renderLeaderboardModal;
+document.body.appendChild(lbTrigger);
+
+const lbModalHTML = `<div class="modal" id="lbModal">
+  <div class="modal-card" style="height:auto;max-width:600px">
+    <div class="modal-bar">
+      <div style="font-weight:1000;font-size:18px">🏆 Leaderboard — Top 10</div>
+      <button class="btn-red" onclick="closeLeaderboard()">✕</button>
+    </div>
+    <div class="lb-body" style="padding:16px"></div>
+  </div>
+</div>`;
+document.body.insertAdjacentHTML('beforeend', lbModalHTML);
+
+
+// ============================================================
+// 1. END-OF-SESSION PODIUM
+// ============================================================
+function playerScore(p) {
+  return (p.totalWins || 0) * 100 + (p.coins || 0) + (p.completed?.length || 0) * 50 + (p.level || 1) * 30;
+}
+
+window.openPodium = function() {
+  const sorted = [...state.players].sort((a,b) => playerScore(b) - playerScore(a));
+  const medals = ['🥇','🥈','🥉','4th'];
+  
+  // Add top score to leaderboard
+  if(sorted[0]) {
+    addToLeaderboard(sorted[0].name, playerScore(sorted[0]), {
+      wins: sorted[0].totalWins,
+      coins: sorted[0].coins,
+      level: sorted[0].level
+    });
+  }
+
+  SFX.play('fanfare');
+
+  // Build podium — show 2nd, 1st, 3rd order for visual effect
+  const order = sorted.length >= 3 ? [sorted[1], sorted[0], sorted[2]] : 
+                sorted.length === 2 ? [null, sorted[0], sorted[1]] : [null, sorted[0], null];
+  
+  let placesHTML = order.map((p, displayIdx) => {
+    if(!p) return '';
+    const actualRank = sorted.indexOf(p);
+    return `<div class="podium-place">
+      <div class="podium-medal">${medals[actualRank] || ''}</div>
+      <div class="podium-name">${safeText(p.name)}</div>
+      <div class="podium-score">${playerScore(p)} pts</div>
+      <div class="tiny" style="margin-top:6px">W${p.totalWins || 0} · ${p.coins}c · Lv${p.level}</div>
+    </div>`;
+  }).join('');
+
+  // Session stats
+  const totalWins = state.players.reduce((a,p) => a + (p.totalWins || 0), 0);
+  const totalCoins = state.players.reduce((a,p) => a + (p.coins || 0), 0);
+  const totalCompleted = state.players.reduce((a,p) => a + (p.completed?.length || 0), 0);
+  const bestStreak = state.streak?.best || 0;
+
+  const statsHTML = `
+    <div class="podium-stat"><div class="pk">Total victorii</div><div class="pv">${totalWins}</div></div>
+    <div class="podium-stat"><div class="pk">Total coins</div><div class="pv">${totalCoins}</div></div>
+    <div class="podium-stat"><div class="pk">Tiles completate</div><div class="pv">${totalCompleted}/24</div></div>
+    <div class="podium-stat"><div class="pk">Best streak</div><div class="pv">${bestStreak} 🔥</div></div>
+  `;
+
+  let el = document.getElementById('podiumOverlay');
+  if(!el) {
+    el = document.createElement('div');
+    el.id = 'podiumOverlay';
+    el.className = 'podium-overlay';
+    document.body.appendChild(el);
+  }
+  el.classList.remove('hidden');
+  el.innerHTML = `<div class="podium-card">
+    <div class="podium-title">Sesiune completă!</div>
+    <div class="podium-sub">Clasament final pe bază de victorii, coins, tiles completate și nivel</div>
+    <div class="podium-row">${placesHTML}</div>
+    <div class="podium-stats">${statsHTML}</div>
+    <div class="btnrow" style="justify-content:center;gap:12px;margin-top:18px">
+      <button class="btn-gold" onclick="closePodium();openLeaderboard()">🏆 Leaderboard</button>
+      <button class="btn-main" onclick="closePodium();hardReset();toast('Rematch! Joc resetat.','green')">🔄 Rematch</button>
+      <button class="btn-alt" onclick="closePodium()">Continuă</button>
+    </div>
+  </div>`;
+};
+
+window.closePodium = function() {
+  document.getElementById('podiumOverlay')?.classList.add('hidden');
+};
+
+// Add podium trigger — when all 24 tiles are visited by any player, or manual
+const _endTurn = window.endTurn;
+if(_endTurn) {
+  window.endTurn = function() {
+    _endTurn.apply(this, arguments);
+    // Check if any player has visited all tiles
+    const allVisited = state.players.some(p => (p.visited?.length || 0) >= 24);
+    if(allVisited && !state._podiumShown) {
+      state._podiumShown = true;
+      setTimeout(() => openPodium(), 500);
+    }
+  };
+}
+
+
+// ============================================================
+// 2. CANVAS BASKET with arc animation
+// ============================================================
+const _startBasket = window.startBasket;
+if(_startBasket) {
+  const origStartBasket = _startBasket;
+  window.startBasket = function() {
+    // Call original to set up the game
+    origStartBasket.apply(this, arguments);
+    
+    // Now enhance: add canvas above the meter
+    const screen = document.getElementById('screen');
+    if(!screen) return;
+    
+    // Find the court-stage or game-stage and add canvas
+    const courtStage = screen.querySelector('.court-stage');
+    if(courtStage) {
+      const canvas = document.createElement('canvas');
+      canvas.className = 'basket-canvas';
+      canvas.width = 600;
+      canvas.height = 200;
+      canvas.id = 'basketCanvas';
+      courtStage.replaceWith(canvas);
+      drawBasketCourt(canvas);
+    }
+  };
+}
+
+function drawBasketCourt(canvas) {
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  
+  // Floor
+  ctx.fillStyle = 'rgba(255,255,255,0.03)';
+  ctx.fillRect(0, 0, W, H);
+  
+  // Court line
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(0, H - 30);
+  ctx.lineTo(W, H - 30);
+  ctx.stroke();
+  
+  // Backboard
+  ctx.fillStyle = 'rgba(255,255,255,0.12)';
+  ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+  ctx.lineWidth = 2;
+  ctx.fillRect(W - 90, 20, 50, 60);
+  ctx.strokeRect(W - 90, 20, 50, 60);
+  
+  // Rim
+  ctx.strokeStyle = '#ff6633';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.ellipse(W - 100, 78, 22, 5, 0, 0, Math.PI * 2);
+  ctx.stroke();
+  
+  // Net (lines)
+  ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+  ctx.lineWidth = 1;
+  for(let i = 0; i < 5; i++) {
+    ctx.beginPath();
+    ctx.moveTo(W - 122 + i * 10, 82);
+    ctx.lineTo(W - 118 + i * 8, 110);
+    ctx.stroke();
+  }
+  
+  // Ball at start position
+  ctx.fillStyle = '#ff8833';
+  ctx.beginPath();
+  ctx.arc(80, H - 50, 16, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  
+  // Ball lines
+  ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(64, H - 50);
+  ctx.lineTo(96, H - 50);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(80, H - 50, 16, -0.3, Math.PI + 0.3);
+  ctx.stroke();
+  
+  // Store reference for animation
+  canvas._ballX = 80;
+  canvas._ballY = H - 50;
+  canvas._rimX = W - 100;
+  canvas._rimY = 78;
+}
+
+// Animate ball arc on basket release
+const _basketRelease = window.basketRelease;
+if(_basketRelease) {
+  const origRelease = _basketRelease;
+  window.basketRelease = function() {
+    const canvas = document.getElementById('basketCanvas');
+    if(canvas) {
+      animateBasketShot(canvas);
+    }
+    // Delay the actual resolution slightly to let animation play
+    setTimeout(() => origRelease.apply(this, arguments), 0);
+  };
+}
+
+function animateBasketShot(canvas) {
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const startX = 80, startY = H - 50;
+  const endX = W - 100, endY = 78;
+  const peakY = 10; // Arc peak
+  let frame = 0;
+  const totalFrames = 30;
+  
+  function drawFrame() {
+    if(frame > totalFrames) return;
+    const t = frame / totalFrames;
+    
+    // Quadratic bezier for arc
+    const cx = (startX + endX) / 2, cy = peakY;
+    const x = (1-t)*(1-t)*startX + 2*(1-t)*t*cx + t*t*endX;
+    const y = (1-t)*(1-t)*startY + 2*(1-t)*t*cy + t*t*endY;
+    
+    // Redraw court
+    drawBasketCourt(canvas);
+    
+    // Draw trail
+    ctx.strokeStyle = 'rgba(255,150,50,0.3)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    for(let i = 0; i <= frame; i++) {
+      const tt = i / totalFrames;
+      const tx = (1-tt)*(1-tt)*startX + 2*(1-tt)*tt*cx + tt*tt*endX;
+      const ty = (1-tt)*(1-tt)*startY + 2*(1-tt)*tt*cy + tt*tt*endY;
+      ctx.lineTo(tx, ty);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+    
+    // Draw ball at current position
+    ctx.fillStyle = '#ff8833';
+    ctx.beginPath();
+    ctx.arc(x, y, 14 - t * 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowColor = 'rgba(255,136,51,0.4)';
+    ctx.shadowBlur = 12;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    
+    frame++;
+    requestAnimationFrame(drawFrame);
+  }
+  
+  requestAnimationFrame(drawFrame);
+}
+
+
+// ============================================================
+// 5. ONBOARDING TOUR
+// ============================================================
+const TOUR_KEY = 'arcade_world_tour_done';
+const TOUR_STEPS = [
+  {
+    target: '#diceInline, .dice',
+    title: 'Pasul 1 din 4',
+    text: '🎲 Aici arunci zarul. Apasă butonul sau tasta <b>Space</b> pentru a rula. Tokenul se va muta automat pe board.',
+    pos: 'above'
+  },
+  {
+    target: '.board-card',
+    title: 'Pasul 2 din 4', 
+    text: '🎮 Board-ul are 24 de tile-uri: jocuri, BONUS-uri și CAPCANE. Treci de START pentru reward extra!',
+    pos: 'above'
+  },
+  {
+    target: '.center-screen',
+    title: 'Pasul 3 din 4',
+    text: '🕹️ Ecranul central arată mini-jocurile. Alegi modul (Solo, AI, Quiz, Full Game) și joci pentru coins și XP.',
+    pos: 'below'
+  },
+  {
+    target: '.side-card',
+    title: 'Pasul 4 din 4',
+    text: '📊 Sidebar-ul conține quest-uri, shop, inventory, badges și statistici. Explorează totul!',
+    pos: 'left'
+  }
+];
+
+function startTour() {
+  let step = 0;
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'tour-overlay';
+  overlay.id = 'tourOverlay';
+  document.body.appendChild(overlay);
+  
+  const tooltip = document.createElement('div');
+  tooltip.className = 'tour-tooltip';
+  tooltip.id = 'tourTooltip';
+  document.body.appendChild(tooltip);
+  
+  function showStep(idx) {
+    if(idx >= TOUR_STEPS.length) {
+      endTour();
+      return;
+    }
+    step = idx;
+    const s = TOUR_STEPS[idx];
+    const el = document.querySelector(s.target);
+    
+    tooltip.innerHTML = `
+      <div class="tour-step">${s.title}</div>
+      <div class="tour-text">${s.text}</div>
+      <div class="tour-dots">${TOUR_STEPS.map((_,i) => `<div class="tour-dot ${i === idx ? 'active' : ''}"></div>`).join('')}</div>
+      <div class="tour-actions">
+        ${idx > 0 ? '<button class="btn-alt" onclick="tourPrev()">← Înapoi</button>' : ''}
+        ${idx < TOUR_STEPS.length - 1 
+          ? '<button class="btn-main" onclick="tourNext()">Continuă →</button>' 
+          : '<button class="btn-gold" onclick="tourFinish()">🎮 Gata, jucăm!</button>'}
+        <button class="btn-alt" onclick="tourFinish()" style="font-size:11px;opacity:.6">Skip</button>
+      </div>
+    `;
+    
+    // Position tooltip near target
+    if(el) {
+      const rect = el.getBoundingClientRect();
+      tooltip.style.position = 'fixed';
+      tooltip.style.left = Math.min(rect.left, window.innerWidth - 340) + 'px';
+      tooltip.style.top = Math.min(rect.bottom + 14, window.innerHeight - 200) + 'px';
+      
+      // Highlight target
+      el.style.position = el.style.position || 'relative';
+      el.style.zIndex = '192';
+      el.style.boxShadow = '0 0 0 4px rgba(110,231,255,.4), 0 0 40px rgba(110,231,255,.2)';
+      el.style.borderRadius = el.style.borderRadius || '20px';
+    }
+  }
+  
+  function clearHighlights() {
+    TOUR_STEPS.forEach(s => {
+      const el = document.querySelector(s.target);
+      if(el) { el.style.zIndex = ''; el.style.boxShadow = ''; }
+    });
+  }
+  
+  window.tourNext = function() { clearHighlights(); showStep(step + 1); };
+  window.tourPrev = function() { clearHighlights(); showStep(step - 1); };
+  window.tourFinish = function() { endTour(); };
+  
+  function endTour() {
+    clearHighlights();
+    overlay.remove();
+    tooltip.remove();
+    localStorage.setItem(TOUR_KEY, 'true');
+  }
+  
+  showStep(0);
+}
+
+// Auto-start tour for new users (after setup screen closes)
+if(!localStorage.getItem(TOUR_KEY) && !localStorage.getItem('arcade_world_v9_final_fidelity')) {
+  // Wait for setup to close
+  const observer = new MutationObserver(() => {
+    const setup = document.getElementById('setupOverlay');
+    if(setup && setup.classList.contains('hidden')) {
+      observer.disconnect();
+      setTimeout(startTour, 600);
+    }
+  });
+  observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
+}
+// Manual tour trigger
+window.startTourManual = startTour;
+
+
+// ============================================================
+// 6. SCREEN TRANSITIONS
+// ============================================================
+const _renderScreen = window.renderScreen;
+if(_renderScreen) {
+  window.renderScreen = function(tab, custom, autoEnd) {
+    const screen = document.getElementById('screen');
+    if(screen) {
+      screen.classList.add('fade-out');
+      screen.classList.remove('fade-in');
+      setTimeout(() => {
+        _renderScreen.call(this, tab, custom, autoEnd);
+        requestAnimationFrame(() => {
+          screen.classList.remove('fade-out');
+          screen.classList.add('fade-in');
+        });
+      }, 150);
+    } else {
+      _renderScreen.call(this, tab, custom, autoEnd);
+    }
+  };
+}
+
+
+// ============================================================
+// 7. ACCESSIBILITY
+// ============================================================
+// Add aria-labels to key interactive elements
+function patchAccessibility() {
+  const rollBtn = document.getElementById('rollBtn');
+  if(rollBtn) rollBtn.setAttribute('aria-label', 'Aruncă zarul');
+  
+  const rollBtnInline = document.getElementById('rollBtnInline');
+  if(rollBtnInline) rollBtnInline.setAttribute('aria-label', 'Aruncă zarul');
+  
+  const bonusBtn = document.getElementById('bonusBtn');
+  if(bonusBtn) bonusBtn.setAttribute('aria-label', 'Folosește bonus turn');
+  
+  const soundBtn = document.getElementById('soundBtn');
+  if(soundBtn) soundBtn.setAttribute('aria-label', 'Toggle sunet');
+  
+  // Aria for dice
+  const dice = document.getElementById('dice');
+  if(dice) { dice.setAttribute('role', 'status'); dice.setAttribute('aria-live', 'polite'); dice.setAttribute('aria-label', 'Rezultat zar'); }
+  
+  // Tiles
+  document.querySelectorAll('.tile').forEach(t => {
+    const name = t.querySelector('.name');
+    if(name) t.setAttribute('aria-label', 'Tile: ' + name.textContent);
+  });
+  
+  // Board landmark
+  const board = document.querySelector('.board-card');
+  if(board) { board.setAttribute('role', 'main'); board.setAttribute('aria-label', 'Board de joc'); }
+  
+  // Skip link
+  if(!document.getElementById('skipLink')) {
+    const skip = document.createElement('a');
+    skip.id = 'skipLink';
+    skip.href = '#diceInline';
+    skip.className = 'sr-only';
+    skip.textContent = 'Sari la acțiunea de joc';
+    skip.style.cssText = 'position:absolute;top:0;left:0;z-index:999';
+    skip.onfocus = function() { this.style.position = 'fixed'; this.style.clip = 'auto'; this.style.width = 'auto'; this.style.height = 'auto'; this.style.padding = '8px 16px'; this.style.background = 'var(--cyan)'; this.style.color = '#000'; this.style.borderRadius = '0 0 12px 0'; };
+    skip.onblur = function() { this.className = 'sr-only'; };
+    document.body.prepend(skip);
+  }
+}
+
+// Run after each render
+const _renderAll = window.renderAll;
+if(_renderAll) {
+  window.renderAll = function() {
+    _renderAll.apply(this, arguments);
+    requestAnimationFrame(patchAccessibility);
+  };
+}
+patchAccessibility();
+
+
+// ============================================================
+// 8. DEV METRICS OVERLAY
+// ============================================================
+const metricsEl = document.createElement('div');
+metricsEl.className = 'dev-metrics';
+metricsEl.id = 'devMetrics';
+document.body.appendChild(metricsEl);
+
+let devMode = false;
+let lastTime = performance.now();
+let frameCount = 0;
+let fps = 60;
+
+function updateMetrics() {
+  if(!devMode) return requestAnimationFrame(updateMetrics);
+  
+  frameCount++;
+  const now = performance.now();
+  if(now - lastTime >= 1000) {
+    fps = frameCount;
+    frameCount = 0;
+    lastTime = now;
+  }
+  
+  const domNodes = document.querySelectorAll('*').length;
+  let storageUsed = 0;
+  try {
+    for(let k in localStorage) {
+      if(localStorage.hasOwnProperty(k)) storageUsed += localStorage[k].length;
+    }
+  } catch(e) {}
+  const storageKB = (storageUsed * 2 / 1024).toFixed(1);
+  
+  const fpsClass = fps >= 50 ? 'good' : fps >= 30 ? 'warn' : 'bad';
+  const domClass = domNodes < 2000 ? 'good' : domNodes < 4000 ? 'warn' : 'bad';
+  
+  metricsEl.innerHTML = `
+    FPS: <span class="${fpsClass}">${fps}</span> · 
+    DOM: <span class="${domClass}">${domNodes}</span> · 
+    Storage: ${storageKB}KB · 
+    Players: ${state.players?.length || 0}
+  `;
+  
+  requestAnimationFrame(updateMetrics);
+}
+
+// Toggle with Ctrl+Shift+D
+document.addEventListener('keydown', (e) => {
+  if(e.ctrlKey && e.shiftKey && e.code === 'KeyD') {
+    e.preventDefault();
+    devMode = !devMode;
+    metricsEl.classList.toggle('visible', devMode);
+    if(devMode) requestAnimationFrame(updateMetrics);
+    toast(devMode ? 'Dev metrics ON (Ctrl+Shift+D)' : 'Dev metrics OFF', devMode ? 'green' : '');
+  }
+});
+
+// ============================================================
+// 9. PODIUM BUTTON IN SIDEBAR
+// ============================================================
+// Add a "Sesiune completă" button to the side
+const sideEl = document.querySelector('.side');
+if(sideEl) {
+  const podiumCard = document.createElement('div');
+  podiumCard.className = 'side-card';
+  podiumCard.innerHTML = `
+    <div class="section-k">Sesiune</div>
+    <div class="tiny" style="margin:8px 0">Termină sesiunea, vezi clasamentul final, apoi rematch sau continuă.</div>
+    <div class="btnrow">
+      <button class="btn-gold" onclick="openPodium()">🏆 Podium</button>
+      <button class="btn-alt" onclick="openLeaderboard()">📊 Leaderboard</button>
+      <button class="btn-alt" onclick="startTourManual()">❓ Tour</button>
+    </div>
+  `;
+  sideEl.appendChild(podiumCard);
+}
+
+// ============================================================
+// UPDATE TITLE & HERO
+// ============================================================
+document.title = 'ARCADE WORLD v26 — Complete Edition';
+const heroH1 = document.querySelector('.hero h1');
+if(heroH1) heroH1.textContent = 'ARCADE WORLD V26';
+const heroP = document.querySelector('.hero p');
+if(heroP) heroP.textContent = 'Complete Edition: podium cu clasament, sound FX sintetizat, canvas basket, leaderboard persistent, onboarding tour, screen transitions, accessibility, dev metrics (Ctrl+Shift+D).';
+
+// Add new pills
+const pillRow = document.querySelector('.pillrow');
+if(pillRow) {
+  pillRow.insertAdjacentHTML('beforeend',
+    '<div class="pill gold">🏆 Podium</div>' +
+    '<div class="pill green">🔊 Sound FX</div>' +
+    '<div class="pill purple">📊 Leaderboard</div>' +
+    '<div class="pill">❓ Tour</div>' +
+    '<div class="pill">♿ A11y</div>'
+  );
+}
+
+console.log('%c🎮 ARCADE WORLD v26 Complete loaded', 'font-size:16px;font-weight:bold;color:#ffd54a');
+console.log('%cDev metrics: Ctrl+Shift+D', 'font-size:12px;color:#6ee7ff');
+
+})();
+
+// ========== v27 MEGA UPGRADE — 9 FEATURES ==========
+(function(){
+'use strict';
+if(!window.state || !window.currentPlayer || !window.TILES) return;
+
+const PLAYER_COLORS = ['#ffd54a','#3fa8ff','#ff72c4','#30d27c'];
+const PLAYER_EMOJI = ['🟡','🔵','🩷','🟢'];
+
+// ============================================================
+// 1. MULTI-PLAYER TOKENS ON BOARD
+// ============================================================
+function createMultiTokens() {
+  const wrap = document.getElementById('boardWrap');
+  if(!wrap) return;
+  // Remove old multi-tokens
+  wrap.querySelectorAll('.multi-token').forEach(el => el.remove());
+  
+  state.players.forEach((p, i) => {
+    const tok = document.createElement('div');
+    tok.className = `multi-token p${i} ${i === state.activePlayer ? 'active-token' : ''}`;
+    tok.id = 'mtoken' + i;
+    tok.textContent = p.name.charAt(0);
+    wrap.appendChild(tok);
+    positionMultiToken(i);
+  });
+}
+
+function positionMultiToken(idx) {
+  const p = state.players[idx];
+  if(!p) return;
+  const pt = centerOfIdx(p.position);
+  if(!pt) return;
+  const tok = document.getElementById('mtoken' + idx);
+  if(!tok) return;
+  // Offset so tokens don't overlap on same tile
+  const offsets = [[-8,-8],[8,-8],[-8,8],[8,8]];
+  const samePos = state.players.filter(pp => pp.position === p.position);
+  const myIdx = samePos.indexOf(p);
+  const off = samePos.length > 1 ? (offsets[myIdx] || [0,0]) : [0,0];
+  tok.style.left = (pt.x + off[0]) + 'px';
+  tok.style.top = (pt.y + off[1]) + 'px';
+  tok.className = `multi-token p${idx} ${idx === state.activePlayer ? 'active-token' : ''}`;
+}
+
+function positionAllTokens() {
+  state.players.forEach((_, i) => positionMultiToken(i));
+}
+
+// Hide original single token
+const origToken = document.getElementById('boardToken');
+if(origToken) origToken.style.display = 'none';
+
+// Hook into renderBoard
+const _renderBoard = window.renderBoard;
+if(_renderBoard) {
+  window.renderBoard = function() {
+    _renderBoard.apply(this, arguments);
+    createMultiTokens();
+  };
+}
+
+// Hook into moveTokenTo to also move multi-tokens
+const _moveTokenTo = window.moveTokenTo;
+if(_moveTokenTo) {
+  window.moveTokenTo = function(idx, animate) {
+    _moveTokenTo.apply(this, arguments);
+    positionMultiToken(state.activePlayer);
+  };
+}
+
+// Hook resize
+window.addEventListener('resize', () => requestAnimationFrame(positionAllTokens));
+
+
+// ============================================================
+// 2. SVG DICE WITH DOT FACES
+// ============================================================
+const DOT_PATTERNS = {
+  1: [[37,37]],
+  2: [[18,18],[56,56]],
+  3: [[18,18],[37,37],[56,56]],
+  4: [[18,18],[56,18],[18,56],[56,56]],
+  5: [[18,18],[56,18],[37,37],[18,56],[56,56]],
+  6: [[18,18],[56,18],[18,37],[56,37],[18,56],[56,56]]
+};
+
+function renderDiceSVG(n) {
+  const dots = DOT_PATTERNS[n] || DOT_PATTERNS[1];
+  return `<svg viewBox="0 0 74 74" width="74" height="74">
+    <rect x="1" y="1" width="72" height="72" rx="14" fill="rgba(255,255,255,0.06)" stroke="rgba(255,213,74,0.35)" stroke-width="2"/>
+    ${dots.map(([x,y]) => `<circle cx="${x}" cy="${y}" r="7" fill="url(#dotGrad)"/>`).join('')}
+    <defs><radialGradient id="dotGrad" cx="35%" cy="35%"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="#ffd54a"/></radialGradient></defs>
+  </svg>`;
+}
+
+// Replace emoji dice with SVG on all dice elements
+function updateDiceFaces(n) {
+  ['dice', 'diceInlineView'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) {
+      el.innerHTML = renderDiceSVG(n);
+      el.style.fontSize = '0'; // hide any text fallback
+    }
+  });
+}
+
+// Default face
+updateDiceFaces(6);
+
+// Hook into rollDice to animate SVG cube spin
+const _rollDice = window.rollDice;
+if(_rollDice) {
+  window.rollDice = async function() {
+    // Add spin class
+    ['dice', 'diceInlineView'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.classList.add('rolling');
+    });
+    
+    const result = await _rollDice.apply(this, arguments);
+    
+    // After roll, get the actual number from state
+    const lastRoll = currentPlayer().lastRoll || 1;
+    ['dice', 'diceInlineView'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.classList.remove('rolling');
+    });
+    updateDiceFaces(lastRoll);
+    
+    return result;
+  };
+}
+
+// Fix: the original rollDice sets textContent which overwrites our SVG
+// We need to intercept the inner loop that sets dice.textContent
+// Override happens after roll completes via lastRoll
+
+
+// ============================================================
+// 3. EVENT CARD FLIP ANIMATION
+// ============================================================
+const _resolveBonus = window.resolveBonus;
+if(_resolveBonus) {
+  window.resolveBonus = function() {
+    const p = currentPlayer();
+    p.bonusHits = (p.bonusHits || 0) + 1;
+    const ev = BONUS_EVENTS[rand(0, BONUS_EVENTS.length - 1)];
+    if(p.unlocks && p.unlocks.bonus_master) p.coins += 10;
+    ev.apply(p);
+    save(); renderAll();
+    
+    // Show flip card instead of plain text
+    const flipHTML = `
+      <div class="event-flip-container">
+        <div class="event-flip-card" id="eventFlipCard">
+          <div class="event-flip-front">
+            <div class="flip-icon">⭐</div>
+            <div class="flip-label">Bonus Event</div>
+            <div class="tiny" style="margin-top:12px">Apasă pentru a dezvălui</div>
+          </div>
+          <div class="event-flip-back">
+            <div class="flip-result-icon">🎁</div>
+            <div class="flip-result-name">${safeText(ev.name)}</div>
+            <div class="flip-result-text">${safeText(ev.text)}</div>
+          </div>
+        </div>
+      </div>
+      <div class="btnrow" style="justify-content:center">
+        <button class="btn-alt" onclick="endTurn()">Tura următoare →</button>
+      </div>`;
+    
+    renderScreen('event', flipHTML, true);
+    
+    // Auto-flip after click or 1.5s
+    setTimeout(() => {
+      const card = document.getElementById('eventFlipCard');
+      if(card) card.classList.add('flipped');
+      if(typeof SFX !== 'undefined') SFX.play('bonus');
+    }, 800);
+    
+    const card = document.getElementById('eventFlipCard');
+    if(card) card.onclick = () => card.classList.add('flipped');
+    
+    toast(p.name + ': ' + ev.name, 'green');
+    endTurnPrompt(false, true);
+  };
+}
+
+const _resolveTrap = window.resolveTrap;
+if(_resolveTrap) {
+  window.resolveTrap = function() {
+    const p = currentPlayer();
+    
+    if((p.inventory?.shield || 0) > 0) {
+      p.inventory.shield--;
+      toast('Shield a blocat CAPCANA', 'green');
+      renderScreen('event', '<div class="event-card"><h3>🛡️ CAPCANĂ blocată</h3><p class="muted">Shield consumat.</p></div>', true);
+      save(); renderAll();
+      return endTurnPrompt();
+    }
+    
+    p.trapHits = (p.trapHits || 0) + 1;
+    const ev = TRAP_EVENTS[rand(0, TRAP_EVENTS.length - 1)];
+    ev.apply(p);
+    save(); renderAll();
+    
+    const flipHTML = `
+      <div class="event-flip-container">
+        <div class="event-flip-card" id="eventFlipCard">
+          <div class="event-flip-front trap-front">
+            <div class="flip-icon">💀</div>
+            <div class="flip-label">Capcană!</div>
+            <div class="tiny" style="margin-top:12px">Apasă pentru a dezvălui</div>
+          </div>
+          <div class="event-flip-back">
+            <div class="flip-result-icon">⚠️</div>
+            <div class="flip-result-name">${safeText(ev.name)}</div>
+            <div class="flip-result-text">${safeText(ev.text)}</div>
+          </div>
+        </div>
+      </div>
+      <div class="btnrow" style="justify-content:center">
+        <button class="btn-alt" onclick="endTurn()">Tura următoare →</button>
+      </div>`;
+    
+    renderScreen('event', flipHTML, true);
+    
+    setTimeout(() => {
+      const card = document.getElementById('eventFlipCard');
+      if(card) card.classList.add('flipped');
+      if(typeof SFX !== 'undefined') SFX.play('trap');
+    }, 800);
+    
+    const card = document.getElementById('eventFlipCard');
+    if(card) card.onclick = () => card.classList.add('flipped');
+    
+    toast(p.name + ': ' + ev.name, 'red');
+    endTurnPrompt();
+  };
+}
+
+
+// ============================================================
+// 4. REPLAY SYSTEM
+// ============================================================
+if(!state.replayMoves) state.replayMoves = [];
+
+function recordMove(type, data) {
+  state.replayMoves.push({ type, data, ts: Date.now(), player: state.activePlayer });
+  if(state.replayMoves.length > 15) state.replayMoves.shift();
+}
+
+// Hook moves
+const _moveBy = window.moveBy;
+if(_moveBy) {
+  window.moveBy = async function(steps) {
+    recordMove('roll', { from: currentPlayer().position, steps });
+    return _moveBy.apply(this, arguments);
+  };
+}
+
+function renderReplayBar() {
+  if(!state.replayMoves.length) return '';
+  const steps = state.replayMoves.slice(-10).map(m => {
+    const icon = m.type === 'roll' ? '🎲' : m.type === 'win' ? '✅' : m.type === 'loss' ? '❌' : m.type === 'bonus' ? '⭐' : m.type === 'trap' ? '💀' : '•';
+    const cls = m.type === 'win' ? 'win' : m.type === 'loss' ? 'loss' : '';
+    return `<div class="replay-step ${cls}" title="P${m.player+1}: ${m.type}">${icon}</div>`;
+  });
+  return `<div class="replay-bar">${steps.join('<span class="replay-arrow">→</span>')}</div>`;
+}
+
+// Hook finishMini to record
+const _finishMini2 = window.finishMini;
+if(_finishMini2) {
+  window.finishMini = function(win, msg, opts) {
+    recordMove(win ? 'win' : 'loss', { msg });
+    return _finishMini2.apply(this, arguments);
+  };
+}
+
+window.replayLast = function() {
+  if(!state.replayMoves.length) return toast('Nicio mișcare de redat', '');
+  toast('Replay: ' + state.replayMoves.length + ' mișcări recente', 'green');
+  // Visual replay - animate through positions
+  let idx = 0;
+  const moves = state.replayMoves.filter(m => m.type === 'roll');
+  function playNext() {
+    if(idx >= moves.length) return;
+    const m = moves[idx];
+    const playerIdx = m.player;
+    const tok = document.getElementById('mtoken' + playerIdx);
+    if(tok) {
+      tok.style.transition = 'left .5s ease, top .5s ease';
+      const pt = centerOfIdx((m.data.from + m.data.steps) % TILES.length);
+      if(pt) { tok.style.left = pt.x + 'px'; tok.style.top = pt.y + 'px'; }
+    }
+    idx++;
+    setTimeout(playNext, 700);
+  }
+  playNext();
+};
+
+
+// ============================================================
+// 5. PROGRESS TRACK (F1-style)
+// ============================================================
+function renderProgressTrack() {
+  const total = TILES.length;
+  let trackHTML = '<div class="progress-track">';
+  state.players.forEach((p, i) => {
+    const pct = (p.position / total * 100).toFixed(1);
+    trackHTML += `<div class="track-marker tm${i}" style="left:${pct}%">${p.name.charAt(0)}</div>`;
+  });
+  trackHTML += '</div>';
+  trackHTML += '<div class="track-labels"><span class="track-start-label">START</span>';
+  trackHTML += state.players.map((p,i) => `<span style="color:${PLAYER_COLORS[i]}">${p.name}: ${p.position}/24</span>`).join(' · ');
+  trackHTML += '</div>';
+  return trackHTML;
+}
+
+// Insert track after board-wrap by hooking renderAll
+const _renderAll = window.renderAll;
+if(_renderAll) {
+  window.renderAll = function() {
+    _renderAll.apply(this, arguments);
+    
+    // Insert progress track
+    let trackEl = document.getElementById('progressTrack');
+    if(!trackEl) {
+      trackEl = document.createElement('div');
+      trackEl.id = 'progressTrack';
+      const boardCard = document.querySelector('.board-card');
+      if(boardCard) boardCard.appendChild(trackEl);
+    }
+    trackEl.innerHTML = renderProgressTrack();
+    
+    // Insert replay bar
+    let replayEl = document.getElementById('replayBarWrap');
+    if(!replayEl) {
+      replayEl = document.createElement('div');
+      replayEl.id = 'replayBarWrap';
+      const boardCard = document.querySelector('.board-card');
+      if(boardCard) boardCard.appendChild(replayEl);
+    }
+    replayEl.innerHTML = renderReplayBar();
+    
+    // Update win condition check
+    checkWinCondition();
+    
+    // Update spectator HUD
+    updateSpectatorHUD();
+    
+    // Refresh SVG dice face
+    const lastRoll = currentPlayer().lastRoll;
+    if(lastRoll) updateDiceFaces(lastRoll);
+  };
+}
+
+
+// ============================================================
+// 6. WIN CONDITION SYSTEM
+// ============================================================
+if(!state.winCondition) state.winCondition = { type: 'free', target: 0 };
+
+const WIN_CONDITIONS = [
+  { type: 'free', label: 'Liber', icon: '♾️', desc: 'Fără limită, joci cât vrei', target: 0 },
+  { type: 'coins', label: '500 Coins', icon: '💰', desc: 'Primul la 500 coins câștigă', target: 500 },
+  { type: 'tiles', label: '12 Tiles', icon: '🗺️', desc: 'Primul cu 12 tiles completate', target: 12 },
+  { type: 'wins', label: '5 Victorii', icon: '🏆', desc: 'Primul cu 5 victorii mini-game', target: 5 }
+];
+
+function setWinCondition(type) {
+  const wc = WIN_CONDITIONS.find(w => w.type === type);
+  if(wc) {
+    state.winCondition = { type: wc.type, target: wc.target };
+    save();
+    toast('Win condition: ' + wc.label, 'gold');
+    renderWinConfig();
+  }
+}
+
+function renderWinConfig() {
+  const el = document.getElementById('winConfigCard');
+  if(!el) return;
+  el.innerHTML = `<div class="section-k">Win Condition</div>
+    <div class="win-config">${WIN_CONDITIONS.map(w => 
+      `<div class="win-option ${state.winCondition.type === w.type ? 'selected' : ''}" onclick="setWinCondition('${w.type}')">
+        <div class="wo-icon">${w.icon}</div>
+        <div class="wo-title">${w.label}</div>
+        <div class="wo-desc">${w.desc}</div>
+      </div>`
+    ).join('')}</div>
+    <div class="win-alert" id="winAlert">🏆 Un jucător e aproape de victorie!</div>`;
+}
+window.setWinCondition = setWinCondition;
+
+function checkWinCondition() {
+  if(!state.winCondition || state.winCondition.type === 'free') return;
+  const wc = state.winCondition;
+  let winner = null;
+  let closeToWin = false;
+  
+  state.players.forEach(p => {
+    let val = 0;
+    if(wc.type === 'coins') val = p.coins || 0;
+    if(wc.type === 'tiles') val = p.completed?.length || 0;
+    if(wc.type === 'wins') val = p.totalWins || 0;
+    
+    if(val >= wc.target && wc.target > 0) winner = p;
+    if(val >= wc.target * 0.8 && wc.target > 0) closeToWin = true;
+  });
+  
+  const alert = document.getElementById('winAlert');
+  if(alert) alert.classList.toggle('visible', closeToWin && !winner);
+  
+  if(winner && !state._winDeclared) {
+    state._winDeclared = true;
+    toast('🏆 ' + winner.name + ' a câștigat! ' + WIN_CONDITIONS.find(w=>w.type===wc.type)?.label, 'gold');
+    setTimeout(() => { if(typeof openPodium === 'function') openPodium(); }, 800);
+  }
+}
+
+// Add win config card to sidebar
+const sideEl = document.querySelector('.side');
+if(sideEl) {
+  const wcCard = document.createElement('div');
+  wcCard.className = 'side-card';
+  wcCard.id = 'winConfigCard';
+  // Insert before last card
+  sideEl.insertBefore(wcCard, sideEl.lastElementChild);
+  renderWinConfig();
+}
+
+
+// ============================================================
+// 7. SPECTATOR MODE
+// ============================================================
+const specHUD = document.createElement('div');
+specHUD.className = 'spectator-hud';
+specHUD.id = 'spectatorHUD';
+document.body.appendChild(specHUD);
+
+function updateSpectatorHUD() {
+  specHUD.innerHTML = state.players.map((p, i) => {
+    const isActive = i === state.activePlayer;
+    return `<div class="spec-player ${isActive ? 'active-spec' : ''}">
+      <div class="spec-dot" style="background:${PLAYER_COLORS[i]}"></div>
+      ${safeText(p.name)} · ${p.coins}c · Lv${p.level} · W${p.totalWins}
+    </div>`;
+  }).join('') + '<button class="btn-alt" onclick="toggleSpectator()" style="padding:6px 12px;font-size:11px">✕ Exit</button>';
+}
+
+window.toggleSpectator = function() {
+  document.body.classList.toggle('spectator-mode');
+  toast(document.body.classList.contains('spectator-mode') ? 'Spectator mode ON' : 'Spectator mode OFF', '');
+};
+
+// Keyboard: F11 or Ctrl+Shift+S for spectator
+document.addEventListener('keydown', e => {
+  if(e.ctrlKey && e.shiftKey && e.code === 'KeyS') {
+    e.preventDefault();
+    toggleSpectator();
+  }
+});
+
+
+// ============================================================
+// 8. LOADING SCREEN
+// ============================================================
+(function showLoading() {
+  const loader = document.createElement('div');
+  loader.className = 'loading-screen';
+  loader.id = 'loadingScreen';
+  loader.innerHTML = `<div class="loading-content">
+    <div class="loading-logo">ARCADE<span>WORLD</span></div>
+    <div class="loading-bar-wrap"><div class="loading-bar-fill" id="loadingBar"></div></div>
+    <div class="loading-text" id="loadingText">Inițializare…</div>
+  </div>`;
+  document.body.prepend(loader);
+  
+  const bar = document.getElementById('loadingBar');
+  const text = document.getElementById('loadingText');
+  const steps = [
+    [20, 'Încărcare board…'],
+    [45, 'Pregătire mini-games…'],
+    [65, 'Configurare jucători…'],
+    [85, 'Inițializare sisteme…'],
+    [100, 'Gata!']
+  ];
+  
+  let i = 0;
+  function nextStep() {
+    if(i >= steps.length) {
+      setTimeout(() => {
+        loader.classList.add('done');
+        setTimeout(() => loader.remove(), 600);
+      }, 300);
+      return;
+    }
+    if(bar) bar.style.width = steps[i][0] + '%';
+    if(text) text.textContent = steps[i][1];
+    i++;
+    setTimeout(nextStep, 250 + Math.random() * 200);
+  }
+  setTimeout(nextStep, 200);
+})();
+
+
+// ============================================================
+// 9. SCREENSHOT MODE
+// ============================================================
+const ssBtn = document.createElement('button');
+ssBtn.className = 'screenshot-btn';
+ssBtn.textContent = '📷 Exit Screenshot Mode';
+ssBtn.onclick = () => toggleScreenshotMode();
+document.body.appendChild(ssBtn);
+
+window.toggleScreenshotMode = function() {
+  document.body.classList.toggle('screenshot-mode');
+  toast(document.body.classList.contains('screenshot-mode') 
+    ? 'Screenshot mode ON — doar board-ul e vizibil' 
+    : 'Screenshot mode OFF', '');
+};
+
+// Keyboard: Ctrl+Shift+P
+document.addEventListener('keydown', e => {
+  if(e.ctrlKey && e.shiftKey && e.code === 'KeyP') {
+    e.preventDefault();
+    toggleScreenshotMode();
+  }
+});
+
+
+// ============================================================
+// ADD BUTTONS TO SIDEBAR
+// ============================================================
+if(sideEl) {
+  const toolsCard = document.createElement('div');
+  toolsCard.className = 'side-card';
+  toolsCard.innerHTML = `<div class="section-k">Moduri vizuale</div>
+    <div class="tiny" style="margin:6px 0 10px">Spectator (Ctrl+Shift+S) · Screenshot (Ctrl+Shift+P) · Replay</div>
+    <div class="btnrow">
+      <button class="btn-alt" onclick="toggleSpectator()">📺 Spectator</button>
+      <button class="btn-alt" onclick="toggleScreenshotMode()">📷 Screenshot</button>
+      <button class="btn-alt" onclick="replayLast()">⏪ Replay</button>
+    </div>`;
+  sideEl.appendChild(toolsCard);
+}
+
+
+// ============================================================
+// UPDATE META
+// ============================================================
+document.title = 'ARCADE WORLD v27 — Ultimate Edition';
+const heroH1 = document.querySelector('.hero h1');
+if(heroH1) heroH1.textContent = 'ARCADE WORLD V27';
+const heroP = document.querySelector('.hero p');
+if(heroP) heroP.textContent = 'Ultimate Edition: multi-tokens, SVG dice, event card flip, replay, progress track, win conditions, spectator mode, loading screen, screenshot mode.';
+
+const pillRow = document.querySelector('.pillrow');
+if(pillRow) {
+  pillRow.insertAdjacentHTML('beforeend',
+    '<div class="pill">🎯 Multi-tokens</div>' +
+    '<div class="pill gold">🎲 SVG Dice</div>' +
+    '<div class="pill purple">🃏 Card Flip</div>' +
+    '<div class="pill green">📺 Spectator</div>'
+  );
+}
+
+console.log('%c🎮 ARCADE WORLD v27 Ultimate loaded', 'font-size:16px;font-weight:bold;color:#ff72c4');
+console.log('%cSpectator: Ctrl+Shift+S | Screenshot: Ctrl+Shift+P | Dev: Ctrl+Shift+D', 'font-size:11px;color:#6ee7ff');
+
+})();
+
+// ========== v28 FINAL MEGA PASS — 17 FEATURES ==========
+(function(){
+'use strict';
+if(!window.state || !window.currentPlayer || !window.TILES) return;
+
+const EMOJIS = ['👏','🔥','😂','💀','🎯','❤️','😤','🤯'];
+
+// ============================================================
+// 2. CONFETTI SYSTEM
+// ============================================================
+window.launchConfetti = function(count) {
+  count = count || 40;
+  const colors = ['#ffd54a','#6ee7ff','#ff72c4','#30d27c','#a78bfa','#ff9c44'];
+  for(let i = 0; i < count; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.left = (10 + Math.random() * 80) + '%';
+    el.style.top = '-20px';
+    el.style.background = colors[Math.floor(Math.random() * colors.length)];
+    el.style.animationDelay = (Math.random() * .8) + 's';
+    el.style.animationDuration = (2 + Math.random() * 1.5) + 's';
+    el.style.borderRadius = Math.random() > .5 ? '50%' : '2px';
+    el.style.width = (6 + Math.random() * 6) + 'px';
+    el.style.height = (8 + Math.random() * 10) + 'px';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  }
+};
+
+// Hook confetti into big wins
+const _openPodium = window.openPodium;
+if(_openPodium) {
+  window.openPodium = function() {
+    _openPodium.apply(this, arguments);
+    launchConfetti(60);
+    setTimeout(() => launchConfetti(30), 800);
+  };
+}
+
+// 3. TILE COMPLETE ANIMATION
+const _claimReward = window.claimReward;
+if(_claimReward) {
+  window.claimReward = function(win, extra) {
+    const result = _claimReward.apply(this, arguments);
+    if(win) {
+      const idx = currentPlayer().position;
+      const tileEl = document.querySelector('.tile-wrap[data-idx="' + idx + '"] .tile');
+      if(tileEl) {
+        tileEl.classList.add('just-completed');
+        setTimeout(() => tileEl.classList.remove('just-completed'), 700);
+      }
+      if(currentPlayer().totalWins && currentPlayer().totalWins % 5 === 0) launchConfetti(30);
+    }
+    return result;
+  };
+}
+
+// ============================================================
+// 4. EMOTE SYSTEM
+// ============================================================
+window.sendEmote = function(emoji) {
+  const el = document.createElement('div');
+  el.className = 'emote-float';
+  el.textContent = emoji;
+  el.style.left = (30 + Math.random() * 40) + '%';
+  el.style.top = (30 + Math.random() * 30) + '%';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1600);
+  if(typeof SFX !== 'undefined') SFX.play('click');
+};
+
+// ============================================================
+// 5. DAILY LOGIN REWARD
+// ============================================================
+const DL_KEY = 'arcade_daily_login';
+function getDailyLogin() {
+  try { return JSON.parse(localStorage.getItem(DL_KEY) || '{}'); } catch(e) { return {}; }
+}
+function checkDailyLogin() {
+  const dl = getDailyLogin();
+  const today = new Date().toISOString().slice(0, 10);
+  if(dl.lastDate === today) return; // already claimed
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  dl.streak = (dl.lastDate === yesterday) ? (dl.streak || 0) + 1 : 1;
+  dl.lastDate = today;
+  dl.totalDays = (dl.totalDays || 0) + 1;
+  
+  const rewards = [20, 30, 40, 50, 75, 100, 150]; // 7-day cycle
+  const reward = rewards[Math.min(dl.streak - 1, 6)];
+  
+  if(state.players && state.players[0]) {
+    state.players[0].coins += reward;
+    if(typeof addXpToPlayer === 'function') addXpToPlayer(state.players[0], Math.round(reward * 0.5));
+  }
+  localStorage.setItem(DL_KEY, JSON.stringify(dl));
+  if(typeof save === 'function') save();
+  
+  setTimeout(() => {
+    toast('📅 Login zilnic! Zi ' + dl.streak + ': +' + reward + ' coins', 'gold');
+    if(dl.streak >= 7) { launchConfetti(25); toast('🔥 7 zile consecutive! Bonus maxim!', 'purple'); }
+  }, 2000);
+}
+checkDailyLogin();
+
+// ============================================================
+// 6. TRADE SYSTEM
+// ============================================================
+window.openTrade = function() {
+  if(state.players.length < 2) return toast('Trebuie minim 2 jucători', 'red');
+  const p1 = 0, p2 = 1;
+  const tradeHTML = `<div class="section-k">Trade între jucători</div>
+    <div class="trade-panel" style="margin:12px 0">
+      <div class="trade-side">
+        <div style="font-weight:900">${safeText(state.players[p1].name)}</div>
+        <div class="tiny">${state.players[p1].coins} coins</div>
+        <div style="margin-top:8px"><input class="trade-input" id="trade1" type="number" value="0" min="0" max="${state.players[p1].coins}"/></div>
+      </div>
+      <div class="trade-arrow">⇄</div>
+      <div class="trade-side">
+        <div style="font-weight:900">${safeText(state.players[p2].name)}</div>
+        <div class="tiny">${state.players[p2].coins} coins</div>
+        <div style="margin-top:8px"><input class="trade-input" id="trade2" type="number" value="0" min="0" max="${state.players[p2].coins}"/></div>
+      </div>
+    </div>
+    <div class="btnrow" style="justify-content:center">
+      <button class="btn-gold" onclick="executeTrade()">✅ Confirmă trade</button>
+    </div>`;
+  renderScreen('event', tradeHTML, true);
+};
+
+window.executeTrade = function() {
+  const a1 = parseInt(document.getElementById('trade1')?.value || 0);
+  const a2 = parseInt(document.getElementById('trade2')?.value || 0);
+  if(isNaN(a1) || isNaN(a2) || a1 < 0 || a2 < 0) return toast('Valori invalide', 'red');
+  if(a1 > state.players[0].coins || a2 > state.players[1].coins) return toast('Coins insuficiente', 'red');
+  state.players[0].coins -= a1; state.players[0].coins += a2;
+  state.players[1].coins -= a2; state.players[1].coins += a1;
+  save(); renderAll();
+  toast('Trade complet: ' + a1 + ' ⇄ ' + a2, 'green');
+  renderScreen('details');
+};
+
+// ============================================================
+// 7. SEASON PASS
+// ============================================================
+if(!state.season) state.season = { level: 1, xp: 0 };
+const SEASON_REWARDS = [
+  { icon: '🎁', name: '+50c' }, { icon: '🛡️', name: 'Shield' }, { icon: '⭐', name: '+80c' },
+  { icon: '🎲', name: 'Reroll' }, { icon: '💎', name: 'x2' }, { icon: '🏆', name: '+150c' },
+  { icon: '🔮', name: 'Epic' }, { icon: '👑', name: '+250c' }, { icon: '🌟', name: 'Legendar' },
+  { icon: '🎮', name: 'MAX' }
+];
+function addSeasonXP(amount) {
+  state.season.xp += amount;
+  while(state.season.xp >= 80 + state.season.level * 20 && state.season.level < 10) {
+    state.season.xp -= (80 + state.season.level * 20);
+    state.season.level++;
+    const reward = SEASON_REWARDS[state.season.level - 1];
+    toast('🌟 Season Pass Lv' + state.season.level + ': ' + reward?.name, 'purple');
+    const p = currentPlayer();
+    if(state.season.level <= 3) p.coins += 50;
+    else if(state.season.level <= 6) p.coins += 80;
+    else p.coins += 150;
+  }
+}
+// Hook into claimReward for season XP
+const _claimReward2 = window.claimReward;
+if(_claimReward2) {
+  window.claimReward = function(win, extra) {
+    const result = _claimReward2.apply(this, arguments);
+    addSeasonXP(win ? 25 : 8);
+    return result;
+  };
+}
+
+// ============================================================
+// 8. INLINE PLAYER NAME EDIT
+// ============================================================
+window.editPlayerName = function(idx) {
+  const name = prompt('Nume nou pentru ' + state.players[idx].name + ':', state.players[idx].name);
+  if(name && name.trim()) {
+    state.players[idx].name = name.trim().slice(0, 12);
+    save(); renderAll();
+    toast('Nume schimbat: ' + state.players[idx].name, 'green');
+  }
+};
+
+// ============================================================
+// 9. TILE UPGRADE UI
+// ============================================================
+window.upgradeTileUI = function(idx) {
+  const p = currentPlayer();
+  const cost = 60 + (state.v21?.tileLevels?.[idx] || 0) * 30;
+  if(p.coins < cost) return toast('Trebuie ' + cost + ' coins', 'red');
+  p.coins -= cost;
+  if(!state.v21) state.v21 = {};
+  if(!state.v21.tileLevels) state.v21.tileLevels = {};
+  state.v21.tileLevels[idx] = Math.min(5, (state.v21.tileLevels[idx] || 0) + 1);
+  save(); renderAll();
+  toast('Tile ' + idx + ' upgraded la Lv' + state.v21.tileLevels[idx], 'green');
+};
+
+// ============================================================
+// 10. BOARD ZOOM
+// ============================================================
+let boardZoom = 1;
+window.zoomBoard = function(delta) {
+  boardZoom = Math.max(0.6, Math.min(1.8, boardZoom + delta));
+  const wrap = document.getElementById('boardWrap');
+  if(wrap) { wrap.style.transform = 'scale(' + boardZoom + ')'; wrap.style.transformOrigin = 'center top'; }
+};
+// Mouse wheel zoom
+document.addEventListener('wheel', (e) => {
+  if(e.target.closest('.board-wrap') || e.target.closest('.board-card')) {
+    e.preventDefault();
+    zoomBoard(e.deltaY > 0 ? -0.1 : 0.1);
+  }
+}, { passive: false });
+
+// ============================================================
+// 11. HAPTIC FEEDBACK
+// ============================================================
+function haptic(ms) {
+  try { if(navigator.vibrate) navigator.vibrate(ms || 15); } catch(e) {}
+}
+// Hook into dice roll
+const _rollDice2 = window.rollDice;
+if(_rollDice2) {
+  window.rollDice = async function() {
+    haptic(30);
+    const r = await _rollDice2.apply(this, arguments);
+    haptic(15);
+    return r;
+  };
+}
+
+// ============================================================
+// 12. FULLSCREEN TOGGLE
+// ============================================================
+window.toggleFullscreen = function() {
+  if(!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(()=>{});
+  } else {
+    document.exitFullscreen().catch(()=>{});
+  }
+};
+
+// ============================================================
+// 13. SPARKLINE GRAPHS
+// ============================================================
+function sparkline(data, w, h, color) {
+  if(!data || data.length < 2) return '';
+  const max = Math.max(...data), min = Math.min(...data);
+  const range = max - min || 1;
+  const step = w / (data.length - 1);
+  const points = data.map((v, i) => (i * step) + ',' + (h - ((v - min) / range) * h * 0.85)).join(' ');
+  return '<svg class="sparkline" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '"><polyline points="' + points + '" fill="none" stroke="' + (color || 'rgba(110,231,255,.6)') + '" stroke-width="1.5" stroke-linecap="round"/></svg>';
+}
+
+// ============================================================
+// 14. TURN COUNTDOWN TIMER
+// ============================================================
+if(!state.turnTimer) state.turnTimer = { enabled: false, seconds: 20 };
+let turnTimerInterval = null;
+let turnTimeLeft = 0;
+
+function startTurnCountdown() {
+  if(!state.turnTimer.enabled) return;
+  turnTimeLeft = state.turnTimer.seconds;
+  clearInterval(turnTimerInterval);
+  turnTimerInterval = setInterval(() => {
+    turnTimeLeft--;
+    updateTimerRing();
+    if(turnTimeLeft <= 0) {
+      clearInterval(turnTimerInterval);
+      toast(currentPlayer().name + ': timp expirat!', 'red');
+      haptic(50);
+      if(typeof endTurn === 'function') endTurn();
+    }
+    if(turnTimeLeft === 5) haptic(20);
+  }, 1000);
+  updateTimerRing();
+}
+
+function updateTimerRing() {
+  const el = document.getElementById('turnTimerRing');
+  if(!el) return;
+  const pct = turnTimeLeft / state.turnTimer.seconds;
+  const r = 18, c = 2 * Math.PI * r;
+  el.innerHTML = '<svg width="42" height="42" viewBox="0 0 42 42"><circle cx="21" cy="21" r="' + r + '" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="3"/><circle cx="21" cy="21" r="' + r + '" fill="none" stroke="' + (pct > .3 ? 'var(--cyan)' : 'var(--red)') + '" stroke-width="3" stroke-dasharray="' + c + '" stroke-dashoffset="' + (c * (1 - pct)) + '" stroke-linecap="round"/></svg><div class="timer-text">' + Math.max(0, turnTimeLeft) + '</div>';
+}
+
+window.toggleTurnTimer = function() {
+  state.turnTimer.enabled = !state.turnTimer.enabled;
+  save();
+  toast('Turn timer: ' + (state.turnTimer.enabled ? 'ON (' + state.turnTimer.seconds + 's)' : 'OFF'), '');
+  if(state.turnTimer.enabled) startTurnCountdown();
+  else { clearInterval(turnTimerInterval); }
+};
+
+const _endTurn2 = window.endTurn;
+if(_endTurn2) {
+  window.endTurn = function() {
+    _endTurn2.apply(this, arguments);
+    if(state.turnTimer.enabled) startTurnCountdown();
+  };
+}
+
+// ============================================================
+// 16. KEYBOARD NAV FOR BOARD
+// ============================================================
+document.addEventListener('keydown', (e) => {
+  if(e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if(e.code === 'ArrowRight') { state.selectedTile = (state.selectedTile + 1) % TILES.length; renderScreen('details'); }
+  if(e.code === 'ArrowLeft') { state.selectedTile = (state.selectedTile - 1 + TILES.length) % TILES.length; renderScreen('details'); }
+  if(e.code === 'KeyF') { e.preventDefault(); toggleFullscreen(); }
+});
+
+// ============================================================
+// 17. SHARE RESULTS
+// ============================================================
+window.shareResults = async function() {
+  const p = currentPlayer();
+  const text = '🎮 ARCADE WORLD\n' + p.name + ' · Lv' + p.level + ' · ' + p.totalWins + ' wins · ' + p.coins + ' coins\nStreak: ' + (state.streak?.best || 0) + ' 🔥\nSeason: Lv' + (state.season?.level || 1) + '\nhttps://laurandreea10.github.io/ARCADE-WORLD/';
+  
+  if(navigator.share) {
+    try { await navigator.share({ title: 'ARCADE WORLD', text }); return; } catch(e) {}
+  }
+  try {
+    await navigator.clipboard.writeText(text);
+    toast('Rezultat copiat în clipboard!', 'green');
+  } catch(e) {
+    toast('Nu s-a putut copia', 'red');
+  }
+};
+
+// ============================================================
+// MEGA RENDER: Add all new UI to sidebar
+// ============================================================
+const _renderAll2 = window.renderAll;
+if(_renderAll2) {
+  window.renderAll = function() {
+    _renderAll2.apply(this, arguments);
+    
+    // Enhance player cards with avatars + name edit
+    document.querySelectorAll('.player-card').forEach((card, i) => {
+      if(card.querySelector('.avatar-circle')) return;
+      const p = state.players[i]; if(!p) return;
+      const avatar = document.createElement('div');
+      avatar.className = 'avatar-circle a' + i;
+      avatar.textContent = p.name.charAt(0);
+      avatar.style.cursor = 'pointer';
+      avatar.onclick = () => editPlayerName(i);
+      avatar.title = 'Click pentru a redenumi';
+      const firstChild = card.firstElementChild;
+      if(firstChild) firstChild.prepend(avatar);
+    });
+    
+    // Update season pass card
+    const seasonEl = document.getElementById('seasonPassCard');
+    if(seasonEl) {
+      const need = 80 + state.season.level * 20;
+      seasonEl.innerHTML = '<div class="section-k">Season Pass</div>' +
+        '<div class="season-track">' + SEASON_REWARDS.map((r, i) => {
+          const lvl = i + 1;
+          const cls = lvl < state.season.level ? 'unlocked' : lvl === state.season.level ? 'current' : '';
+          return '<div class="season-node ' + cls + '">' + r.icon + '</div>';
+        }).join('') + '</div>' +
+        '<div class="tiny">Lv' + state.season.level + ' · ' + state.season.xp + '/' + need + ' XP</div>' +
+        '<div class="bar" style="margin-top:6px"><span style="width:' + Math.round(state.season.xp / need * 100) + '%"></span></div>';
+    }
+    
+    // Update emote bar
+    const emoteEl = document.getElementById('emoteCard');
+    if(emoteEl && !emoteEl.querySelector('.emote-bar')) {
+      emoteEl.innerHTML = '<div class="section-k">Emotes</div>' +
+        '<div class="emote-bar" style="margin-top:8px">' +
+        EMOJIS.map(e => '<button class="emote-btn" onclick="sendEmote(\'' + e + '\')">' + e + '</button>').join('') +
+        '</div>';
+    }
+    
+    // Stats sparklines
+    const p = currentPlayer();
+    const statsScreen = document.querySelector('.screen .log');
+    if(statsScreen && p.history && p.history.length >= 3) {
+      const coinHistory = p.history.slice(0, 10).map(h => h.coins || 0).reverse();
+      if(!statsScreen.querySelector('.sparkline')) {
+        statsScreen.insertAdjacentHTML('beforeend', '<div style="margin-top:8px">Coins trend: ' + sparkline(coinHistory, 100, 20) + '</div>');
+      }
+    }
+    
+    // Turn timer ring
+    if(state.turnTimer.enabled) updateTimerRing();
+    
+    // Mini-game previews on modes screen
+    const modesScreen = document.querySelector('.choices');
+    if(modesScreen && !document.getElementById('gamePreviewRow')) {
+      const t = currentTile();
+      if(t.type === 'game') {
+        const previews = TILES.filter(tt => tt.type === 'game').slice(0, 6);
+        const row = '<div id="gamePreviewRow" class="game-preview-row">' +
+          previews.map(g => '<div class="game-preview-thumb" onclick="selectTile(' + TILES.indexOf(g) + ')" title="' + g.name + '"><div>' + (g.icon || '🎮') + '</div><div class="gp-name">' + g.name + '</div></div>').join('') +
+          '</div>';
+        modesScreen.insertAdjacentHTML('beforebegin', row);
+      }
+    }
+  };
+}
+
+// ============================================================
+// ADD SIDEBAR CARDS
+// ============================================================
+const sideEl = document.querySelector('.side');
+if(sideEl) {
+  // Season pass
+  const spCard = document.createElement('div');
+  spCard.className = 'side-card';
+  spCard.id = 'seasonPassCard';
+  sideEl.appendChild(spCard);
+  
+  // Emotes
+  const emCard = document.createElement('div');
+  emCard.className = 'side-card';
+  emCard.id = 'emoteCard';
+  sideEl.appendChild(emCard);
+  
+  // Tools card
+  const toolsCard = document.createElement('div');
+  toolsCard.className = 'side-card';
+  toolsCard.innerHTML = '<div class="section-k">Extra</div>' +
+    '<div class="btnrow" style="margin-top:8px;flex-wrap:wrap">' +
+    '<button class="btn-alt" onclick="openTrade()">🤝 Trade</button>' +
+    '<button class="btn-alt" onclick="toggleTurnTimer()">⏱ Timer</button>' +
+    '<button class="btn-alt" onclick="toggleFullscreen()">⛶ Fullscreen</button>' +
+    '<button class="btn-alt" onclick="shareResults()">📤 Share</button>' +
+    '</div>';
+  sideEl.appendChild(toolsCard);
+}
+
+// Add zoom controls to board
+const boardWrap = document.getElementById('boardWrap');
+if(boardWrap) {
+  const zc = document.createElement('div');
+  zc.className = 'zoom-controls';
+  zc.innerHTML = '<button class="btn-alt zoom-btn" onclick="zoomBoard(0.15)">+</button><button class="btn-alt zoom-btn" onclick="zoomBoard(-0.15)">−</button><button class="btn-alt zoom-btn" onclick="boardZoom=1;zoomBoard(0)">⟲</button>';
+  boardWrap.appendChild(zc);
+}
+
+// Add turn timer ring to dice inline
+const diceInline = document.getElementById('diceInline');
+if(diceInline) {
+  const ring = document.createElement('div');
+  ring.className = 'turn-timer-ring';
+  ring.id = 'turnTimerRing';
+  diceInline.querySelector('.dice-inline-left')?.appendChild(ring);
+}
+
+// ============================================================
+// UPDATE META
+// ============================================================
+document.title = 'ARCADE WORLD v28 — Final Edition';
+const heroH1 = document.querySelector('.hero h1');
+if(heroH1) heroH1.textContent = 'ARCADE WORLD V28';
+const heroP = document.querySelector('.hero p');
+if(heroP) heroP.textContent = 'Final Edition: avatare, confetti, card flip, emotes, daily login, trade, season pass, zoom, fullscreen, haptic, sparklines, turn timer, share, keyboard nav, game previews.';
+
+console.log('%c🎮 ARCADE WORLD v28 FINAL loaded', 'font-size:16px;font-weight:bold;color:#30d27c');
+console.log('%cF=Fullscreen | ←→=Browse tiles | Ctrl+Shift+S=Spectator | Ctrl+Shift+P=Screenshot', 'font-size:11px;color:#6ee7ff');
+
+})();
+
+// ========== v29 PREMIUM MOBILE ==========
+(function(){
+'use strict';
+if(!window.state) return;
+
+const PLAYER_COLORS = ['#ffd54a','#3fa8ff','#ff72c4','#30d27c'];
+
+// ============================================================
+// BOTTOM TAB BAR
+// ============================================================
+const tabBar = document.createElement('div');
+tabBar.className = 'mobile-tab-bar';
+tabBar.innerHTML = `<div class="tab-bar-inner">
+  <button class="tab-item active" data-tab="board" onclick="mobileTab('board')">
+    <span class="tab-icon">🎮</span>Board
+  </button>
+  <button class="tab-item" data-tab="play" onclick="mobileTab('play')">
+    <span class="tab-icon">🎲</span>Play
+  </button>
+  <button class="tab-item" data-tab="stats" onclick="mobileTab('stats')">
+    <span class="tab-icon">📊</span>Stats
+  </button>
+  <button class="tab-item" data-tab="shop" onclick="mobileTab('shop')">
+    <span class="tab-icon">🛒</span>Shop
+  </button>
+  <button class="tab-item" data-tab="more" onclick="mobileTab('more')">
+    <span class="tab-icon">⚙️</span>More
+  </button>
+</div>`;
+document.body.appendChild(tabBar);
+
+// Mobile panels
+const panels = {
+  stats: () => {
+    const p = currentPlayer();
+    return `<div class="mobile-panel-header"><h2>📊 Stats · ${safeText(p.name)}</h2><button class="mobile-panel-close" onclick="closeMobilePanel()">✕</button></div>
+      <div class="hud" style="grid-template-columns:repeat(2,1fr)">
+        <div class="box"><div class="k">Level</div><div class="v">${p.level}</div></div>
+        <div class="box"><div class="k">Coins</div><div class="v">${p.coins}</div></div>
+        <div class="box"><div class="k">Wins</div><div class="v">${p.totalWins}</div></div>
+        <div class="box"><div class="k">Tiles done</div><div class="v">${p.completed?.length || 0}/24</div></div>
+        <div class="box"><div class="k">Streak</div><div class="v">${state.streak?.current || 0}${state.streak?.current >= 3 ? ' 🔥' : ''}</div></div>
+        <div class="box"><div class="k">Season</div><div class="v">Lv${state.season?.level || 1}</div></div>
+        <div class="box"><div class="k">Board passes</div><div class="v">${p.boardPasses || 0}</div></div>
+        <div class="box"><div class="k">XP</div><div class="v">${p.xp}/${typeof levelNeed === 'function' ? levelNeed(p.level) : '?'}</div></div>
+      </div>
+      <div class="xpbar" style="margin-top:12px"><div class="xpfill" style="width:${typeof levelNeed === 'function' ? Math.round(p.xp/levelNeed(p.level)*100) : 50}%"></div></div>
+      <div style="margin-top:16px">
+        <div class="section-k">Jucători</div>
+        <div class="players" style="margin-top:8px">${state.players.map((pl,i) => `<div class="player-card ${i === state.activePlayer ? 'active' : ''}">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="avatar-circle a${i}" onclick="editPlayerName(${i})" style="cursor:pointer">${pl.name.charAt(0)}</div>
+            <div><b>${safeText(pl.name)}</b><div class="tiny">Tile ${pl.position} · Coins ${pl.coins} · Lv${pl.level} · W${pl.totalWins}</div></div>
+            <span class="tag" style="margin-left:auto">${i === state.activePlayer ? 'ACTIV' : ''}</span>
+          </div>
+        </div>`).join('')}</div>
+      </div>
+      <div style="margin-top:16px">
+        <div class="section-k">Quest-uri</div>
+        <div class="list" style="margin-top:8px">${typeof QUESTS !== 'undefined' ? QUESTS.map(qs => {
+          const pr = Math.min(qs.target, qs.progress(p));
+          return '<div class="quest"><div style="font-weight:900">' + (p.questsDone?.includes(qs.id) ? '✅' : '🎯') + ' ' + qs.title + '</div><div class="tiny">' + pr + '/' + qs.target + '</div><div class="bar"><span style="width:' + Math.round(pr/qs.target*100) + '%"></span></div></div>';
+        }).join('') : ''}</div>
+      </div>`;
+  },
+  
+  shop: () => {
+    const p = currentPlayer();
+    return `<div class="mobile-panel-header"><h2>🛒 Shop & Inventory</h2><button class="mobile-panel-close" onclick="closeMobilePanel()">✕</button></div>
+      <div class="tiny" style="margin-bottom:12px">Coins: <b style="color:var(--gold)">${p.coins}</b></div>
+      <div class="section-k">Shop</div>
+      <div class="shopgrid" style="margin-top:8px;grid-template-columns:1fr">${typeof SHOP_ITEMS !== 'undefined' ? SHOP_ITEMS.map(it => 
+        '<div class="shop-item" style="display:flex;align-items:center;gap:12px"><div style="font-size:28px">' + it.icon + '</div><div style="flex:1"><div style="font-weight:900">' + it.name + '</div><div class="tiny">' + it.desc + '</div></div><button class="btn-main" style="min-width:80px" onclick="buyItem(\'' + it.id + '\');mobileTab(\'shop\')">' + it.price + 'c</button></div>'
+      ).join('') : ''}</div>
+      <div class="section-k" style="margin-top:16px">Inventory</div>
+      <div class="inventory" style="margin-top:8px;grid-template-columns:repeat(2,1fr)">
+        <div class="event-card"><b>🛡️ Shield</b><div class="tiny">${p.inventory?.shield || 0}</div></div>
+        <div class="event-card"><b>🎲 Reroll</b><div class="tiny">${p.inventory?.reroll || 0}</div></div>
+        <div class="event-card"><b>💎 x2</b><div class="tiny">${p.inventory?.double || 0}</div></div>
+        <div class="event-card"><b>📦 Chests</b><div class="tiny">C${p.chests?.common||0} R${p.chests?.rare||0} E${p.chests?.epic||0}</div></div>
+      </div>
+      <div class="section-k" style="margin-top:16px">Badges</div>
+      <div class="badgegrid" style="margin-top:8px;grid-template-columns:repeat(3,1fr)">${typeof BADGES !== 'undefined' ? BADGES.map(b => 
+        '<div class="badge ' + (p.badges?.[b.id] ? '' : 'locked') + '"><div class="icon">' + b.icon + '</div><div class="tiny">' + b.rarity + '</div></div>'
+      ).join('') : ''}</div>`;
+  },
+  
+  more: () => {
+    return `<div class="mobile-panel-header"><h2>⚙️ More</h2><button class="mobile-panel-close" onclick="closeMobilePanel()">✕</button></div>
+      <div class="list">
+        <div class="quest" onclick="openSavePanel();closeMobilePanel();" style="cursor:pointer"><b>💾 Save / Load</b><div class="tiny">Export, import, profile slots, reset</div></div>
+        <div class="quest" onclick="openPodium();closeMobilePanel();" style="cursor:pointer"><b>🏆 Podium</b><div class="tiny">Clasament sesiune curentă</div></div>
+        <div class="quest" onclick="openLeaderboard();closeMobilePanel();" style="cursor:pointer"><b>📊 Leaderboard</b><div class="tiny">Top 10 all-time</div></div>
+        <div class="quest" onclick="openTrade();closeMobilePanel();" style="cursor:pointer"><b>🤝 Trade</b><div class="tiny">Schimbă coins între jucători</div></div>
+        <div class="quest" onclick="toggleSpectator();closeMobilePanel();" style="cursor:pointer"><b>📺 Spectator Mode</b><div class="tiny">Vizualizare minimală</div></div>
+        <div class="quest" onclick="toggleFullscreen();closeMobilePanel();" style="cursor:pointer"><b>⛶ Fullscreen</b><div class="tiny">Ecran complet</div></div>
+        <div class="quest" onclick="shareResults();" style="cursor:pointer"><b>📤 Share Results</b><div class="tiny">Partajează scorul tău</div></div>
+        <div class="quest" onclick="toggleTurnTimer();" style="cursor:pointer"><b>⏱ Turn Timer</b><div class="tiny">${state.turnTimer?.enabled ? 'ON' : 'OFF'} — limită de timp per tură</div></div>
+        <div class="quest" onclick="nextTheme();mobileTab('more');" style="cursor:pointer"><b>🎨 Theme</b><div class="tiny">Schimbă tema vizuală</div></div>
+        <div class="quest" onclick="toggleSound();mobileTab('more');" style="cursor:pointer"><b>${state.sound ? '🔊' : '🔇'} Sound</b><div class="tiny">${state.sound ? 'ON' : 'OFF'}</div></div>
+        <div class="quest" onclick="setPlayerCount(state.multiplayerCount >= 4 ? 2 : state.multiplayerCount + 1);mobileTab('more');" style="cursor:pointer"><b>👥 Jucători: ${state.multiplayerCount || 2}</b><div class="tiny">Tap pentru a schimba (2-4)</div></div>
+        <div class="quest" onclick="if(typeof startTourManual==='function')startTourManual();closeMobilePanel();" style="cursor:pointer"><b>❓ Tutorial</b><div class="tiny">Repornește tour-ul</div></div>
+      </div>
+      <div class="tiny" style="margin-top:16px;text-align:center;opacity:.5">ARCADE WORLD v29 · Premium Edition</div>`;
+  }
+};
+
+let activePanel = null;
+
+window.mobileTab = function(tab) {
+  // Update active state
+  tabBar.querySelectorAll('.tab-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.tab === tab);
+  });
+  
+  closeMobilePanel();
+  
+  if(tab === 'board') {
+    // Just show the board (default)
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else if(tab === 'play') {
+    // Scroll to center screen
+    const screen = document.querySelector('.center-screen');
+    if(screen) screen.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } else if(panels[tab]) {
+    showMobilePanel(tab);
+  }
+};
+
+function showMobilePanel(tab) {
+  closeMobilePanel();
+  const panel = document.createElement('div');
+  panel.className = 'mobile-panel visible';
+  panel.id = 'mobilePanel';
+  panel.innerHTML = panels[tab]();
+  document.body.appendChild(panel);
+  activePanel = tab;
+}
+
+window.closeMobilePanel = function() {
+  const panel = document.getElementById('mobilePanel');
+  if(panel) panel.remove();
+  activePanel = null;
+};
+
+// ============================================================
+// FLOATING DICE FAB
+// ============================================================
+const fab = document.createElement('button');
+fab.className = 'mobile-dice-fab';
+fab.textContent = '🎲';
+fab.onclick = function() {
+  if(typeof rollDice === 'function' && !state.animating) {
+    rollDice();
+    fab.style.transform = 'translateX(-50%) scale(.85)';
+    setTimeout(() => fab.style.transform = 'translateX(-50%) scale(1)', 200);
+  }
+};
+document.body.appendChild(fab);
+
+// ============================================================
+// MOBILE SCORE STRIP
+// ============================================================
+const scoreStrip = document.createElement('div');
+scoreStrip.className = 'mobile-score-strip';
+scoreStrip.id = 'mobileScoreStrip';
+document.body.appendChild(scoreStrip);
+
+function updateScoreStrip() {
+  const colors = ['#ffd54a','#3fa8ff','#ff72c4','#30d27c'];
+  scoreStrip.innerHTML = '<div class="score-strip-inner">' +
+    state.players.map((p, i) => 
+      '<div class="score-chip ' + (i === state.activePlayer ? 'active-chip' : '') + '">' +
+      '<div class="sc-dot" style="background:' + colors[i] + '"></div>' +
+      safeText(p.name) + ' · ' + p.coins + 'c · Lv' + p.level +
+      '</div>'
+    ).join('') +
+    '<div class="score-chip" style="color:var(--gold)">🎲 ' + (currentPlayer().lastRoll || '—') + '</div>' +
+    '</div>';
+}
+
+// ============================================================
+// SWIPE GESTURES
+// ============================================================
+let touchStartX = 0, touchStartY = 0;
+
+document.addEventListener('touchstart', (e) => {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+}, { passive: true });
+
+document.addEventListener('touchend', (e) => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  
+  // Only handle horizontal swipes (not scroll)
+  if(Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx) * 0.7) return;
+  
+  // Don't swipe inside modals/panels
+  if(e.target.closest('.modal, .mobile-panel, .game-stage, .meter')) return;
+  
+  if(dx > 0) {
+    // Swipe right — previous tile
+    state.selectedTile = (state.selectedTile - 1 + TILES.length) % TILES.length;
+    if(typeof renderScreen === 'function') renderScreen('details');
+  } else {
+    // Swipe left — next tile
+    state.selectedTile = (state.selectedTile + 1) % TILES.length;
+    if(typeof renderScreen === 'function') renderScreen('details');
+  }
+}, { passive: true });
+
+// ============================================================
+// HOOK INTO RENDER TO UPDATE MOBILE UI
+// ============================================================
+const _renderAll = window.renderAll;
+if(_renderAll) {
+  window.renderAll = function() {
+    _renderAll.apply(this, arguments);
+    updateScoreStrip();
+    
+    // Update FAB with bonus indicator
+    const p = currentPlayer();
+    if(p.bonusTurns > 0) {
+      fab.textContent = '✨';
+      fab.title = 'Bonus turn disponibil!';
+    } else {
+      fab.textContent = '🎲';
+      fab.title = 'Aruncă zarul';
+    }
+    
+    // Refresh active panel if open
+    if(activePanel && panels[activePanel]) {
+      const panel = document.getElementById('mobilePanel');
+      if(panel) panel.innerHTML = panels[activePanel]();
+    }
+  };
+}
+
+// ============================================================
+// UPDATE META
+// ============================================================
+document.title = 'ARCADE WORLD v29 — Premium Edition';
+const heroH1 = document.querySelector('.hero h1');
+if(heroH1) heroH1.textContent = 'ARCADE WORLD V29';
+const heroP = document.querySelector('.hero p');
+if(heroP) heroP.textContent = 'Premium Edition: mobile-first redesign, bottom tab bar, floating dice, swipe gestures, Google Fonts, glassmorphism, animated borders, safe-area insets, PWA-ready.';
+
+console.log('%c🎮 ARCADE WORLD v29 PREMIUM loaded', 'font-size:16px;font-weight:bold;color:#74f6ea');
+
+})();
+
+// ========== v29.1 CRITICAL MOBILE FIX ==========
+(function(){
+'use strict';
+if(!window.state) return;
+
+const isMobile = () => window.innerWidth <= 768;
+
+// ============================================================
+// 1. SCROLL TO START TILE ON LOAD
+// ============================================================
+function scrollToStartTile() {
+  if(!isMobile()) return;
+  requestAnimationFrame(() => {
+    const startTile = document.querySelector('.tile-wrap[data-idx="0"]');
+    if(startTile) {
+      startTile.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+    }
+  });
+}
+
+// ============================================================
+// 2. SCROLL TO CURRENT PLAYER TILE AFTER MOVE
+// ============================================================
+function scrollToCurrentTile() {
+  if(!isMobile()) return;
+  const p = currentPlayer();
+  const tile = document.querySelector('.tile-wrap[data-idx="' + p.position + '"]');
+  if(tile) {
+    tile.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    // Highlight flash
+    const btn = tile.querySelector('.tile');
+    if(btn) {
+      btn.style.boxShadow = '0 0 0 3px rgba(255,213,74,.5), 0 0 20px rgba(255,213,74,.3)';
+      setTimeout(() => btn.style.boxShadow = '', 800);
+    }
+  }
+}
+
+// Hook into moveBy to auto-scroll
+const _moveBy = window.moveBy;
+if(_moveBy) {
+  window.moveBy = async function(steps) {
+    const result = await _moveBy.apply(this, arguments);
+    scrollToCurrentTile();
+    return result;
+  };
+}
+
+// ============================================================
+// 3. GAME OVERLAY (center-screen content on mobile)
+// ============================================================
+let gameOverlay = document.getElementById('mobileGameOverlay');
+if(!gameOverlay) {
+  gameOverlay = document.createElement('div');
+  gameOverlay.className = 'mobile-game-overlay';
+  gameOverlay.id = 'mobileGameOverlay';
+  document.body.appendChild(gameOverlay);
+}
+
+// When renderScreen is called on mobile, mirror content to overlay
+const _renderScreen = window.renderScreen;
+if(_renderScreen) {
+  window.renderScreen = function(tab, custom, autoEnd) {
+    _renderScreen.apply(this, arguments);
+    
+    if(isMobile()) {
+      const screen = document.getElementById('screen');
+      if(screen && (tab === 'modes' || tab === 'event' || custom)) {
+        gameOverlay.innerHTML = '<div style="max-width:600px;margin:0 auto">' + screen.innerHTML + '</div>';
+        gameOverlay.classList.add('visible');
+        
+        // Add close button at top
+        if(!gameOverlay.querySelector('.game-overlay-close')) {
+          const closeBtn = document.createElement('button');
+          closeBtn.className = 'btn-alt game-overlay-close';
+          closeBtn.style.cssText = 'position:sticky;top:0;z-index:5;margin-bottom:10px;width:100%';
+          closeBtn.textContent = '← Înapoi la board';
+          closeBtn.onclick = () => gameOverlay.classList.remove('visible');
+          gameOverlay.prepend(closeBtn);
+        }
+      }
+    }
+  };
+}
+
+// Close game overlay on end turn
+const _endTurn = window.endTurn;
+if(_endTurn) {
+  window.endTurn = function() {
+    _endTurn.apply(this, arguments);
+    if(isMobile()) {
+      gameOverlay.classList.remove('visible');
+      setTimeout(scrollToCurrentTile, 300);
+    }
+  };
+}
+
+// ============================================================
+// 4. "PLAY" TAB OPENS GAME OVERLAY
+// ============================================================
+const _mobileTab = window.mobileTab;
+if(_mobileTab) {
+  window.mobileTab = function(tab) {
+    if(tab === 'play' && isMobile()) {
+      // Show game screen in overlay
+      const screen = document.getElementById('screen');
+      if(screen) {
+        gameOverlay.innerHTML = '<div style="max-width:600px;margin:0 auto">' + screen.innerHTML + '</div>';
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'btn-alt';
+        closeBtn.style.cssText = 'position:sticky;top:0;z-index:5;margin-bottom:10px;width:100%';
+        closeBtn.textContent = '← Înapoi la board';
+        closeBtn.onclick = () => gameOverlay.classList.remove('visible');
+        gameOverlay.prepend(closeBtn);
+        gameOverlay.classList.add('visible');
+      }
+      // Update tab bar
+      document.querySelectorAll('.tab-item').forEach(el => {
+        el.classList.toggle('active', el.dataset.tab === 'play');
+      });
+      return;
+    }
+    _mobileTab.apply(this, arguments);
+  };
+}
+
+// ============================================================
+// 5. TILE TAP → OPEN GAME ON MOBILE
+// ============================================================
+const _selectTile = window.selectTile;
+if(_selectTile) {
+  window.selectTile = function(idx) {
+    _selectTile.apply(this, arguments);
+    if(isMobile()) {
+      // Brief delay to let renderScreen populate
+      setTimeout(() => {
+        const screen = document.getElementById('screen');
+        if(screen) {
+          gameOverlay.innerHTML = '<div style="max-width:600px;margin:0 auto">' + screen.innerHTML + '</div>';
+          const closeBtn = document.createElement('button');
+          closeBtn.className = 'btn-alt';
+          closeBtn.style.cssText = 'position:sticky;top:0;z-index:5;margin-bottom:10px;width:100%';
+          closeBtn.textContent = '← Înapoi la board';
+          closeBtn.onclick = () => gameOverlay.classList.remove('visible');
+          gameOverlay.prepend(closeBtn);
+          gameOverlay.classList.add('visible');
+        }
+      }, 200);
+    }
+  };
+}
+
+// ============================================================
+// 6. RENDER HOOK: scroll on load + keep synced
+// ============================================================
+const _renderAll = window.renderAll;
+if(_renderAll) {
+  window.renderAll = function() {
+    _renderAll.apply(this, arguments);
+    // First load: scroll to start
+    if(!window._mobileScrolled && isMobile()) {
+      window._mobileScrolled = true;
+      setTimeout(scrollToStartTile, 500);
+    }
+  };
+}
+
+// Also scroll on init
+setTimeout(scrollToStartTile, 800);
+setTimeout(scrollToStartTile, 2000); // after setup overlay closes
+
+// ============================================================
+// 7. CLOSE OVERLAY ON BACK BUTTON
+// ============================================================
+window.addEventListener('popstate', () => {
+  if(gameOverlay.classList.contains('visible')) {
+    gameOverlay.classList.remove('visible');
+  }
+  closeMobilePanel();
+});
+
+// Push state when opening overlay to enable back button
+const origGameOverlayAdd = gameOverlay.classList.add.bind(gameOverlay.classList);
+
+console.log('%c📱 Mobile fix v29.1 loaded', 'font-size:12px;color:#30d27c');
+
+})();
+
+// ===== MOBILE DEFINITIVE v30 =====
+(function(){
+  if(!window.state) return;
+  var COLORS=['#ffd54a','#3fa8ff','#ff72c4','#30d27c'];
+  
+  // Update score strip
+  function upStrip(){
+    var el=document.getElementById('mStripInner');
+    if(!el||!state.players)return;
+    el.innerHTML=state.players.map(function(p,i){
+      var on=i===state.activePlayer?'on':'';
+      return '<div class="m-chip '+on+'"><div class="m-cdot" style="background:'+COLORS[i]+'"></div>'+
+        p.name+' · '+p.coins+'c · Lv'+p.level+'</div>';
+    }).join('')+'<div class="m-chip" style="color:#ffd54a">🎲 '+(currentPlayer().lastRoll||'—')+'</div>';
+  }
+  
+  // Hook renderAll
+  var _ra=window.renderAll;
+  if(_ra){window.renderAll=function(){_ra.apply(this,arguments);upStrip();
+    // Auto-scroll to current tile
+    var idx=currentPlayer().position;
+    var tw=document.querySelector('.tile-wrap[data-idx="'+idx+'"]');
+    if(tw&&window.innerWidth<=768){tw.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});}
+  };}
+  
+  // Tab navigation
+  window.mTab=function(t){
+    document.querySelectorAll('.m-tab').forEach(function(el,i){
+      el.classList.toggle('active',['board','play','stats','shop','more'][i]===t);
+    });
+    var panel=document.getElementById('mPanel');
+    
+    if(t==='board'){
+      panel.classList.remove('open');
+      window.scrollTo({top:0,behavior:'smooth'});
+      return;
+    }
+    if(t==='play'){
+      var scr=document.getElementById('screen');
+      panel.innerHTML='<div class="m-panel-head"><h2>🕹️ Play</h2><button class="m-panel-close" onclick="document.getElementById(\'mPanel\').classList.remove(\'open\')">✕</button></div>'+(scr?scr.innerHTML:'<p>Aruncă zarul pentru a juca.</p>');
+      panel.classList.add('open');
+      return;
+    }
+    if(t==='stats'){
+      var p=currentPlayer();
+      panel.innerHTML='<div class="m-panel-head"><h2>📊 Stats</h2><button class="m-panel-close" onclick="document.getElementById(\'mPanel\').classList.remove(\'open\')">✕</button></div>'+
+        '<div class="hud" style="grid-template-columns:repeat(2,1fr)">'+
+        '<div class="box"><div class="k">Level</div><div class="v">'+p.level+'</div></div>'+
+        '<div class="box"><div class="k">Coins</div><div class="v">'+p.coins+'</div></div>'+
+        '<div class="box"><div class="k">Wins</div><div class="v">'+p.totalWins+'</div></div>'+
+        '<div class="box"><div class="k">Tiles</div><div class="v">'+(p.completed?p.completed.length:0)+'/24</div></div>'+
+        '<div class="box"><div class="k">Streak</div><div class="v">'+(state.streak?state.streak.current:0)+'</div></div>'+
+        '<div class="box"><div class="k">Passes</div><div class="v">'+(p.boardPasses||0)+'</div></div>'+
+        '</div>'+
+        '<div class="section-k" style="margin-top:14px">Jucători</div>'+
+        '<div class="players" style="margin-top:8px">'+state.players.map(function(pl,i){
+          return '<div class="player-card '+(i===state.activePlayer?'active':'')+'"><div style="display:flex;justify-content:space-between;align-items:center"><b>'+pl.name+'</b><span class="tag">'+(i===state.activePlayer?'ACTIV':'')+'</span></div><div class="tiny">Tile '+pl.position+' · '+pl.coins+'c · Lv'+pl.level+' · W'+pl.totalWins+'</div></div>';
+        }).join('')+'</div>';
+      panel.classList.add('open');
+      return;
+    }
+    if(t==='shop'){
+      var p2=currentPlayer();
+      panel.innerHTML='<div class="m-panel-head"><h2>🛒 Shop</h2><button class="m-panel-close" onclick="document.getElementById(\'mPanel\').classList.remove(\'open\')">✕</button></div>'+
+        '<div class="tiny" style="margin-bottom:10px">Coins: <b style="color:var(--gold)">'+p2.coins+'</b></div>'+
+        (typeof SHOP_ITEMS!=='undefined'?SHOP_ITEMS.map(function(it){
+          return '<div class="quest" style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div style="font-size:24px">'+it.icon+'</div><div style="flex:1"><b>'+it.name+'</b><div class="tiny">'+it.desc+'</div></div><button class="btn-main" style="min-width:70px" onclick="buyItem(\''+it.id+'\');mTab(\'shop\')">'+it.price+'c</button></div>';
+        }).join(''):'') +
+        '<div class="section-k" style="margin-top:14px">Inventory</div>'+
+        '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:8px">'+
+        '<div class="event-card"><b>🛡️</b> '+(p2.inventory?p2.inventory.shield:0)+'</div>'+
+        '<div class="event-card"><b>🎲</b> '+(p2.inventory?p2.inventory.reroll:0)+'</div>'+
+        '<div class="event-card"><b>💎</b> '+(p2.inventory?p2.inventory.double:0)+'</div>'+
+        '<div class="event-card"><b>📦</b> C'+(p2.chests?p2.chests.common:0)+' R'+(p2.chests?p2.chests.rare:0)+'</div></div>';
+      panel.classList.add('open');
+      return;
+    }
+    if(t==='more'){
+      panel.innerHTML='<div class="m-panel-head"><h2>⚙️ More</h2><button class="m-panel-close" onclick="document.getElementById(\'mPanel\').classList.remove(\'open\')">✕</button></div>'+
+        '<div class="list">'+
+        '<div class="quest" onclick="openSavePanel();document.getElementById(\'mPanel\').classList.remove(\'open\')" style="cursor:pointer"><b>💾 Save / Load</b></div>'+
+        '<div class="quest" onclick="if(typeof openPodium===\'function\')openPodium();document.getElementById(\'mPanel\').classList.remove(\'open\')" style="cursor:pointer"><b>🏆 Podium</b></div>'+
+        '<div class="quest" onclick="if(typeof openLeaderboard===\'function\')openLeaderboard();document.getElementById(\'mPanel\').classList.remove(\'open\')" style="cursor:pointer"><b>📊 Leaderboard</b></div>'+
+        '<div class="quest" onclick="nextTheme();mTab(\'more\')" style="cursor:pointer"><b>🎨 Theme</b></div>'+
+        '<div class="quest" onclick="toggleSound();mTab(\'more\')" style="cursor:pointer"><b>'+(state.sound?'🔊 Sound ON':'🔇 Sound OFF')+'</b></div>'+
+        '<div class="quest" onclick="setPlayerCount(state.multiplayerCount>=4?2:state.multiplayerCount+1);mTab(\'more\')" style="cursor:pointer"><b>👥 Jucători: '+state.multiplayerCount+'</b><div class="tiny">Tap pentru a schimba</div></div>'+
+        '<div class="quest" onclick="if(typeof toggleFullscreen===\'function\')toggleFullscreen()" style="cursor:pointer"><b>⛶ Fullscreen</b></div>'+
+        '<div class="quest" onclick="if(typeof shareResults===\'function\')shareResults()" style="cursor:pointer"><b>📤 Share</b></div>'+
+        '</div>'+
+        '<div class="tiny" style="margin-top:16px;text-align:center;opacity:.4">ARCADE WORLD v30</div>';
+      panel.classList.add('open');
+      return;
+    }
+  };
+  
+  // When tile is tapped on mobile, open Play panel
+  var _sel=window.selectTile;
+  if(_sel){window.selectTile=function(idx){_sel.apply(this,arguments);
+    if(window.innerWidth<=768){setTimeout(function(){mTab('play');},200);}
+  };}
+  
+  // After move, close panel and show board
+  var _et=window.endTurn;
+  if(_et){window.endTurn=function(){_et.apply(this,arguments);
+    document.getElementById('mPanel').classList.remove('open');
+  };}
+  
+  // Scroll to START on first load
+  setTimeout(function(){
+    if(window.innerWidth<=768){
+      var s=document.querySelector('.tile-wrap[data-idx="0"]');
+      if(s)s.scrollIntoView({inline:'start',block:'nearest'});
+    }
+  },1200);
+  
+  // Also after setup closes
+  var obs=new MutationObserver(function(){
+    var setup=document.getElementById('setupOverlay');
+    if(setup&&setup.classList.contains('hidden')){
+      obs.disconnect();
+      setTimeout(function(){
+        var s=document.querySelector('.tile-wrap[data-idx="0"]');
+        if(s&&window.innerWidth<=768)s.scrollIntoView({inline:'start',block:'nearest'});
+      },500);
+    }
+  });
+  obs.observe(document.body,{subtree:true,attributes:true,attributeFilter:['class']});
+  
+  upStrip();
+})();
