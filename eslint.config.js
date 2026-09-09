@@ -13,6 +13,8 @@ export default [
       globals: {
         window: 'readonly',
         document: 'readonly',
+        navigator: 'readonly',
+        MutationObserver: 'readonly',
         localStorage: 'readonly',
         URLSearchParams: 'readonly',
         structuredClone: 'readonly',

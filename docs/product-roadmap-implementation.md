@@ -21,7 +21,7 @@ The module `src/game/productLoop.js` adds a testable product layer for the roadm
 
 ## Implemented UI overlay
 
-The module `src/game/productLoopUi.js` mounts a non-invasive product loop assistant over the existing page.
+The module `src/game/productLoopUi.js` mounts a product loop assistant over the existing page.
 
 It renders:
 
@@ -29,15 +29,39 @@ It renders:
 - profile/avatar cycling;
 - level, XP, coins, and boss progress;
 - reward preview;
-- simulated shared result screen;
+- shared result screen fed by real mini-game events;
 - daily challenge card;
 - progressive mini-game unlock grid;
 - haptic feedback where supported;
-- local progress persistence.
+- local progress persistence;
+- tile decoration for locked/unlocked mini-games.
 
-To enable it in the live page, load `src/game/productLoopAutoMount.js` as a module near the end of `index.html`.
+`src/game/productLoopAutoMount.js` enables the overlay in production mode: debug win/loss buttons are hidden, tiles are decorated, and mini-game results are expected from game events.
 
-The overlay is intentionally separate from the monolithic `index.html` so it can be tested and iterated without risking regressions in the playable board.
+## Real mini-game result contract
+
+Mini-games can report results in either of these ways:
+
+1. Dispatch a browser event named `arcade:minigame-result` with `detail` containing the result payload.
+2. Send a `postMessage` with `type: arcade:minigame-result` and the same payload.
+
+Payload fields:
+
+- `miniGameId`: game id such as `basket`, `memory`, `breakout`, `hockey`, `maze`, or `shooter`;
+- `score`: numeric score;
+- `won`: boolean;
+- `durationSeconds`: optional numeric duration;
+- `difficulty`: optional numeric multiplier.
+
+The overlay converts that payload into the shared result model, applies XP/coins/boss rewards, updates unlocks, saves locally, and shows the result screen.
+
+## Tile locking
+
+The overlay scans `.tile` elements and tries to detect mini-game names from their text or `data-mini-game-id` attribute.
+
+Locked mini-game tiles are visually dimmed and blocked before their original click handler can start the game. The lock card shows the requirement and current progress.
+
+Recommended next step: add explicit `data-mini-game-id` attributes to every mini-game tile so detection is exact instead of text-based.
 
 ## Recommended UI wiring order
 
