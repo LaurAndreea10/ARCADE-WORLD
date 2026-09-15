@@ -5,7 +5,7 @@
 <h1 align="center">ARCADE WORLD</h1>
 
 <p align="center">
-  <strong>Browser-based board game with 11 embedded mini-games, territory capture, boss fights, and local multiplayer.</strong>
+  <strong>Browser-based board game with an expanding mini-game catalog, territory capture, boss fights, and local multiplayer.</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,8 @@ Arcade World is a **digital board game** where 2–4 players roll dice, move aro
 
 ### Core Gameplay
 - **24-tile board** with game tiles, bonus events, traps, and a START reward
-- **11 unique mini-games** — Basket, Hockey, Bounce, Maze, Bomber, Shooter, TicTacToe, Memory, Breakout, Fusion, PvAI duel
+- **Expanded mini-game catalog** — Basket, Hockey, Bounce, Maze, Bomber, Shooter, TicTacToe, Memory, Breakout, Fusion, PvAI duel and Tri-Link Quest
+- **Tri-Link Quest** — 10-level accessible campaign combining sliding puzzle, match-3 and connect, with offline PWA support
 - **Pizza tiles** — PIZZA GAME and PIZZA DELUXE are tracked for the pizza quest
 - **2–4 local players** — player-count helpers are ready for setup UI wiring
 - **4 play modes** per tile — Solo, vs AI (3 difficulties), Quiz, Full Game (iframe overlay)
@@ -155,6 +156,7 @@ Pentru misiunea cu pizza: aterizează pe tile-ul **PIZZA GAME** sau **PIZZA DELU
 
 ## Documentation
 
+- [`games/tri-link-quest/README.md`](games/tri-link-quest/README.md) — Tri-Link Quest gameplay, accessibility and result-event contract
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) — local setup, PR checklist, and contribution flow
 - [`SECURITY.md`](SECURITY.md) — iframe, save import, DOM, and dependency security policy
 - [`docs/architecture.md`](docs/architecture.md) — system architecture and migration plan
