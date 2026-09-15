@@ -36,5 +36,5 @@ Contractul iframe are teste pentru origine greșită, altă fereastră, sesiune 
 
 ## Linkuri
 
-- [Demo live](https://laurandreea10.github.io/ARCADE-WORLD/games/tri-link-quest/)
+- [Demo live](https://laurandreea10.github.io/Tri-Link-Quest/)
 - [ARCADE WORLD](https://laurandreea10.github.io/ARCADE-WORLD/)
