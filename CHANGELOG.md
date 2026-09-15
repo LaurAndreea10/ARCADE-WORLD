@@ -1,3 +1,14 @@
+## v34 — 2026-09-15
+
+### Tri-Link Quest
+
+- Adăugat jocul 3-în-1: sliding puzzle, match-3 și connect.
+- Adăugate 10 niveluri, trei dificultăți, RO/EN, contrast și persistență.
+- Adăugat PWA offline, artwork Open Graph și documentație dedicată.
+- Integrate coins, XP, istoric, statistici și insigna Triple Crown.
+- Securizat contractul postMessage prin validarea originii, iframe-ului și sesiunii.
+- Adăugate teste Vitest pentru acceptarea și respingerea mesajelor.
+
 ## v33 — 2026-09-04
 
 ### Performance architecture
