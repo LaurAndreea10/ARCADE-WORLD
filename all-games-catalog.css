@@ -1,0 +1,27 @@
+.aw-version-nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;position:relative;z-index:2}
+.aw-version-btn{min-height:44px;padding:10px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);color:#fff}
+.aw-version-btn[aria-selected="true"]{background:linear-gradient(180deg,#c4f6ff,#6ee7ff);color:#06172a}
+.aw-games-portal{max-width:1550px;margin:0 auto;padding:0 16px 110px;color:var(--text)}
+.aw-games-portal[hidden],body[data-aw-version="classic"] .aw-games-portal{display:none}
+body:not([data-aw-version="classic"]) .app{display:none}
+.aw-catalog-hero{padding:24px;border:1px solid rgba(110,231,255,.2);border-radius:28px;background:linear-gradient(145deg,rgba(15,30,56,.97),rgba(7,15,28,.97));box-shadow:var(--shadow)}
+.aw-catalog-hero h2{margin:6px 0;font-size:clamp(30px,5vw,58px)}
+.aw-catalog-tools{display:grid;grid-template-columns:minmax(220px,1fr) auto;gap:10px;margin-top:18px}
+.aw-game-search{min-height:48px;border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:0 14px;background:#081321;color:#fff;font:inherit}
+.aw-filter-row{display:flex;gap:8px;flex-wrap:wrap}
+.aw-filter{min-height:44px;padding:9px 12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#fff}
+.aw-filter.is-active{background:var(--gold);color:#302400}
+.aw-game-section{margin-top:18px;padding:18px;border:1px solid rgba(255,255,255,.09);border-radius:24px;background:rgba(6,14,28,.72)}
+.aw-game-section h3{margin:0 0 12px;font-size:22px}
+.aw-game-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.aw-game-card{display:flex;min-height:190px;flex-direction:column;padding:16px;border:1px solid rgba(255,255,255,.1);border-radius:20px;background:linear-gradient(180deg,rgba(15,34,68,.95),rgba(6,16,32,.98))}
+.aw-game-card:focus-within{outline:3px solid var(--cyan);outline-offset:3px}
+.aw-game-icon{font-size:34px}.aw-game-card h4{margin:10px 0 5px;font-size:17px}.aw-game-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.45}
+.aw-game-meta{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.aw-game-tag{font-size:10px;padding:4px 7px;border-radius:999px;background:rgba(110,231,255,.1);color:#c8f8ff}
+.aw-game-actions{display:flex;gap:8px;margin-top:auto;padding-top:12px}.aw-game-link{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:8px 11px;border-radius:12px;background:linear-gradient(180deg,#c4f6ff,#6ee7ff);color:#06172a;text-decoration:none;font-weight:900}
+.aw-game-link--repo{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.1)}
+.aw-empty{padding:30px;text-align:center;color:var(--muted)}
+@media(max-width:1100px){.aw-game-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:760px){.aw-games-portal{padding:10px 10px 110px}.aw-catalog-hero{padding:16px}.aw-catalog-tools{grid-template-columns:1fr}.aw-game-grid{grid-template-columns:1fr}.aw-version-nav{display:grid;grid-template-columns:1fr}.aw-version-btn{width:100%}}
+@media(prefers-reduced-motion:reduce){.aw-games-portal *{scroll-behavior:auto!important;transition:none!important}}
+
