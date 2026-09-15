@@ -40,6 +40,7 @@ export function installArcadeProductLoopUi({
   enableDebugActions = false,
   decorateTiles = true,
 } = {}) {
+  window.ArcadeProductLoop?.destroy?.();
   injectStyles();
 
   const saved = parseStoredState(storage);
@@ -48,6 +49,7 @@ export function installArcadeProductLoopUi({
   const stack = createAndroidBackStack('board');
   const root = document.createElement('aside');
   root.className = 'aw-loop-shell';
+  if (window.matchMedia?.('(max-width: 760px)').matches) root.classList.add('is-collapsed');
   root.setAttribute('aria-label', 'Arcade World progress assistant');
 
   const state = {
@@ -70,12 +72,15 @@ export function installArcadeProductLoopUi({
   }
 
   function recordMiniGameResult(payload = {}) {
+    const score = toFiniteNumber(payload.score, 0, { min: 0 });
+    const durationSeconds = toFiniteNumber(payload.durationSeconds, 0, { min: 0 });
+    const difficulty = toFiniteNumber(payload.difficulty, 1, { min: 0.25, max: 4 });
     const result = buildMiniGameResult({
-      miniGameId: payload.miniGameId ?? state.selectedMiniGame,
-      score: Number(payload.score ?? 0),
+      miniGameId: normalizeMiniGameId(payload.miniGameId) ?? state.selectedMiniGame,
+      score,
       won: Boolean(payload.won),
-      durationSeconds: Number(payload.durationSeconds ?? 0),
-      difficulty: Number(payload.difficulty ?? 1),
+      durationSeconds,
+      difficulty,
     });
     const applied = applyMiniGameResult(state.profile, result);
     state.profile = applied.profile;
@@ -132,6 +137,8 @@ export function installArcadeProductLoopUi({
     const unlocks = MINI_GAME_IDS.map((id) => getMiniGameUnlockState(id, state.profile));
 
     root.innerHTML = `
+      <button class="aw-loop-toggle" data-aw-action="toggle" aria-expanded="${!root.classList.contains('is-collapsed')}" aria-label="Arată sau ascunde progresul">🏆 <span>Product loop</span></button>
+      <div class="aw-loop-content">
       <div class="aw-loop-card aw-loop-card--hero">
         <div>
           <div class="aw-loop-kicker">Core loop</div>
@@ -173,6 +180,7 @@ export function installArcadeProductLoopUi({
           ${unlocks.map(renderUnlock).join('')}
         </div>
       </div>
+      </div>
     `;
 
     if (decorateTiles) decorateBoardTiles(state.profile);
@@ -184,6 +192,12 @@ export function installArcadeProductLoopUi({
     if (!button) return;
 
     const action = button.dataset.awAction;
+
+    if (action === 'toggle') {
+      root.classList.toggle('is-collapsed');
+      render();
+      return;
+    }
 
     if (action === 'next-onboarding') {
       state.onboarding = advanceOnboarding(state.onboarding);
@@ -211,29 +225,34 @@ export function installArcadeProductLoopUi({
     render();
   });
 
-  window.addEventListener('popstate', () => {
+  const handlePopState = () => {
     const back = handleAndroidBack(state.stack);
     state.stack = back.stack;
     if (back.action === 'navigate-back') {
       state.lastResult = null;
       render();
     }
-  });
+  };
 
-  window.addEventListener('arcade:minigame-result', (event) => {
+  const handleResultEvent = (event) => {
     recordMiniGameResult(event.detail);
-  });
+  };
 
-  window.addEventListener('message', (event) => {
+  const handleMessage = (event) => {
     const data = event.data;
     if (!data || data.type !== 'arcade:minigame-result') return;
+    if (!isTrustedResultMessage(event)) return;
     recordMiniGameResult(data.payload ?? data);
-  });
+  };
 
+  window.addEventListener('popstate', handlePopState);
+  window.addEventListener('arcade:minigame-result', handleResultEvent);
+  window.addEventListener('message', handleMessage);
+
+  let observer = null;
+  let handleTileClick = null;
   if (decorateTiles) {
-    document.addEventListener(
-      'click',
-      (event) => {
+    handleTileClick = (event) => {
         const tile = event.target.closest?.('.tile');
         const miniGameId = tile ? detectMiniGameId(tile) : null;
         if (!miniGameId) return;
@@ -250,11 +269,10 @@ export function installArcadeProductLoopUi({
           nextStep: 'Earn rewards to unlock it',
         };
         render();
-      },
-      true,
-    );
+    };
+    document.addEventListener('click', handleTileClick, true);
 
-    const observer = new MutationObserver(() => decorateBoardTiles(state.profile));
+    observer = new MutationObserver(() => decorateBoardTiles(state.profile));
     observer.observe(document.body, { childList: true, subtree: true });
   }
 
@@ -272,7 +290,15 @@ export function installArcadeProductLoopUi({
       state.lastResult = null;
       render();
     },
-    destroy: () => root.remove(),
+    destroy: () => {
+      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener('arcade:minigame-result', handleResultEvent);
+      window.removeEventListener('message', handleMessage);
+      if (handleTileClick) document.removeEventListener('click', handleTileClick, true);
+      observer?.disconnect();
+      root.remove();
+      if (window.ArcadeProductLoop === api) window.ArcadeProductLoop = { install: installArcadeProductLoopUi };
+    },
   };
 
   window.ArcadeProductLoop = api;
@@ -368,6 +394,23 @@ function normalizeText(value) {
     .trim();
 }
 
+function toFiniteNumber(value, fallback, { min = -Infinity, max = Infinity } = {}) {
+  const number = Number(value ?? fallback);
+  if (!Number.isFinite(number)) return fallback;
+  return Math.min(max, Math.max(min, number));
+}
+
+function isTrustedResultMessage(event) {
+  if (event.origin === window.location.origin && event.source === window) return true;
+  const frame = document.getElementById('fullFrame');
+  if (!frame?.contentWindow || event.source !== frame.contentWindow) return false;
+  try {
+    return event.origin === new window.URL(frame.src, window.location.href).origin;
+  } catch {
+    return false;
+  }
+}
+
 function injectStyles() {
   if (document.getElementById(STYLE_ID)) return;
 
@@ -375,6 +418,7 @@ function injectStyles() {
   style.id = STYLE_ID;
   style.textContent = `
     .aw-loop-shell{position:fixed;right:16px;bottom:16px;z-index:90;width:min(390px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;display:grid;gap:10px;padding:10px;border:1px solid rgba(110,231,255,.24);border-radius:24px;background:rgba(3,9,22,.82);box-shadow:0 24px 80px rgba(0,0,0,.45);backdrop-filter:blur(14px);color:#f5fbff;font-family:Outfit,Inter,system-ui,sans-serif}.aw-loop-card{padding:14px;border:1px solid rgba(255,255,255,.1);border-radius:18px;background:linear-gradient(180deg,rgba(15,30,56,.95),rgba(7,15,28,.95));box-shadow:0 12px 32px rgba(0,0,0,.22)}.aw-loop-card--hero{display:flex;align-items:center;justify-content:space-between;gap:12px}.aw-loop-card--onboarding{border-color:rgba(255,213,74,.35)}.aw-loop-card--result{border-color:rgba(48,210,124,.35)}.aw-loop-kicker{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#ffd54a;font-weight:900;margin-bottom:4px}.aw-loop-card strong{display:block;font-size:16px}.aw-loop-card p{margin:6px 0 0;color:rgba(245,251,255,.76);font-size:13px;line-height:1.35}.aw-loop-note{font-size:12px!important;color:rgba(245,251,255,.62)!important}.aw-loop-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.aw-loop-stat{padding:10px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);text-align:center}.aw-loop-stat span{display:block;font-size:10px;color:rgba(245,251,255,.68);text-transform:uppercase;letter-spacing:.12em}.aw-loop-stat strong{display:block;margin-top:4px;font-size:16px}.aw-loop-button{border:0;border-radius:14px;padding:10px 12px;background:linear-gradient(180deg,#c4f6ff,#6ee7ff);color:#06172a;font-weight:900;cursor:pointer}.aw-loop-button:disabled{opacity:.45;cursor:not-allowed}.aw-loop-button--ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.12)}.aw-loop-button--wide{width:100%;margin-top:10px}.aw-loop-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.aw-loop-bar{height:9px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.12);margin-top:10px}.aw-loop-bar span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#6ee7ff,#ffd54a)}.aw-loop-unlocks{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}.aw-loop-unlock{display:flex;align-items:center;justify-content:space-between;gap:8px;border-radius:14px;padding:9px 10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:#fff;text-align:left}.aw-loop-unlock span{font-weight:900}.aw-loop-unlock small{font-size:10px;font-weight:900;color:rgba(245,251,255,.72)}.aw-loop-unlock.is-locked{opacity:.55;filter:grayscale(.25)}.aw-loop-unlock.is-unlocked{border-color:rgba(48,210,124,.38)}.tile[data-unlock-state='locked']{opacity:.54;filter:grayscale(.22)}@media(max-width:760px){.aw-loop-shell{left:12px;right:12px;bottom:12px;width:auto;max-height:48vh}.aw-loop-grid{grid-template-columns:repeat(2,1fr)}}
+    .aw-loop-content{display:grid;gap:10px}.aw-loop-toggle{width:100%;min-height:44px;border-radius:14px;background:rgba(255,255,255,.09);color:#fff;border:1px solid rgba(255,255,255,.12)}.aw-loop-shell.is-collapsed .aw-loop-content{display:none}@media(max-width:760px){.aw-loop-shell{bottom:82px;max-height:calc(100dvh - 96px)}}
   `;
   document.head.append(style);
 }
