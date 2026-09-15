@@ -3081,6 +3081,9 @@ function renderTopStats(){const p=currentPlayer();q('top-stats').innerHTML=`
 }
 
 function tileState(player,idx){if(player.position===idx)return {label:'CURRENT',cls:'current'};if(player.completed.includes(idx))return {label:'DONE',cls:'completed'};if(player.visited.includes(idx))return {label:'VISITED',cls:'visited'};return {label:TILES[idx].type==='special'?'SPECIAL':'OPEN',cls:''}}
+function productLoopMiniGameId(family){return family==='ttt'?'ticTacToe':family}
+function productLoopDifficulty(){return state.difficulty==='hard'?1.5:state.difficulty==='easy'?.75:1}
+function emitProductLoopResult(tileData,won,score,durationSeconds=0){const miniGameId=productLoopMiniGameId(tileData?.family);if(!miniGameId)return;window.dispatchEvent(new CustomEvent('arcade:minigame-result',{detail:{miniGameId,score:Number(score)||0,won:Boolean(won),durationSeconds:Number(durationSeconds)||0,difficulty:productLoopDifficulty()}}))}
 
 
 function tileIconMarkup(t){
@@ -3104,7 +3107,7 @@ function tileIconMarkup(t){
 
 function renderBoard(){
   const p=currentPlayer();
-  const cell=(idx)=>{const t=tile(idx);const s=tileState(p,idx);const corner=[0,6,12,18].includes(idx);return `<div class="tile-wrap" data-idx="${idx}" onclick="selectTile(${idx})"><button class="tile ${t.type==='special'?'special':''} ${s.cls} ${corner?'corner':''}"><div class="idx">${idx}</div><div class="icon">${tileIconMarkup(t)}</div><div class="name">${safeText(t.name)}</div><div class="state">${s.label}</div><div class="dot"></div></button></div>`};
+  const cell=(idx)=>{const t=tile(idx);const s=tileState(p,idx);const corner=[0,6,12,18].includes(idx);const gameId=t.type==='game'?` data-mini-game-id="${productLoopMiniGameId(t.family)}"`:'';return `<div class="tile-wrap" data-idx="${idx}" onclick="selectTile(${idx})"><button class="tile ${t.type==='special'?'special':''} ${s.cls} ${corner?'corner':''}"${gameId}><div class="idx">${idx}</div><div class="icon">${tileIconMarkup(t)}</div><div class="name">${safeText(t.name)}</div><div class="state">${s.label}</div><div class="dot"></div></button></div>`};
   q('topRow').innerHTML=TOP_IDS.map(cell).join('');
   q('rightCol').innerHTML=RIGHT_IDS.map(cell).join('');
   q('bottomRow').innerHTML=BOTTOM_IDS.slice().reverse().map(cell).join('');
@@ -3211,7 +3214,7 @@ function chooseDifficulty(d){state.difficulty=d;launchMini()}
 function launchMini(){const fam=currentTile().family;if(fam==='basket')return startBasket();if(fam==='maze')return startMaze();if(fam==='bomber')return startBomber();if(fam==='shooter')return startShooter();if(fam==='fusion')return startFusion();if(fam==='hockey')return startHockey();if(fam==='ttt')return startTTT();if(fam==='bounce')return startBounce();if(fam==='breakout')return startBreakout();if(fam==='memory')return startMemory();if(fam==='pvai')return startPvAI();}
 
 function layoutGame(title,subtitle,hud,body,foot=''){q('screen').innerHTML=`<h3>${title}</h3><p class="muted">${subtitle}</p><div class="hud">${hud.map(h=>`<div class="box"><div class="k">${h.k}</div><div class="v" id="${h.id||''}">${h.v}</div></div>`).join('')}</div>${body}${foot?`<div class="btnrow" style="margin-top:12px">${foot}</div>`:''}`}
-function finishMini(win,msg,opts={}){const r=claimReward(win,{coins:opts.extraCoins||0,xp:opts.extraXp||0,score:opts.score||0,partial:opts.partial??(win?1:.35),result:win?'win':'lose',source:'mini'});if(win)burst();q('screen').innerHTML=`<div class="log"><b>${win?'✅':'❌'} ${msg}</b><br><br>Coins +${r.coins} · XP +${r.xp}</div><div class="btnrow" style="margin-top:12px"><button class="btn-main" onclick="renderScreen('modes')">Replay</button><button class="btn-alt" onclick="endTurn()">Tura următoare</button></div>`}
+function finishMini(win,msg,opts={}){const playedTile=currentTile();const startedAt=Number(state.miniStartedAt)||Date.now();const r=claimReward(win,{coins:opts.extraCoins||0,xp:opts.extraXp||0,score:opts.score||0,partial:opts.partial??(win?1:.35),result:win?'win':'lose',source:'mini'});emitProductLoopResult(playedTile,win,opts.score||0,Math.round((Date.now()-startedAt)/1000));state.miniStartedAt=null;if(win)burst();q('screen').innerHTML=`<div class="log"><b>${win?'✅':'❌'} ${msg}</b><br><br>Coins +${r.coins} · XP +${r.xp}</div><div class="btnrow" style="margin-top:12px"><button class="btn-main" onclick="renderScreen('modes')">Replay</button><button class="btn-alt" onclick="endTurn()">Tura următoare</button></div>`}
 
 function askQuiz(onWin,onLose){const pools={basket:[['Câte puncte are liberă?',['1','2','3'],0],['Ce e dunk?',['șut','slam','dribling'],1]],maze:[['Ce vrei în maze?',['ieșirea','bonus audio','skin'],0]],memory:[['Ce cauți în memory?',['perechi','chei','boss'],0]],fusion:[['Fusion combină?',['mecanici arcade','doar puzzle','doar quiz'],0]],hockey:[['Scop air hockey?',['marchezi','rotești tabla','spargi bricks'],0]],ttt:[['Ținta?',['3 în linie','4 în pătrat','2 în coloană'],0]]};const fam=currentTile().family;const qz=(pools[fam]||[['Skill check?',['da','nu','poate'],0]])[0];q('screen').innerHTML=`<h3>Bonus Quiz</h3><div class="log">${qz[0]}</div><div class="btnrow" style="margin-top:12px">${qz[1].map((a,i)=>`<button class="btn-main" onclick="quizPick(${i},${qz[2]})">${a}</button>`).join('')}</div>`;window.quizPick=(i,c)=>i===c?onWin():onLose()}
 
@@ -9511,5 +9514,6 @@ console.log('%c📱 Mobile fix v29.1 loaded', 'font-size:12px;color:#30d27c');
 })();
 </script>
 
+<script type="module" src="./src/game/productLoopAutoMount.js"></script>
 </body>
 </html>
