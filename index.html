@@ -49,6 +49,14 @@
 
 
   <link rel="stylesheet" href="arcade-world.bundle.min.css?v=34">
+<style id="skydreams-arcade-style">
+.sky-arcade-card{margin-top:14px;padding:14px;border:1px solid rgba(112,245,230,.45);border-radius:18px;background:linear-gradient(135deg,#123b57,#251c54);color:#fff;max-width:680px}
+.sky-arcade-card strong{display:block;font-size:1.08rem}.sky-arcade-card p{margin:5px 0 10px;color:#e4efff}
+.sky-arcade-actions{display:flex;flex-wrap:wrap;gap:8px}.sky-arcade-actions a,.sky-arcade-actions button{display:inline-block;padding:9px 14px;border-radius:11px;border:1px solid #9afaff;background:#126f85;color:#fff;font:700 14px system-ui;text-decoration:none;cursor:pointer}
+#skyArcadeDialog{width:min(1100px,96vw);height:min(850px,94vh);padding:0;border:2px solid #70f5e6;border-radius:18px;background:#0b1430;color:#fff}
+#skyArcadeDialog::backdrop{background:#04091bdb}#skyArcadeDialog header{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;font:700 16px system-ui}
+#skyArcadeDialog iframe{display:block;width:100%;height:calc(100% - 50px);border:0}#skyArcadeDialog button{background:#243763;color:#fff;border:1px solid #8ca8d7;border-radius:9px;padding:8px 12px;cursor:pointer}
+</style>
 </head>
 <body class="theme-cyan">
 
@@ -86,6 +94,11 @@
           <div class="pill">export/import save</div>
         </div>
         <div class="aw-dock" id="awDock"></div>
+<section class="sky-arcade-card" data-mini-game-id="skydreams-portal" aria-labelledby="skyArcadeTitle">
+<strong id="skyArcadeTitle">☁️ SkyDreams Portal <span class="pill green">NEW</span></strong>
+<p>Curse, Daily Challenge, Campionat și shop · RO/EN · mod text accesibil / Races, daily challenge, championship and shop.</p>
+<div class="sky-arcade-actions"><button type="button" onclick="openSkyArcade()">▶ Joacă aici / Play here</button><a href="https://laurandreea10.github.io/codepen-portfolio/skydreams-portal/" target="_blank" rel="noopener noreferrer">↗ Tab separat / New tab</a></div>
+</section>
       </div>
       <div class="panel stats" id="top-stats"></div>
     </div>
@@ -351,6 +364,7 @@
 
 
 
+<dialog id="skyArcadeDialog" aria-labelledby="skyArcadeDialogTitle"><header><span id="skyArcadeDialogTitle">SkyDreams Portal</span><button type="button" onclick="document.getElementById('skyArcadeDialog').close()">Închide / Close ✕</button></header><iframe id="skyArcadeFrame" title="SkyDreams Portal — joc RO/EN / bilingual game" allow="fullscreen"></iframe></dialog>
 <div class="aw-modal" id="awModal"><div class="aw-card" id="awModalCard"></div></div>
 
 
@@ -452,6 +466,11 @@
 
 
 
-  <script src="arcade-world.bundle.min.js?v=35" defer></script>
+  <script id="skydreams-arcade-launcher">
+const SKY_ARCADE_URL='https://laurandreea10.github.io/codepen-portfolio/skydreams-portal/';
+function openSkyArcade(){const dialog=document.getElementById('skyArcadeDialog'),frame=document.getElementById('skyArcadeFrame');frame.src=SKY_ARCADE_URL;dialog.showModal()}
+document.getElementById('skyArcadeDialog').addEventListener('close',()=>{document.getElementById('skyArcadeFrame').removeAttribute('src')});
+</script>
+<script src="arcade-world.bundle.min.js?v=35" defer></script>
 </body>
 </html>
