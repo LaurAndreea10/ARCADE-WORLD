@@ -53,6 +53,8 @@
 .sky-arcade-card{margin-top:14px;padding:14px;border:1px solid rgba(112,245,230,.45);border-radius:18px;background:linear-gradient(135deg,#123b57,#251c54);color:#fff;max-width:680px}
 .sky-arcade-card strong{display:block;font-size:1.08rem}.sky-arcade-card p{margin:5px 0 10px;color:#e4efff}
 .sky-arcade-actions{display:flex;flex-wrap:wrap;gap:8px}.sky-arcade-actions a,.sky-arcade-actions button{display:inline-block;padding:9px 14px;border-radius:11px;border:1px solid #9afaff;background:#126f85;color:#fff;font:700 14px system-ui;text-decoration:none;cursor:pointer}
+.sky-arcade-actions :is(a,button):focus-visible{outline:3px solid #fff;outline-offset:3px}
+.arcade-extras{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px;max-width:900px}.arcade-extras .sky-arcade-card{margin-top:14px}
 #skyArcadeDialog{width:min(1100px,96vw);height:min(850px,94vh);padding:0;border:2px solid #70f5e6;border-radius:18px;background:#0b1430;color:#fff}
 #skyArcadeDialog::backdrop{background:#04091bdb}#skyArcadeDialog header{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;font:700 16px system-ui}
 #skyArcadeDialog iframe{display:block;width:100%;height:calc(100% - 50px);border:0}#skyArcadeDialog button{background:#243763;color:#fff;border:1px solid #8ca8d7;border-radius:9px;padding:8px 12px;cursor:pointer}
@@ -94,11 +96,23 @@
           <div class="pill">export/import save</div>
         </div>
         <div class="aw-dock" id="awDock"></div>
+<div class="arcade-extras" aria-label="Experiențe noi / New experiences">
 <section class="sky-arcade-card" data-mini-game-id="skydreams-portal" aria-labelledby="skyArcadeTitle">
 <strong id="skyArcadeTitle">☁️ SkyDreams Portal <span class="pill green">NEW</span></strong>
 <p>Curse, Cloud Maze, labirint zilnic, campionat și shop · RO/EN · hartă text accesibilă / Races, Cloud Maze, daily maze, championship and shop.</p>
 <div class="sky-arcade-actions"><button type="button" onclick="openSkyArcade()">▶ Joacă aici / Play here</button><a href="https://laurandreea10.github.io/codepen-portfolio/skydreams-portal/" target="_blank" rel="noopener noreferrer">↗ Tab separat / New tab</a></div>
 </section>
+<section class="sky-arcade-card" data-mini-game-id="revenue-landscape" aria-labelledby="revenueArcadeTitle">
+<strong id="revenueArcadeTitle">📊 Revenue Landscape <span class="pill green">NEW</span></strong>
+<p>Explorează și editează un peisaj 3D izometric al veniturilor · RO/EN / Explore and edit an isometric 3D revenue landscape.</p>
+<div class="sky-arcade-actions"><button type="button" onclick="openArcadeExperience('revenue')">▶ Deschide aici / Open here</button><a href="https://laurandreea10.github.io/Revenue-Landscape/" target="_blank" rel="noopener noreferrer">↗ Tab separat / New tab</a></div>
+</section>
+<section class="sky-arcade-card" data-mini-game-id="kygo-world" aria-labelledby="kygoArcadeTitle">
+<strong id="kygoArcadeTitle">🐩 Kygo World <span class="pill green">NEW</span></strong>
+<p>Joc de aventură cu mod Story și ediții Halloween, Paște și Crăciun · RO/EN / Adventure game with Story mode and seasonal editions.</p>
+<div class="sky-arcade-actions"><button type="button" onclick="openArcadeExperience('kygo')">▶ Joacă aici / Play here</button><a href="https://laurandreea10.github.io/codepen-portfolio/kygo-world/" target="_blank" rel="noopener noreferrer">↗ Tab separat / New tab</a></div>
+</section>
+</div>
       </div>
       <div class="panel stats" id="top-stats"></div>
     </div>
@@ -468,7 +482,9 @@
 
   <script id="skydreams-arcade-launcher">
 const SKY_ARCADE_URL='https://laurandreea10.github.io/codepen-portfolio/skydreams-portal/';
-function openSkyArcade(){const dialog=document.getElementById('skyArcadeDialog'),frame=document.getElementById('skyArcadeFrame');frame.src=SKY_ARCADE_URL;dialog.showModal()}
+const ARCADE_EXPERIENCES={sky:{url:SKY_ARCADE_URL,title:'SkyDreams Portal'},revenue:{url:'https://laurandreea10.github.io/Revenue-Landscape/',title:'Revenue Landscape'},kygo:{url:'https://laurandreea10.github.io/codepen-portfolio/kygo-world/',title:'Kygo World'}};
+function openArcadeExperience(id){const experience=ARCADE_EXPERIENCES[id];if(!experience)return;const dialog=document.getElementById('skyArcadeDialog'),frame=document.getElementById('skyArcadeFrame');document.getElementById('skyArcadeDialogTitle').textContent=experience.title;frame.title=experience.title;frame.src=experience.url;dialog.showModal()}
+function openSkyArcade(){openArcadeExperience('sky')}
 document.getElementById('skyArcadeDialog').addEventListener('close',()=>{document.getElementById('skyArcadeFrame').removeAttribute('src')});
 </script>
 <script src="arcade-world.bundle.min.js?v=35" defer></script>
