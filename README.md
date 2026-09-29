@@ -178,3 +178,7 @@ MIT — see [LICENSE](LICENSE)
 <p align="center">
   <sub>Built by <a href="https://github.com/LaurAndreea10">Laura Andreea</a> — a portfolio project demonstrating frontend architecture, game design, responsive UI, and maintainable frontend engineering.</sub>
 </p>
+
+## Grădina Curioasă / Curious Garden
+
+The [bilingual learning game](https://gradina-curioasa.plugaru-laura10.chatgpt.site/) joins the external experiences in Arcade World. It offers 12 age-adapted worlds, four interactive adventures, local profiles, seasonal events and a birthday workshop. The card offers an in-page launcher and a direct link.
