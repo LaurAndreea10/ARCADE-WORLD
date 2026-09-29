@@ -112,6 +112,11 @@
 <p>Joc de aventură cu mod Story și ediții Halloween, Paște și Crăciun · RO/EN / Adventure game with Story mode and seasonal editions.</p>
 <div class="sky-arcade-actions"><button type="button" onclick="openArcadeExperience('kygo')">▶ Joacă aici / Play here</button><a href="https://laurandreea10.github.io/codepen-portfolio/kygo-world/" target="_blank" rel="noopener noreferrer">↗ Tab separat / New tab</a></div>
 </section>
+<section class="sky-arcade-card" data-mini-game-id="curious-garden" aria-labelledby="curiousGardenArcadeTitle">
+<strong id="curiousGardenArcadeTitle">🦄 Grădina Curioasă / Curious Garden <span class="pill green">NEW</span></strong>
+<p>12 lumi, jocuri adaptate vârstei, aventuri cu unicorni, brioșe, mașini și rachete, evenimente și aniversare · RO/EN.</p>
+<div class="sky-arcade-actions"><button type="button" onclick="openArcadeExperience('garden')">▶ Joacă aici / Play here</button><a href="https://gradina-curioasa.plugaru-laura10.chatgpt.site/" target="_blank" rel="noopener noreferrer">↗ Tab separat / New tab</a></div>
+</section>
 </div>
       </div>
       <div class="panel stats" id="top-stats"></div>
@@ -482,7 +487,7 @@
 
   <script id="skydreams-arcade-launcher">
 const SKY_ARCADE_URL='https://laurandreea10.github.io/codepen-portfolio/skydreams-portal/';
-const ARCADE_EXPERIENCES={sky:{url:SKY_ARCADE_URL,title:'SkyDreams Portal'},revenue:{url:'https://laurandreea10.github.io/Revenue-Landscape/',title:'Revenue Landscape'},kygo:{url:'https://laurandreea10.github.io/codepen-portfolio/kygo-world/',title:'Kygo World'}};
+const ARCADE_EXPERIENCES={sky:{url:SKY_ARCADE_URL,title:'SkyDreams Portal'},revenue:{url:'https://laurandreea10.github.io/Revenue-Landscape/',title:'Revenue Landscape'},kygo:{url:'https://laurandreea10.github.io/codepen-portfolio/kygo-world/',title:'Kygo World'},garden:{url:'https://gradina-curioasa.plugaru-laura10.chatgpt.site/',title:'Grădina Curioasă / Curious Garden'}};
 function openArcadeExperience(id){const experience=ARCADE_EXPERIENCES[id];if(!experience)return;const dialog=document.getElementById('skyArcadeDialog'),frame=document.getElementById('skyArcadeFrame');document.getElementById('skyArcadeDialogTitle').textContent=experience.title;frame.title=experience.title;frame.src=experience.url;dialog.showModal()}
 function openSkyArcade(){openArcadeExperience('sky')}
 document.getElementById('skyArcadeDialog').addEventListener('close',()=>{document.getElementById('skyArcadeFrame').removeAttribute('src')});
