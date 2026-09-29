@@ -181,4 +181,4 @@ MIT — see [LICENSE](LICENSE)
 
 ## Grădina Curioasă / Curious Garden
 
-The [bilingual learning game](https://gradina-curioasa.plugaru-laura10.chatgpt.site/) joins the external experiences in Arcade World. It offers 12 age-adapted worlds, four interactive adventures, local profiles, seasonal events and a birthday workshop. The card offers an in-page launcher and a direct link.
+The [bilingual learning game](https://gradina-curioasa.plugaru-laura10.chatgpt.site/) ([source code](https://github.com/LaurAndreea10/codepen-portfolio/tree/main/curious-garden/)) joins the external experiences in Arcade World. It offers 12 age-adapted worlds, four interactive adventures, local profiles, seasonal events and a birthday workshop. The card offers an in-page launcher and a direct link.
