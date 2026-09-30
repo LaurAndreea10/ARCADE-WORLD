@@ -58,6 +58,7 @@
 #skyArcadeDialog{width:min(1100px,96vw);height:min(850px,94vh);padding:0;border:2px solid #70f5e6;border-radius:18px;background:#0b1430;color:#fff}
 #skyArcadeDialog::backdrop{background:#04091bdb}#skyArcadeDialog header{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;font:700 16px system-ui}
 #skyArcadeDialog iframe{display:block;width:100%;height:calc(100% - 50px);border:0}#skyArcadeDialog button{background:#243763;color:#fff;border:1px solid #8ca8d7;border-radius:9px;padding:8px 12px;cursor:pointer}
+@media(max-width:768px){#mobileFab{bottom:calc(85px + env(safe-area-inset-bottom))!important}}
 </style>
 </head>
 <body class="theme-cyan">
@@ -97,6 +98,7 @@
         </div>
         <div class="aw-dock" id="awDock"></div>
 <div class="arcade-extras" aria-label="Experiențe noi / New experiences">
+<section class="sky-arcade-card" data-mini-game-id="odyssey-quest" aria-labelledby="odysseyArcadeTitle"><strong id="odysseyArcadeTitle">⛵ Odyssey Quest <span class="pill green">NEW</span></strong><p>12 episoade · 120 probe · 11 moduri · RO/EN · accesibil · offline / 12 episodes · 120 trials · 11 modes · accessible · offline.</p><div class="sky-arcade-actions"><button type="button" onclick="openArcadeExperience('odyssey')">▶ Joacă aici / Play here</button><a href="https://laurandreea10.github.io/codepen-portfolio/odyssey-quest/" target="_blank" rel="noopener noreferrer">↗ Tab separat / New tab</a><a href="https://laurandreea10.github.io/codepen-portfolio/odyssey-quest/README.md" target="_blank" rel="noopener noreferrer">README</a></div><p id="odysseyArcadeResult" data-odyssey-score role="status" aria-live="polite"></p></section>
 <section class="sky-arcade-card" data-mini-game-id="skydreams-portal" aria-labelledby="skyArcadeTitle">
 <strong id="skyArcadeTitle">☁️ SkyDreams Portal <span class="pill green">NEW</span></strong>
 <p>Curse, Cloud Maze, labirint zilnic, campionat și shop · RO/EN · hartă text accesibilă / Races, Cloud Maze, daily maze, championship and shop.</p>
@@ -487,10 +489,15 @@
 
   <script id="skydreams-arcade-launcher">
 const SKY_ARCADE_URL='https://laurandreea10.github.io/codepen-portfolio/skydreams-portal/';
-const ARCADE_EXPERIENCES={sky:{url:SKY_ARCADE_URL,title:'SkyDreams Portal'},revenue:{url:'https://laurandreea10.github.io/Revenue-Landscape/',title:'Revenue Landscape'},kygo:{url:'https://laurandreea10.github.io/codepen-portfolio/kygo-world/',title:'Kygo World'},garden:{url:'https://gradina-curioasa.plugaru-laura10.chatgpt.site/',title:'Grădina Curioasă / Curious Garden'}};
-function openArcadeExperience(id){const experience=ARCADE_EXPERIENCES[id];if(!experience)return;const dialog=document.getElementById('skyArcadeDialog'),frame=document.getElementById('skyArcadeFrame');document.getElementById('skyArcadeDialogTitle').textContent=experience.title;frame.title=experience.title;frame.src=experience.url;dialog.showModal()}
+const ARCADE_EXPERIENCES={odyssey:{url:'https://laurandreea10.github.io/codepen-portfolio/odyssey-quest/?parentOrigin=https%3A%2F%2Flaurandreea10.github.io',title:'Odyssey Quest'},sky:{url:SKY_ARCADE_URL,title:'SkyDreams Portal'},revenue:{url:'https://laurandreea10.github.io/Revenue-Landscape/',title:'Revenue Landscape'},kygo:{url:'https://laurandreea10.github.io/codepen-portfolio/kygo-world/',title:'Kygo World'},garden:{url:'https://gradina-curioasa.plugaru-laura10.chatgpt.site/',title:'Grădina Curioasă / Curious Garden'}};
+let activeArcadeExperience=null;
+function openArcadeExperience(id){activeArcadeExperience=id;const experience=ARCADE_EXPERIENCES[id];if(!experience)return;const dialog=document.getElementById('skyArcadeDialog'),frame=document.getElementById('skyArcadeFrame');document.getElementById('skyArcadeDialogTitle').textContent=experience.title;frame.title=experience.title;frame.src=experience.url;dialog.showModal()}
 function openSkyArcade(){openArcadeExperience('sky')}
-document.getElementById('skyArcadeDialog').addEventListener('close',()=>{document.getElementById('skyArcadeFrame').removeAttribute('src')});
+document.getElementById('skyArcadeDialog').addEventListener('close',()=>{activeArcadeExperience=null;document.getElementById('skyArcadeFrame').removeAttribute('src')});
+
+window.addEventListener('message',event=>{const frame=document.getElementById('skyArcadeFrame'),d=event.data;if(activeArcadeExperience!=='odyssey'||event.origin!=='https://laurandreea10.github.io'||event.source!==frame.contentWindow||!d||d.type!=='GAME_SCORE'||d.gameId!=='odyssey-quest'||!Number.isInteger(d.score)||d.score<0||d.score>100||!Number.isInteger(d.chapter)||d.chapter<0||d.chapter>11||!Number.isInteger(d.stage)||d.stage<0||d.stage>9)return;document.querySelectorAll('[data-odyssey-score]').forEach(el=>el.textContent='Odyssey Quest · Scor / Score: '+d.score+' · Capitol / Chapter '+(d.chapter+1));});
+
+document.addEventListener('DOMContentLoaded',()=>{const original=window.mTab,more=document.querySelector('.m-tabs .m-tab:last-child');if(!more)return;more.onclick=()=>{const panel=document.getElementById('mPanel'),source=document.querySelector('.arcade-extras [data-mini-game-id="odyssey-quest"]');if(!source||!panel)return;if(typeof original==='function')original('more');else{panel.replaceChildren();const heading=document.createElement('div');heading.className='m-panel-head';const title=document.createElement('h2');title.textContent='Experiențe / Experiences';const close=document.createElement('button');close.textContent='✕';close.setAttribute('aria-label','Închide / Close');close.onclick=()=>panel.classList.remove('open');heading.append(title,close);panel.append(heading);panel.classList.add('open');document.querySelectorAll('.m-tab').forEach(el=>el.classList.toggle('active',el===more));}const card=source.cloneNode(true);card.removeAttribute('aria-labelledby');card.removeAttribute('id');card.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));panel.appendChild(card);};});
 </script>
 <script src="arcade-world.bundle.min.js?v=35" defer></script>
 </body>

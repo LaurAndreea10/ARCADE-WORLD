@@ -1,3 +1,9 @@
+## Odyssey Quest — 2026-09-30
+
+- Added bilingual launch card and embedded play through the existing experience dialog.
+- Added validated iframe score display (origin, source window, game ID, score and chapter/stage).
+- The standalone experience preserves its own progress and does not change board tile ownership.
+
 ## v34 — 2026-09-15
 
 ### Tri-Link Quest
