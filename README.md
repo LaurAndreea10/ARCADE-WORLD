@@ -35,6 +35,7 @@ Arcade World is a **digital board game** where 2–4 players roll dice, move aro
 ## Features
 
 ### Core Gameplay
+
 - **24-tile board** with game tiles, bonus events, traps, and a START reward
 - **Expanded mini-game catalog** — Basket, Hockey, Bounce, Maze, Bomber, Shooter, TicTacToe, Memory, Breakout, Fusion, PvAI duel and Tri-Link Quest
 - **Tri-Link Quest** — 10-level accessible campaign combining sliding puzzle, match-3 and connect, with offline PWA support
@@ -44,6 +45,7 @@ Arcade World is a **digital board game** where 2–4 players roll dice, move aro
 - **Dice roll → move → resolve → play** turn loop with smooth token animation
 
 ### Product Systems Ready for UI Wiring
+
 - **Player count setup** — helpers for choosing, clamping, creating, and resizing 2–4 players
 - **Pizza quest** — helper that completes the quest after a pizza mini-game is finished
 - **Mini-game registry** — one source of truth for game IDs, modes, categories, scoring, iframe URLs, and fallbacks
@@ -113,18 +115,18 @@ npm run lint
 npm test
 ```
 
-| Check | Status |
-|---|---|
-| Formatting | Prettier config added |
-| Linting | ESLint config added |
-| Unit tests | Vitest tests added for core helpers, player count, pizza quest, and product systems |
-| CI | GitHub Actions workflow added |
-| Accessibility/performance | Checklist documented in `docs/accessibility-performance.md` |
-| iframe safety | Contract documented in `docs/iframe-bridge.md` |
-| Save safety | Migrations and recovery documented in `docs/save-system.md` |
-| Player count and pizza quest | Documented in `docs/player-count-and-pizza-quest.md` |
-| Contribution flow | `CONTRIBUTING.md` and `docs/add-mini-game.md` added |
-| Security | `SECURITY.md` added |
+| Check                        | Status                                                                              |
+| ---------------------------- | ----------------------------------------------------------------------------------- |
+| Formatting                   | Prettier config added                                                               |
+| Linting                      | ESLint config added                                                                 |
+| Unit tests                   | Vitest tests added for core helpers, player count, pizza quest, and product systems |
+| CI                           | GitHub Actions workflow added                                                       |
+| Accessibility/performance    | Checklist documented in `docs/accessibility-performance.md`                         |
+| iframe safety                | Contract documented in `docs/iframe-bridge.md`                                      |
+| Save safety                  | Migrations and recovery documented in `docs/save-system.md`                         |
+| Player count and pizza quest | Documented in `docs/player-count-and-pizza-quest.md`                                |
+| Contribution flow            | `CONTRIBUTING.md` and `docs/add-mini-game.md` added                                 |
+| Security                     | `SECURITY.md` added                                                                 |
 
 ---
 
@@ -182,7 +184,6 @@ MIT — see [LICENSE](LICENSE)
 ## Grădina Curioasă / Curious Garden
 
 The [bilingual learning game](https://gradina-curioasa.plugaru-laura10.chatgpt.site/) ([source code](https://github.com/LaurAndreea10/codepen-portfolio/tree/main/curious-garden/)) joins the external experiences in Arcade World. It offers 12 age-adapted worlds, four interactive adventures, local profiles, seasonal events and a birthday workshop. The card offers an in-page launcher and a direct link.
-
 
 ### Odyssey Quest
 

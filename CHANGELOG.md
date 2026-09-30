@@ -36,6 +36,7 @@ The format follows the spirit of [Keep a Changelog](https://keepachangelog.com/)
 ## [Unreleased]
 
 ### Added
+
 - Tooling foundation with Vite, ESLint, Prettier, and Vitest.
 - GitHub Actions quality workflow for formatting, linting, and tests.
 - Core game helper modules for dice, movement, economy, ELO, save schema, and iframe bridge behavior.
@@ -46,11 +47,13 @@ The format follows the spirit of [Keep a Changelog](https://keepachangelog.com/)
 - MIT license file.
 
 ### Changed
+
 - Project roadmap now separates playable demo work from maintainable architecture work.
 - Version notes are tracked here instead of inside inline HTML comments.
 - README now describes the modular migration path, quality workflow, product systems, and contribution docs.
 
 ### Planned
+
 - Incremental extraction of the existing single-file game into the new `src/` module structure.
 - Lighthouse audit artifacts for desktop and mobile.
 - Online multiplayer prototype behind a feature flag.
