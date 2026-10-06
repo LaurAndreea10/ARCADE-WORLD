@@ -188,3 +188,12 @@ The [bilingual learning game](https://gradina-curioasa.plugaru-laura10.chatgpt.s
 ### Odyssey Quest
 
 [Play the 12-island adventure](https://laurandreea10.github.io/codepen-portfolio/odyssey-quest/) — 120 trials, 11 modes, RO/EN and accessible offline play. Launch from the new experience card or a separate tab. Results are shown in the card; board ownership remains unchanged.
+
+
+### SlideStorm Arena
+
+**RO** — [Joacă SlideStorm Arena](https://laurandreea10.github.io/codepen-portfolio/slidestorm-arena/). Cardul din Arcade World deschide jocul în dialogul existent sau într-un tab separat. Aceeași experiență este disponibilă în catalogul mobil. Jocul își păstrează progresul local separat; rezultatele primite de la iframe sunt afișate în card, fără modificarea proprietății tile-urilor.
+
+**EN** — [Play SlideStorm Arena](https://laurandreea10.github.io/codepen-portfolio/slidestorm-arena/). The Arcade World card opens the game in the existing dialog or a separate tab. The same experience is available in the mobile catalog. Game progress remains separate and local; validated iframe results appear in the card without changing board tile ownership.
+
+Integration checks: one source card, launcher URL, mobile card cloning, and score-message origin/source checks confirmed in `index.html`. Real-device touch and screen-reader behavior remain unverified by this integration check.
