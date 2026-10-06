@@ -1,3 +1,7 @@
+# BooScary integration — 2026-10-06
+
+Added BooScary v4 to desktop/mobile catalog and iframe launcher, with origin/source-checked score messages and direct play/case-study links.
+
 ## Odyssey Quest — 2026-09-30
 
 - Added bilingual launch card and embedded play through the existing experience dialog.
@@ -58,3 +62,4 @@ The format follows the spirit of [Keep a Changelog](https://keepachangelog.com/)
 - Lighthouse audit artifacts for desktop and mobile.
 - Online multiplayer prototype behind a feature flag.
 - UI wiring for achievements, daily challenges, settings, profiles, and match summaries.
+

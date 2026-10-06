@@ -166,7 +166,7 @@
               <div class="pill">export/import save</div>
             </div>
             <div class="aw-dock" id="awDock"></div>
-            <div class="arcade-extras" aria-label="Experiențe noi / New experiences"><section class="sky-arcade-card" data-mini-game-id="tic-tac-toe-ultimate" aria-labelledby="tttArcadeTitle"><strong id="tttArcadeTitle">❌⭕ Tic Tac Toe Ultimate 3.1</strong><p>3×3–6×6 · AI · puzzle-uri generate / generated puzzles · campionat / championship · RO/EN · backup JSON.</p><div class="sky-arcade-actions"><a href="https://laurandreea10.github.io/Tic-Tac-Toe/" target="_blank" rel="noopener noreferrer">Joacă / Play</a><a href="https://laurandreea10.github.io/Tic-Tac-Toe/CHANGELOG.md">Istoric / History</a></div></section>
+            <div class="arcade-extras" aria-label="Experiențe noi / New experiences"><section class="sky-arcade-card" data-mini-game-id="booscary" aria-labelledby="booArcadeTitle"><strong id="booArcadeTitle">🎃 Halloween BooScary v4</strong><p>Atelier / Studio · 6 editions · 22 challenges · story · RO/EN · offline</p><div class="sky-arcade-actions"><button onclick="openArcadeExperience('booscary')">Joacă aici / Play here</button><a href="https://laurandreea10.github.io/codepen-portfolio/booscary/">Deschide / Open</a><a href="https://laurandreea10.github.io/codepen-portfolio/booscary/case-study.html">Studiu / Case study</a></div><p data-booscary-score aria-live="polite"></p></section><section class="sky-arcade-card" data-mini-game-id="tic-tac-toe-ultimate" aria-labelledby="tttArcadeTitle"><strong id="tttArcadeTitle">❌⭕ Tic Tac Toe Ultimate 3.1</strong><p>3×3–6×6 · AI · puzzle-uri generate / generated puzzles · campionat / championship · RO/EN · backup JSON.</p><div class="sky-arcade-actions"><a href="https://laurandreea10.github.io/Tic-Tac-Toe/" target="_blank" rel="noopener noreferrer">Joacă / Play</a><a href="https://laurandreea10.github.io/Tic-Tac-Toe/CHANGELOG.md">Istoric / History</a></div></section>
 <section class="sky-arcade-card" data-mini-game-id="slidestorm-arena" aria-labelledby="slideArcadeTitle"><strong id="slideArcadeTitle">🌊 SlideStorm Arena <span class="pill green">NEW</span></strong><p>100 niveluri / levels · 8 sporturi / sports · 11 moduri / modes · RO/EN · constructor / builder · opțiuni de accesibilitate / accessibility options.</p><div class="sky-arcade-actions"><button type="button" onclick="openArcadeExperience('slidestorm')">Joacă aici / Play here</button><a href="https://laurandreea10.github.io/codepen-portfolio/slidestorm-arena/" target="_blank" rel="noopener noreferrer">Tab separat / New tab</a><a href="https://laurandreea10.github.io/codepen-portfolio/slidestorm-arena/README.md">README</a></div><p data-slidestorm-score role="status" aria-live="polite"></p></section>
               <section
                 class="sky-arcade-card"
@@ -771,6 +771,7 @@
     <script id="skydreams-arcade-launcher">
       const SKY_ARCADE_URL = 'https://laurandreea10.github.io/codepen-portfolio/skydreams-portal/';
       const ARCADE_EXPERIENCES = {
+booscary:{url:'https://laurandreea10.github.io/codepen-portfolio/booscary/?parentOrigin=https%3A%2F%2Flaurandreea10.github.io',title:'Halloween BooScary v4'},
 slidestorm: {url:'https://laurandreea10.github.io/codepen-portfolio/slidestorm-arena/?parentOrigin=https%3A%2F%2Flaurandreea10.github.io',title:'SlideStorm Arena'},
         odyssey: {
           url: 'https://laurandreea10.github.io/codepen-portfolio/odyssey-quest/?parentOrigin=https%3A%2F%2Flaurandreea10.github.io',
@@ -813,6 +814,7 @@ slidestorm: {url:'https://laurandreea10.github.io/codepen-portfolio/slidestorm-a
       window.addEventListener('message', (event) => {
         const frame = document.getElementById('skyArcadeFrame'),
           d = event.data;
+if(activeArcadeExperience==='booscary'&&event.origin==='https://laurandreea10.github.io'&&event.source===frame.contentWindow&&d?.type==='GAME_SCORE'&&d.gameId==='booscary'&&Number.isInteger(d.score)&&d.score>=0&&d.score<=100&&Number.isInteger(d.level)&&d.level>=1&&d.level<=10){document.querySelectorAll('[data-booscary-score]').forEach(el=>el.textContent='BooScary · Score: '+d.score+' · Level '+d.level);return;}
 if(activeArcadeExperience==='slidestorm'&&event.origin==='https://laurandreea10.github.io'&&event.source===frame.contentWindow&&d?.type==='GAME_SCORE'&&d.gameId==='slidestorm-arena'&&Number.isInteger(d.score)&&d.score>=0&&d.score<=100&&Number.isInteger(d.level)&&d.level>=1&&d.level<=100){document.querySelectorAll('[data-slidestorm-score]').forEach(el=>el.textContent='SlideStorm · Scor / Score: '+d.score+' · Nivel / Level '+d.level);return;}
         if (
           activeArcadeExperience !== 'odyssey' ||
@@ -875,6 +877,7 @@ if(activeArcadeExperience==='slidestorm'&&event.origin==='https://laurandreea10.
           card.removeAttribute('id');
           card.querySelectorAll('[id]').forEach((el) => el.removeAttribute('id'));
           panel.appendChild(card);
+const booSource=document.querySelector('.arcade-extras [data-mini-game-id="booscary"]');if(booSource){const card=booSource.cloneNode(true);card.removeAttribute('aria-labelledby');card.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));panel.appendChild(card);}
 const slideSource=document.querySelector('.arcade-extras [data-mini-game-id="slidestorm-arena"]');if(slideSource){const slideCard=slideSource.cloneNode(true);slideCard.removeAttribute('aria-labelledby');slideCard.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));panel.appendChild(slideCard);}
         };
       });
@@ -882,5 +885,6 @@ const slideSource=document.querySelector('.arcade-extras [data-mini-game-id="sli
     <script src="arcade-world.bundle.min.js?v=35" defer></script>
   </body>
 </html>
+
 
 
