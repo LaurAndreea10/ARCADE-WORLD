@@ -1,3 +1,10 @@
+# PentArena integration — 2026-10-06
+
+- Added a bilingual five-sport PentArena card to desktop experiences and the mobile More panel.
+- Reused the existing iframe dialog launcher, with separate-tab play and public version-history links.
+- PentArena keeps its own local progress; this integration adds no board rewards or score synchronization.
+- Static card/launcher/mobile-clone checks and inline JavaScript syntax checks passed. Live deployment and physical-device behavior were not verified.
+
 # Serpent Prism integration — 2026-10-06
 
 Added Serpent Prism to desktop experiences and the mobile More panel, using the existing iframe launcher. Includes direct RO/EN play and version-history links. Progress remains stored by Serpent Prism; no board rewards or score synchronization are added.
