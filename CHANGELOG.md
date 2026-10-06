@@ -1,3 +1,10 @@
+## SlideStorm Arena integration verification — 2026-10-06
+
+- Confirmed the existing single source card, embedded launcher, separate-tab link and mobile catalog clone; no duplicate game card added.
+- Confirmed score messages are checked against the active experience, trusted origin, iframe source, game ID and numeric score/level bounds.
+- Added RO/EN README documentation for launching SlideStorm Arena and its separate local progress.
+- Static source checks passed; live deployment, real-device touch and screen-reader behavior were not verified in this check.
+
 # BooScary integration — 2026-10-06
 
 Added BooScary v4 to desktop/mobile catalog and iframe launcher, with origin/source-checked score messages and direct play/case-study links.
