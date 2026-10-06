@@ -197,3 +197,8 @@ The [bilingual learning game](https://gradina-curioasa.plugaru-laura10.chatgpt.s
 **EN** — [Play SlideStorm Arena](https://laurandreea10.github.io/codepen-portfolio/slidestorm-arena/). The Arcade World card opens the game in the existing dialog or a separate tab. The same experience is available in the mobile catalog. Game progress remains separate and local; validated iframe results appear in the card without changing board tile ownership.
 
 Integration checks: one source card, launcher URL, mobile card cloning, and score-message origin/source checks confirmed in `index.html`. Real-device touch and screen-reader behavior remain unverified by this integration check.
+
+
+### Serpent Prism
+
+[Play Zuma × Snake](https://laurandreea10.github.io/codepen-portfolio/serpent-prism/) · [English](https://laurandreea10.github.io/codepen-portfolio/serpent-prism/?lang=en) · [Version history](https://laurandreea10.github.io/codepen-portfolio/serpent-prism/changelog.html). Available in desktop experiences and mobile More, with embedded play and a separate-tab option. Six modes, Aqua/Dune/Neon, limited-ammo puzzles, accessibility settings and its own local progress/JSON backup. Board ownership and rewards remain separate.

@@ -1,3 +1,7 @@
+# Serpent Prism integration — 2026-10-06
+
+Added Serpent Prism to desktop experiences and the mobile More panel, using the existing iframe launcher. Includes direct RO/EN play and version-history links. Progress remains stored by Serpent Prism; no board rewards or score synchronization are added.
+
 ## SlideStorm Arena integration verification — 2026-10-06
 
 - Confirmed the existing single source card, embedded launcher, separate-tab link and mobile catalog clone; no duplicate game card added.
