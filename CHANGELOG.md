@@ -4,7 +4,7 @@
 - Each new card links to the playable project and its source repository. Tri-Link Quest also uses the existing in-page launcher.
 - Updated the mobile More panel to clone the full experience grid, remove duplicate clones on repeat visits, and preserve unique accessible IDs.
 - Standalone games keep their own saved progress; launching a game does not award Arcade World board coins or XP.
-- Static checks confirmed 35 unique cards and 17 new project links. Real-device mobile play remains unverified.
+- Static checks confirmed 35 unique cards, 17 new game cards, and valid inline launcher syntax. The launcher registry terminator was corrected so the integrated launchers parse. Real-device mobile play remains unverified.
 
 # Portfolio game catalogue expansion — 2026-10-18
 
