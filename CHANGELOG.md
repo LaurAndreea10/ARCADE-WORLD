@@ -1,3 +1,10 @@
+# Portfolio game catalogue expansion — 2026-10-18
+
+- Added Puck & Pool Arena, Ghost Talk, Growth Quest · Funnel Forge, LIVADA · Culesul, LOOP — Cosmic Relay, Gimnaziu Space, Excel Quest, and BASKET VS AI to the Arcade World experience cards.
+- Added bilingual card descriptions, embedded launchers, and separate-tab links. The cards stay in the existing responsive experience grid.
+- Each project continues to own its progress. These launch cards do not award Arcade World board coins or XP.
+- Source-level checks confirmed one card, launcher mapping, and embedded launch action per added experience. Physical-device testing remains unconfirmed.
+
 # PentArena integration — 2026-10-06
 
 - Added a bilingual five-sport PentArena card to desktop experiences and the mobile More panel.
