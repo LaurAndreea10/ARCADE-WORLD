@@ -1,3 +1,11 @@
+# Arcade World complete game catalogue — 2026-10-18
+
+- Expanded the experience grid from 18 to 35 cards, adding Nexus Arcade, Tri-Link Quest, Lily Hop World, Pizza Game, Pizza Chef Deluxe, Neon Island Run 3D, Garden Match Masters, VELOCITY X, BlockForge, StarForge Maze, HexWords 2048, Signal Garden, Maze Adventure, Bounce Ball, Air Hockey Arcade, Neon Drift, and Surfin Bird Quest.
+- Each new card links to the playable project and its source repository. Tri-Link Quest also uses the existing in-page launcher.
+- Updated the mobile More panel to clone the full experience grid, remove duplicate clones on repeat visits, and preserve unique accessible IDs.
+- Standalone games keep their own saved progress; launching a game does not award Arcade World board coins or XP.
+- Static checks confirmed 35 unique cards and 17 new project links. Real-device mobile play remains unverified.
+
 # Portfolio game catalogue expansion — 2026-10-18
 
 - Added Puck & Pool Arena, Ghost Talk, Growth Quest · Funnel Forge, LIVADA · Culesul, LOOP — Cosmic Relay, Gimnaziu Space, Excel Quest, and BASKET VS AI to the Arcade World experience cards.
