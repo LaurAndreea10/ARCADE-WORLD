@@ -37,7 +37,7 @@ Arcade World is a **digital board game** where 2–4 players roll dice, move aro
 ### Core Gameplay
 
 - **24-tile board** with game tiles, bonus events, traps, and a START reward
-- **Expanded mini-game catalog** — Basket, Hockey, Bounce, Maze, Bomber, Shooter, TicTacToe, Memory, Breakout, Fusion, PvAI duel and Tri-Link Quest
+- **Expanded mini-game catalog** — Basket, Hockey, Bounce, Maze, Bomber, Shooter, TicTacToe, Memory, Breakout, Fusion, PvAI duel and Tri-Link Quest, plus 17 linked portfolio experiences including PentArena, Puck & Pool Arena, Serpent Prism, SlideStorm Arena, Ghost Talk, LOOP Cosmic Relay, Growth Quest · Funnel Forge, Gimnaziu Space, Excel Quest and BASKET VS AI. Linked games keep their own local progress; no board rewards are granted unless a game has an explicit result contract.
 - **Tri-Link Quest** — 10-level accessible campaign combining sliding puzzle, match-3 and connect, with offline PWA support
 - **Pizza tiles** — PIZZA GAME and PIZZA DELUXE are tracked for the pizza quest
 - **2–4 local players** — player-count helpers are ready for setup UI wiring
