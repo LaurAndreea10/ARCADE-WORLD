@@ -1,6 +1,6 @@
 # Candy Route integration — 2026-10-26
 
-- Added Candy Route v2.0 to the existing experience grid and large embedded launcher, with a separate-tab fallback and English link.
+- Added Candy Route v2.1 to the existing experience grid and large embedded launcher, with a separate-tab fallback and English link.
 - The mobile More panel uses the existing clone mechanism; card IDs stay unique.
 - Game progress stays inside Candy Route. No Arcade World board XP or coins are awarded by this launcher.
 - The destination ships in the companion codepen-portfolio PR; merge that PR before this one.
