@@ -1,3 +1,9 @@
+# Candy Route v3 launcher — 2026-10-26
+
+- Updated the existing Candy Route card to v3: 12-variant Studio, creator, profiles, local duel, PNG and offline support.
+- Kept one source card, the existing large embedded launcher, English/separate-tab links and independent game progress.
+- Deploy the companion Candy Route v3 PR in codepen-portfolio before publishing this label update. Local logic/interaction verification belongs to that PR; this change only updates launcher text.
+
 # Candy Route integration — 2026-10-26
 
 - Added Candy Route v2.1 to the existing experience grid and large embedded launcher, with a separate-tab fallback and English link.
