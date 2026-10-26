@@ -1,3 +1,10 @@
+# Candy Route integration — 2026-10-26
+
+- Added Candy Route v2.1 to the existing experience grid and large embedded launcher, with a separate-tab fallback and English link.
+- The mobile More panel uses the existing clone mechanism; card IDs stay unique.
+- Game progress stays inside Candy Route. No Arcade World board XP or coins are awarded by this launcher.
+- The destination ships in the companion codepen-portfolio PR; merge that PR before this one.
+
 # Arcade World complete game catalogue — 2026-10-18
 
 - Expanded the experience grid from 18 to 35 cards, adding Nexus Arcade, Tri-Link Quest, Lily Hop World, Pizza Game, Pizza Chef Deluxe, Neon Island Run 3D, Garden Match Masters, VELOCITY X, BlockForge, StarForge Maze, HexWords 2048, Signal Garden, Maze Adventure, Bounce Ball, Air Hockey Arcade, Neon Drift, and Surfin Bird Quest.
