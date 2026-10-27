@@ -1,3 +1,9 @@
+# Candy Route v4 launcher — 2026-10-27
+
+- Updated the existing Candy Route card for the story map, visual creator and local tournaments.
+- Preserved the single source card, large launcher, RO/EN links and independent progress. No extra board rewards or duplicate catalogue entry.
+- Deploy the companion codepen-portfolio v4 update before publishing this label. Public Arena hosting is not activated by this launcher.
+
 # Candy Route v3 launcher — 2026-10-26
 
 - Updated the existing Candy Route card to v3: 12-variant Studio, creator, profiles, local duel, PNG and offline support.
