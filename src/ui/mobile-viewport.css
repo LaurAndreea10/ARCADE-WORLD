@@ -1,15 +1,44 @@
 /* Keep the mobile board's intrinsic grid width from expanding the layout viewport.
    Fixed navigation must stay in the visual viewport so touch targets remain reachable. */
 @media (max-width: 768px) {
-  html, body { max-inline-size: 100%; overflow-x: clip; }
-  .app, .frame, .main { min-inline-size: 0; max-inline-size: 100%; }
-  .main > *, .main > .stage, .board-card, .board-wrap, .board-shell,
-  .center-screen, .center-panel.screen, .board-insights, .insight-card {
+  html,
+  body {
+    max-inline-size: 100%;
+    overflow-x: clip;
+  }
+  .app,
+  .frame,
+  .main {
+    min-inline-size: 0;
+    max-inline-size: 100%;
+  }
+  .main > *,
+  .main > .stage,
+  .board-card,
+  .board-wrap,
+  .board-shell,
+  .center-screen,
+  .center-panel.screen,
+  .board-insights,
+  .insight-card {
     min-inline-size: 0 !important;
     max-inline-size: 100% !important;
   }
-  .main > .stage { grid-template-columns: minmax(0, 1fr); }
-  .screen-tabs { flex-wrap: wrap; min-inline-size: 0; }
-  .m-tabs, .m-score-strip { inline-size: 100dvw; max-inline-size: 100dvw; right: auto; }
-  .m-strip-inner { min-inline-size: 0; max-inline-size: 100%; }
+  .main > .stage {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .screen-tabs {
+    flex-wrap: wrap;
+    min-inline-size: 0;
+  }
+  .m-tabs,
+  .m-score-strip {
+    inline-size: 100dvw;
+    max-inline-size: 100dvw;
+    right: auto;
+  }
+  .m-strip-inner {
+    min-inline-size: 0;
+    max-inline-size: 100%;
+  }
 }

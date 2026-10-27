@@ -119,4 +119,3 @@ The format follows the spirit of [Keep a Changelog](https://keepachangelog.com/)
 - Lighthouse audit artifacts for desktop and mobile.
 - Online multiplayer prototype behind a feature flag.
 - UI wiring for achievements, daily challenges, settings, profiles, and match summaries.
-
