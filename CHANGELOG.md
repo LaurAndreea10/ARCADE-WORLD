@@ -1,3 +1,8 @@
+# Mobile launcher reachability — 2026-10-27
+
+- Constrain the board grid and nested panels to the mobile viewport. Intrinsic content previously expanded the 390 px layout to 604 px and placed the More touch target outside the visual viewport.
+- Keep fixed score/navigation bars within dynamic viewport width; preserve the existing Candy Route card and launcher.
+
 # Candy Route v4 launcher — 2026-10-27
 
 - Updated the existing Candy Route card for the story map, visual creator and local tournaments.
@@ -114,4 +119,3 @@ The format follows the spirit of [Keep a Changelog](https://keepachangelog.com/)
 - Lighthouse audit artifacts for desktop and mobile.
 - Online multiplayer prototype behind a feature flag.
 - UI wiring for achievements, daily challenges, settings, profiles, and match summaries.
-
