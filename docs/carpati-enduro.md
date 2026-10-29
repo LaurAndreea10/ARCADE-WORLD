@@ -10,4 +10,4 @@ The game retains its own local progress. Standalone rides do not claim board til
 
 The listener requires all of: trusted GitHub Pages origin, exact active iframe `contentWindow`, active experience `carpatienduro`, and a valid bounded payload. Results are rendered with `textContent`. No new origins, account services or permission requests are added.
 
-Run `node --test tests/carpati-enduro-bridge.test.cjs` for acceptance/rejection cases. The game-side sender is in the companion codepen-portfolio PR. Merge the game PR first if the card should show Expedition 2 immediately; the launcher URL itself already points to the existing game.
+Run `npx vitest run tests/carpati-enduro-bridge.test.js` for acceptance/rejection cases. The game-side sender is in the companion codepen-portfolio PR. Merge the game PR first if the card should show Expedition 2 immediately; the launcher URL itself already points to the existing game.
