@@ -166,7 +166,7 @@
               <div class="pill">export/import save</div>
             </div>
             <div class="aw-dock" id="awDock"></div>
-            <div class="arcade-extras" aria-label="Experiențe noi / New experiences"><section class="sky-arcade-card" data-mini-game-id="candy-route" aria-labelledby="candyRouteArcadeTitle"><strong id="candyRouteArcadeTitle">🍬 Candy Route v4.0</strong><p>30 niveluri / levels · hartă cu poveste / story map · creator vizual / visual editor · turnee locale / local tournaments · offline · RO/EN. Progres separat / Separate progress.</p><div class="sky-arcade-actions"><button type="button" onclick="openArcadeExperience('candyroute')">Joacă aici / Play here</button><a href="https://laurandreea10.github.io/codepen-portfolio/candy-route/" target="_blank" rel="noopener noreferrer">Tab separat / New tab</a><a href="https://laurandreea10.github.io/codepen-portfolio/candy-route/?lang=en" target="_blank" rel="noopener noreferrer" lang="en">Play in English</a><a href="https://laurandreea10.github.io/codepen-portfolio/candy-route/CHANGELOG.md">Istoric / History</a></div></section><section class="sky-arcade-card" data-mini-game-id="pentarena" aria-labelledby="pentArenaArcadeTitle">
+            <div class="arcade-extras" aria-label="Experiențe noi / New experiences"><section class="sky-arcade-card" data-mini-game-id="carpati-enduro" aria-labelledby="carpatiEnduroArcadeTitle"><strong id="carpatiEnduroArcadeTitle">🏍️ Carpați Enduro · Expedition 2</strong><p>Moto × Enduro × Trial · AI · editor de trasee / track editor · expediții / expeditions · RO/EN · comenzi adaptabile / adaptable controls. Progres separat / Separate progress.</p><div class="sky-arcade-actions"><button type="button" onclick="openArcadeExperience('carpatienduro')">Joacă aici / Play here</button><a href="https://laurandreea10.github.io/codepen-portfolio/carpati-enduro/" target="_blank" rel="noopener noreferrer">Tab separat / New tab</a><a href="https://laurandreea10.github.io/codepen-portfolio/carpati-enduro/?lang=en" target="_blank" rel="noopener noreferrer" lang="en">Play in English</a><a href="https://laurandreea10.github.io/codepen-portfolio/carpati-enduro/case-study.html">Studiu / Case study</a></div><p data-carpati-score role="status" aria-live="polite"></p></section><section class="sky-arcade-card" data-mini-game-id="candy-route" aria-labelledby="candyRouteArcadeTitle"><strong id="candyRouteArcadeTitle">🍬 Candy Route v4.0</strong><p>30 niveluri / levels · hartă cu poveste / story map · creator vizual / visual editor · turnee locale / local tournaments · offline · RO/EN. Progres separat / Separate progress.</p><div class="sky-arcade-actions"><button type="button" onclick="openArcadeExperience('candyroute')">Joacă aici / Play here</button><a href="https://laurandreea10.github.io/codepen-portfolio/candy-route/" target="_blank" rel="noopener noreferrer">Tab separat / New tab</a><a href="https://laurandreea10.github.io/codepen-portfolio/candy-route/?lang=en" target="_blank" rel="noopener noreferrer" lang="en">Play in English</a><a href="https://laurandreea10.github.io/codepen-portfolio/candy-route/CHANGELOG.md">Istoric / History</a></div></section><section class="sky-arcade-card" data-mini-game-id="pentarena" aria-labelledby="pentArenaArcadeTitle">
                 <strong id="pentArenaArcadeTitle">🏀 PentArena <span class="pill green">NEW</span></strong>
                 <p>5 sporturi / sports: baschet / basketball, fotbal / football, air hockey, volei / volleyball, biliard / pool · AI / 2 jucători / players · Pentatlon / Pentathlon · carieră / career · RO/EN · progres local / local progress.</p>
                 <div class="sky-arcade-actions">
@@ -859,9 +859,11 @@
       </div>
     </div>
 
-    <script id="skydreams-arcade-launcher">
+    <script src="src/integration/carpatiEnduroBridge.js"></script>
+<script id="skydreams-arcade-launcher">
       const SKY_ARCADE_URL = 'https://laurandreea10.github.io/codepen-portfolio/skydreams-portal/';
       const ARCADE_EXPERIENCES = {
+        carpatienduro: { url: 'https://laurandreea10.github.io/codepen-portfolio/carpati-enduro/', title: 'Carpați Enduro · Expedition 2' },
         candyroute: { url: 'https://laurandreea10.github.io/codepen-portfolio/candy-route/', title: 'Candy Route' },
         pentarena: { url: 'https://laurandreea10.github.io/codepen-portfolio/pentarena/', title: 'PentArena' },
 serpent:{url:'https://laurandreea10.github.io/codepen-portfolio/serpent-prism/',title:'Serpent Prism'},
@@ -940,6 +942,10 @@ slidestorm: {url:'https://laurandreea10.github.io/codepen-portfolio/slidestorm-a
       window.addEventListener('message', (event) => {
         const frame = document.getElementById('skyArcadeFrame'),
           d = event.data;
+if (window.validCarpatiEnduroResult(event, frame.contentWindow, activeArcadeExperience)) {
+          document.querySelectorAll('[data-carpati-score]').forEach(el => el.textContent = 'Carpați Enduro · ' + (d.completed ? 'Finalizat / Finished' : 'Încercare / Attempt') + ' · ' + d.time.toFixed(2) + 's · ' + d.crashes + ' căderi / crashes');
+          return;
+        }
 if(activeArcadeExperience==='booscary'&&event.origin==='https://laurandreea10.github.io'&&event.source===frame.contentWindow&&d?.type==='GAME_SCORE'&&d.gameId==='booscary'&&Number.isInteger(d.score)&&d.score>=0&&d.score<=100&&Number.isInteger(d.level)&&d.level>=1&&d.level<=10){document.querySelectorAll('[data-booscary-score]').forEach(el=>el.textContent='BooScary · Score: '+d.score+' · Level '+d.level);return;}
 if(activeArcadeExperience==='slidestorm'&&event.origin==='https://laurandreea10.github.io'&&event.source===frame.contentWindow&&d?.type==='GAME_SCORE'&&d.gameId==='slidestorm-arena'&&Number.isInteger(d.score)&&d.score>=0&&d.score<=100&&Number.isInteger(d.level)&&d.level>=1&&d.level<=100){document.querySelectorAll('[data-slidestorm-score]').forEach(el=>el.textContent='SlideStorm · Scor / Score: '+d.score+' · Nivel / Level '+d.level);return;}
         if (
@@ -1010,6 +1016,7 @@ if(activeArcadeExperience==='slidestorm'&&event.origin==='https://laurandreea10.
     <script src="arcade-world.bundle.min.js?v=35" defer></script>
   </body>
 </html>
+
 
 
 
