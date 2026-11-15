@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "source": "projects.json",
+  "publications": [
+    {
+      "slug": "kygo-arhipelagul",
+      "version": "2.0.0",
+      "url": "https://laurandreea10.github.io/codepen-portfolio/kygo-arhipelagul/",
+      "title": {
+        "ro": "Kygo: Arhipelagul — douăsprezece jocuri 3D într-unul",
+        "en": "Kygo: The Archipelago — twelve 3D games in one"
+      },
+      "description": {
+        "ro": "Douăsprezece mecanici din jocurile mele pe o singură hartă 3D: surf, shooter, șarpe-prismă, air hockey, livadă, labirint, enduro, turn de blocuri, zbor printre ziduri, baschet, curse și snowboard. 5 niveluri pe insulă, boși, mod fără sfârșit, arbore de abilități, prestigiu, provocări zilnice și săptămânale, coduri de provocare, 16 realizări. Three.js cu fallback 2D, PWA offline. RO/EN, tastatură/atingere/gamepad, joc cu un singur buton, mod fără eșec, contrast ridicat, mișcare redusă.",
+        "en": "Twelve mechanics from my games on one 3D map: surfing, a shooter, a prism snake, air hockey, an orchard, a maze, enduro, block stacking, flying through walls, basketball, racing and snowboarding. 5 levels per island, bosses, endless mode, a skill tree, prestige, daily and weekly challenges, challenge codes, 16 achievements. Three.js with a 2D fallback, offline PWA. RO/EN, keyboard/touch/gamepad, one-switch play, no-fail mode, high contrast, reduced motion."
+      },
+      "completed": "2026-11-11"
+    },
+    {
+      "slug": "baseline-voyage",
+      "version": "4.0.0",
+      "url": "https://laurandreea10.github.io/codepen-portfolio/baseline-voyage/",
+      "title": {
+        "ro": "CHRONOSCROLL × Baseline Voyage — animation-timeline",
+        "en": "CHRONOSCROLL × Baseline Voyage — animation-timeline"
+      },
+      "description": {
+        "ro": "Călătorie condusă de scroll prin istoria animation-timeline (2023 → 2026): observator 3D, cronologie animată, univers 3D, portaluri, galerie cinema, cronologii denumite cu timeline-scope, laborator CSS cu provocări, compatibilitate live și jocul CHRONO PILOT, în care bara de scroll e joystickul. RO/EN, dark/light × 7 palete, mișcare redusă, fallback @supports și mod static.",
+        "en": "A scroll-driven voyage through the history of animation-timeline (2023 → 2026): 3D observatory, animated timeline, 3D universe, portals, cinema gallery, named timelines with timeline-scope, a CSS lab with challenges, live compatibility and the CHRONO PILOT game, where the scrollbar is the joystick. RO/EN, dark/light × 7 palettes, reduced motion, @supports fallback and static mode."
+      },
+      "completed": "2026-11-09"
+    },
+    {
+      "slug": "genoboard-evo-rush",
+      "version": "2.2.0",
+      "url": "https://laurandreea10.github.io/codepen-portfolio/genoboard-evo-rush/",
+      "title": {
+        "ro": "GENOBOARD: Evo Rush",
+        "en": "GENOBOARD: Evo Rush"
+      },
+      "description": {
+        "ro": "Joc arcade de browser despre evoluție: pornește de la o celulă, fă trick-uri, întrece rivali și construiește genomul. Alege vederea de ansamblu 2D sau perspectiva 3D; joacă 12 variante de competiții tematice de Crăciun, Paște și Halloween și deblochează plăci cosmetice în magazin. RO/EN, contrast ridicat, mișcare redusă și asistență la aterizare.",
+        "en": "Browser arcade evolution game: start as a cell, perform tricks, race rivals and build a genome. Choose the 2D overview or immersive 3D view; play 12 Christmas, Easter and Halloween competition variants and unlock cosmetic boards in the shop. RO/EN, high contrast, reduced motion and landing assist."
+      },
+      "completed": "2026-11-06"
+    }
+  ]
+}
